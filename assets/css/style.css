@@ -791,10 +791,12 @@ button {
   filter: drop-shadow(0 18px 28px rgba(8, 12, 40, 0.4));
 }
 
+/* Sits inside the stage so it covers the active pouch's upper left corner
+   and never strays onto the pouch behind it. */
 .showcase__badge {
   position: absolute;
-  top: 4%;
-  left: 0;
+  top: 3%;
+  left: 2%;
   z-index: 4;
   display: grid;
   place-content: center;
@@ -804,14 +806,14 @@ button {
   height: 76px;
   border-radius: 50%;
   background: var(--badge-accent, var(--accent));
-  transform: translateX(-28%) rotateY(0deg);
+  transform: rotateY(0deg);
   transform-style: preserve-3d;
   transition: transform 250ms var(--ease);
   pointer-events: none;
 }
 
 .showcase__badge.is-flipping {
-  transform: translateX(-28%) rotateY(90deg);
+  transform: rotateY(90deg);
 }
 
 .showcase__badge-num {
