@@ -646,6 +646,686 @@ button {
   }
 }
 
+/* --- Compact frame: header only (inner pages) --------------------------- */
+.hero-frame--compact {
+  padding-bottom: 1.1rem;
+}
+
+@media (min-width: 1024px) {
+  .hero-frame--compact {
+    padding-bottom: 1.5rem;
+  }
+}
+
+/* --- Buttons on light grounds ------------------------------------------ */
+.btn--navy {
+  background: var(--navy);
+  border-color: var(--navy);
+  color: var(--cream);
+}
+
+.btn--navy:hover {
+  background: var(--navy-deep);
+  border-color: var(--navy-deep);
+}
+
+.btn--ghost {
+  background: transparent;
+  border-color: var(--line);
+  color: var(--navy-ink);
+}
+
+.btn--ghost:hover {
+  border-color: var(--navy-ink);
+}
+
+.chip--light {
+  border-color: var(--line);
+  color: var(--navy-ink);
+}
+
+/* --- Sections on the page ground --------------------------------------- */
+.section {
+  padding: 3.5rem var(--gutter);
+}
+
+.section--flush-top {
+  padding-top: 0;
+}
+
+.section__inner {
+  max-width: var(--container);
+  margin-inline: auto;
+}
+
+.section__head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.section__title {
+  margin: 0;
+  color: var(--navy-ink);
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(1.75rem, 1.2rem + 2vw, 2.5rem);
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+
+.section__sub {
+  margin: 0.35rem 0 0;
+  color: var(--text);
+}
+
+.section__link {
+  color: var(--pack-blue);
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.section__link:hover {
+  text-decoration: underline;
+}
+
+@media (min-width: 768px) {
+  .section {
+    padding: 5.5rem var(--gutter);
+  }
+
+  .section__head {
+    margin-bottom: 2rem;
+  }
+}
+
+/* --- Price + facts (shared) --------------------------------------------- */
+.price {
+  display: grid;
+  line-height: 1.1;
+}
+
+.price__amount {
+  color: var(--navy-ink);
+  font-weight: 700;
+  font-size: 1.25rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.price__weight {
+  color: var(--text);
+  font-size: 0.8125rem;
+}
+
+.facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* --- Section: featured product / line-up ------------------------------- */
+.product-card {
+  position: relative;
+  display: grid;
+  gap: 1.25rem;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: var(--paper);
+  overflow: hidden;
+  transition: border-color var(--t-fast) var(--ease);
+}
+
+.product-card:hover {
+  border-color: var(--pack-blue);
+}
+
+.product-card__media {
+  display: block;
+  aspect-ratio: 1;
+  background: var(--cream-soft);
+}
+
+.product-card__media img {
+  width: 100%;
+  height: 100%;
+  padding: 8%;
+  object-fit: contain;
+}
+
+.product-card__body {
+  display: grid;
+  align-content: start;
+  gap: 0.5rem;
+  padding: 0 1.25rem 1.25rem;
+}
+
+.product-card__name {
+  margin: 0;
+  color: var(--navy-ink);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.375rem;
+  line-height: 1.15;
+}
+
+.product-card__name a {
+  text-decoration: none;
+}
+
+/* Stretch the name link over the whole card; buttons sit above it */
+.product-card__name a::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+.product-card__tagline {
+  margin: 0;
+  color: var(--text);
+}
+
+.product-card__protein {
+  margin: 0;
+  color: var(--pack-blue);
+  font-weight: 500;
+}
+
+.product-card__buy {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1rem;
+  margin-top: 0.5rem;
+}
+
+.product-card__buy .price__weight {
+  white-space: nowrap;
+}
+
+.product-card__actions {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex: 1 1 100%;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.product-card__actions .btn {
+  flex: 1 1 auto;
+}
+
+@media (min-width: 768px) {
+  .product-card--feature {
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    align-items: center;
+    gap: 0;
+  }
+
+  .product-card--feature .product-card__media img {
+    padding: 6%;
+  }
+
+  .product-card--feature .product-card__actions {
+    flex: 0 1 auto;
+  }
+
+  .product-card--feature .product-card__actions .btn {
+    flex: 0 0 auto;
+  }
+
+  .product-card--feature .product-card__body {
+    gap: 0.75rem;
+    padding: 2.5rem;
+  }
+
+  .product-card--feature .product-card__name {
+    font-size: 2rem;
+  }
+
+  .product-card--feature .product-card__tagline {
+    font-size: 1.125rem;
+  }
+
+  .product-card--feature .product-card__buy {
+    margin-top: 1rem;
+  }
+}
+
+/* --- Section: product page ---------------------------------------------- */
+.crumbs {
+  margin: 0 0 1.5rem;
+  font-size: 0.9375rem;
+}
+
+.crumbs a {
+  color: var(--pack-blue);
+  text-decoration: none;
+}
+
+.crumbs a:hover {
+  text-decoration: underline;
+}
+
+.product {
+  display: grid;
+  gap: 2rem;
+}
+
+.gallery {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.gallery__stage {
+  position: relative;
+  aspect-ratio: 1;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: var(--cream-soft);
+  overflow: hidden;
+}
+
+.gallery__zoom {
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: zoom-in;
+}
+
+.gallery__zoom:disabled {
+  cursor: default;
+}
+
+.gallery__main {
+  width: 100%;
+  height: 100%;
+  padding: 6%;
+  object-fit: contain;
+}
+
+.gallery__main[data-kind="photo"] {
+  padding: 0;
+  object-fit: cover;
+}
+
+.thumbs {
+  display: flex;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0 0 0.25rem;
+  list-style: none;
+  overflow-x: auto;
+}
+
+.thumb {
+  flex: none;
+  width: 76px;
+  height: 76px;
+  padding: 0;
+  border: 2px solid var(--line);
+  border-radius: 12px;
+  background: var(--cream-soft);
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color var(--t-fast) var(--ease);
+}
+
+.thumb:hover {
+  border-color: var(--pack-blue);
+}
+
+.thumb[aria-current="true"] {
+  border-color: var(--navy);
+}
+
+.thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.thumb[data-kind="pack"] img {
+  padding: 6px;
+  object-fit: contain;
+}
+
+.buy {
+  display: grid;
+  align-content: start;
+  gap: 1rem;
+}
+
+.buy__title {
+  margin: 0;
+  color: var(--navy-ink);
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(2.25rem, 1.5rem + 3vw, 3.5rem);
+  line-height: 1.02;
+  letter-spacing: -0.012em;
+}
+
+.buy__tagline {
+  margin: 0;
+  color: var(--text);
+  font-size: 1.125rem;
+}
+
+.stat {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: baseline;
+  gap: 0 0.85rem;
+  padding: 1rem 1.25rem;
+  border-radius: 16px;
+  background: var(--navy);
+  color: var(--cream);
+}
+
+.stat__num {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 2.75rem;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.stat__label {
+  color: rgba(247, 233, 195, 0.85);
+  font-size: 0.9375rem;
+  line-height: 1.35;
+}
+
+.stat__label strong {
+  display: block;
+  color: var(--cream);
+  font-weight: 600;
+}
+
+.buy__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+}
+
+.buy__row .price__amount {
+  font-size: 2rem;
+}
+
+.buy__row .price__weight {
+  font-size: 0.9375rem;
+}
+
+.buy__note {
+  margin: 0;
+  color: var(--text);
+  font-size: 0.875rem;
+}
+
+.buy__status {
+  margin: 0;
+  min-height: 1.4em;
+  color: var(--navy-ink);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+@media (min-width: 1024px) {
+  .product {
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+    align-items: start;
+    gap: 4rem;
+  }
+
+  .gallery {
+    position: sticky;
+    top: 1.5rem;
+  }
+
+  .buy {
+    padding-top: 0.5rem;
+  }
+}
+
+/* --- Nutrition panel ---------------------------------------------------- */
+.nutrition {
+  max-width: 760px;
+  border: 2px solid var(--navy-ink);
+  border-radius: 16px;
+  overflow: auto;
+}
+
+.nutrition table {
+  width: 100%;
+  min-width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+.nutrition caption {
+  padding: 1rem 1.25rem;
+  background: var(--navy);
+  color: var(--cream);
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.375rem;
+  line-height: 1.15;
+  text-align: left;
+}
+
+.nutrition caption small {
+  display: block;
+  margin-top: 0.25rem;
+  color: rgba(247, 233, 195, 0.85);
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 0.875rem;
+}
+
+.nutrition th,
+.nutrition td {
+  padding: 0.6rem 1.25rem;
+  border-top: 1px solid var(--line);
+  text-align: left;
+  vertical-align: baseline;
+}
+
+.nutrition thead th {
+  border-top: 0;
+  background: var(--cream-soft);
+  color: var(--navy-ink);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.nutrition thead th:not(:first-child),
+.nutrition td {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.nutrition tbody th {
+  color: var(--navy-ink);
+  font-weight: 500;
+}
+
+.nutrition .is-sub th {
+  padding-left: 2.25rem;
+  color: var(--text);
+  font-weight: 400;
+}
+
+.nutrition .is-hero th,
+.nutrition .is-hero td {
+  background: rgba(240, 138, 42, 0.14);
+  color: var(--navy-ink);
+  font-weight: 700;
+}
+
+.nutrition__foot {
+  margin: 0;
+  padding: 0.75rem 1.25rem;
+  border-top: 1px solid var(--line);
+  background: var(--cream-soft);
+  color: var(--text);
+  font-size: 0.8125rem;
+}
+
+/* Phone: tighter cells, headers may wrap. Must come after the nowrap rule above. */
+@media (max-width: 767px) {
+  .nutrition th,
+  .nutrition td {
+    padding: 0.55rem 0.6rem;
+    font-size: 0.9375rem;
+  }
+
+  .nutrition caption,
+  .nutrition__foot {
+    padding-inline: 0.6rem;
+  }
+
+  .nutrition thead th:not(:first-child) {
+    white-space: normal;
+  }
+
+  .nutrition thead th {
+    font-size: 0.6875rem;
+  }
+
+  .nutrition .is-sub th {
+    padding-left: 1.5rem;
+  }
+}
+
+/* --- Lightbox ------------------------------------------------------------ */
+.lightbox {
+  max-width: min(96vw, 1100px);
+  max-height: 96vh;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.lightbox::backdrop {
+  background: rgba(10, 16, 50, 0.88);
+}
+
+.lightbox__img {
+  max-width: 96vw;
+  max-height: 82vh;
+  width: auto;
+  height: auto;
+  margin: 0 auto;
+  border-radius: 16px;
+}
+
+.lightbox__bar {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 0 0;
+}
+
+.lightbox__btn {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 2px solid var(--cream-70);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--cream);
+  cursor: pointer;
+  transition: background-color var(--t-fast) var(--ease), border-color var(--t-fast) var(--ease);
+}
+
+.lightbox__btn:hover {
+  background: var(--cream-10);
+  border-color: var(--cream);
+}
+
+.lightbox__btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* --- Section: footer ------------------------------------------------------ */
+.footer {
+  margin: var(--frame);
+  padding: 2rem var(--gutter);
+  border-radius: var(--radius-hero);
+  background: var(--navy);
+  color: var(--cream);
+}
+
+.footer__inner {
+  display: grid;
+  gap: 1.25rem;
+  max-width: var(--container);
+  margin-inline: auto;
+}
+
+.footer__tag {
+  margin: 0.5rem 0 0;
+  color: rgba(247, 233, 195, 0.8);
+}
+
+.footer__nav ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.footer__nav a {
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.footer__nav a:hover {
+  text-decoration: underline;
+}
+
+.footer__legal {
+  margin: 0;
+  color: rgba(247, 233, 195, 0.65);
+  font-size: 0.8125rem;
+}
+
+@media (min-width: 768px) {
+  .footer {
+    padding: 3rem var(--gutter);
+  }
+
+  .footer__inner {
+    grid-template-columns: 1fr auto;
+    align-items: start;
+  }
+
+  .footer__legal {
+    grid-column: 1 / -1;
+  }
+}
+
 /* --- Motion: one orchestrated entrance --------------------------------- */
 @keyframes rise {
   from {
