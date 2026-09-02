@@ -105,6 +105,23 @@
     }
   }
 
+  /* --- Quantity stepper -------------------------------------------------- */
+  var qty = document.querySelector('[data-qty]');
+
+  if (qty) {
+    var input = qty.querySelector('.qty__input');
+
+    var step = function (delta) {
+      var min = parseInt(input.min, 10) || 1;
+      var max = parseInt(input.max, 10) || 99;
+      var next = (parseInt(input.value, 10) || min) + delta;
+      input.value = Math.min(max, Math.max(min, next));
+    };
+
+    qty.querySelector('[data-qty-down]').addEventListener('click', function () { step(-1); });
+    qty.querySelector('[data-qty-up]').addEventListener('click', function () { step(1); });
+  }
+
   /* --- Pre-order button (placeholder until Shopify is connected) -------- */
   var cartButton = document.querySelector('[data-add-to-cart]');
   var cartStatus = document.querySelector('.buy__status');

@@ -18,8 +18,8 @@
         href="/assets/img/masala-bhujia-pack-720.webp"
         imagesrcset="/assets/img/masala-bhujia-pack-720.webp 720w, /assets/img/masala-bhujia-pack-1054.webp 1054w"
         imagesizes="(min-width: 1024px) 600px, 100vw">
-  <link rel="stylesheet" href="/assets/css/fonts.css">
-  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="stylesheet" href="/assets/css/fonts.css?v=3">
+  <link rel="stylesheet" href="/assets/css/style.css?v=3">
   <script>document.documentElement.classList.replace('no-js', 'js');</script>
 </head>
 <body>
@@ -124,26 +124,57 @@
           <div class="buy" id="buy">
             <p class="eyebrow">Baked, not fried<span class="eyebrow__sep" aria-hidden="true">•</span>Made in India</p>
             <h1 class="buy__title" id="product-title">Masala Bhujia</h1>
-            <p class="buy__tagline">The classic namkeen, rebuilt. Same crunch, same masala, with the protein of a proper snack.</p>
+            <p class="buy__price">₹99</p>
+            <p class="buy__tax">MRP inclusive of all taxes</p>
+            <p class="buy__tagline">The classic namkeen, rebuilt. Same crunch, same masala, with 14 g of protein a pack. That is 21% protein by weight.</p>
 
-            <div class="stat">
-              <span class="stat__num">14 g</span>
-              <span class="stat__label"><strong>protein per pack</strong>That's 21% protein by weight. Serving size 30 g, about two servings a pack.</span>
+            <div class="field">
+              <p class="field__label" id="size-label">Size: <span>60 g</span></p>
+              <ul class="sizes" aria-labelledby="size-label">
+                <li class="size-option">60 g</li>
+              </ul>
             </div>
 
-            <ul class="facts">
-              <li class="chip chip--light">No palm oil</li>
-              <li class="chip chip--light">Rich in fibre</li>
-              <li class="chip chip--light">Real ingredients</li>
-              <li class="chip chip--light">100% vegetarian</li>
-            </ul>
-
-            <div class="buy__row">
-              <p class="price"><span class="price__amount">₹99</span><span class="price__weight">60 g pack</span></p>
-              <button class="btn btn--navy" type="button" data-add-to-cart>Pre-order · ₹99</button>
+            <div class="field">
+              <label class="field__label" for="qty">Quantity</label>
+              <div class="qty" data-qty>
+                <button class="qty__btn" type="button" data-qty-down aria-label="Decrease quantity">−</button>
+                <input class="qty__input" id="qty" name="quantity" type="number" value="1" min="1" max="20" step="1" inputmode="numeric">
+                <button class="qty__btn" type="button" data-qty-up aria-label="Increase quantity">+</button>
+              </div>
             </div>
+
+            <button class="btn btn--navy btn--block" type="button" data-add-to-cart>Pre-order · ₹99</button>
             <p class="buy__status" role="status" aria-live="polite"></p>
-            <p class="buy__note">Pay now, we ship when the first batch is ready. <a href="#nutrition">See the full nutrition table.</a></p>
+            <p class="buy__note">Pay now, we ship when the first batch is ready.</p>
+
+            <details class="acc" open>
+              <summary class="acc__head">Product description</summary>
+              <div class="acc__body">
+                <p>Your favourite bhujia, rebuilt around protein. The same chatpata masala and the same crunch you reach for at chai time, baked instead of deep fried, with no palm oil. A 60 g pack carries 14 g of protein and 7 g of dietary fibre.</p>
+                <p>Serving size 30 g, about two servings a pack.</p>
+              </div>
+            </details>
+
+            <details class="acc">
+              <summary class="acc__head">Health benefits</summary>
+              <div class="acc__body">
+                <ul>
+                  <li>Baked, not fried</li>
+                  <li>No palm oil</li>
+                  <li>21% protein per serve</li>
+                  <li>Rich in dietary fibre</li>
+                  <li>100% vegetarian</li>
+                </ul>
+              </div>
+            </details>
+
+            <details class="acc">
+              <summary class="acc__head">Nutrition</summary>
+              <div class="acc__body">
+                <p>Full nutritional information is in the table below. <a href="#nutrition">Jump to the protein numbers.</a></p>
+              </div>
+            </details>
           </div>
         </div>
       </div>
@@ -229,6 +260,6 @@
     </div>
   </dialog>
 
-  <script src="/assets/js/main.js" defer></script>
+  <script src="/assets/js/main.js?v=3" defer></script>
 </body>
 </html>
