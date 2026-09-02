@@ -32,6 +32,7 @@
   --container: 1200px;
 
   --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --ease-inout: cubic-bezier(0.65, 0, 0.35, 1);
   --t-fast: 160ms;
   --t-base: 220ms;
 }
@@ -576,16 +577,216 @@ button {
   background: var(--orange);
 }
 
+/* --- Hero showcase: rotating product carousel --------------------------- */
+
+/* Animatable custom property for the ambient glow. Where @property is not
+   supported the colour still applies, it just swaps instead of cross-fading. */
+@property --glow {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: transparent;
+}
+
 .hero__visual {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  display: grid;
+  justify-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  margin-inline: auto;
   padding-bottom: 2.5rem;
 }
 
-.hero__pack {
-  width: min(56vw, 260px);
+.showcase__name {
+  margin: 0;
+  color: var(--cream);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(1.25rem, 1rem + 1.2vw, 1.75rem);
+  line-height: 1.2;
+  text-align: center;
+  transition:
+    opacity 300ms var(--ease),
+    transform 300ms var(--ease);
+}
+
+.showcase__name.is-out {
+  opacity: 0;
+  transform: translateY(-12px);
+}
+
+.showcase__name.is-enter {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: none;
+}
+
+/* Below 768px the carousel sits at 70% of the viewport, per the brief. */
+.showcase__stage {
+  position: relative;
+  width: 70vw;
+  max-width: 300px;
+  aspect-ratio: 0.73;
+  touch-action: pan-y;
+}
+
+.showcase__glow {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 0;
+  width: 165%;
+  height: 165%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(closest-side, var(--glow), transparent 72%);
+  transition: --glow 900ms ease;
+  pointer-events: none;
+}
+
+/* One element carries the float, so the loop never restarts on a swap. */
+.showcase__float {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  animation: showcase-float 5s ease-in-out infinite;
+}
+
+@keyframes showcase-float {
+  0%, 100% { transform: translateY(-4px); }
+  50%      { transform: translateY(4px); }
+}
+
+.showcase__pack {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  opacity: 0;
+  transform: translateX(40px) scale(0.92);
+  transition:
+    opacity 700ms var(--ease-inout),
+    transform 700ms var(--ease-inout);
   filter: drop-shadow(0 18px 28px rgba(8, 12, 40, 0.4));
+  pointer-events: none;
+}
+
+.showcase__pack.is-active {
+  opacity: 1;
+  transform: translateX(0) scale(1);
+}
+
+.showcase__pack.is-leaving {
+  opacity: 0;
+  transform: translateX(-40px) scale(0.92);
+}
+
+.showcase__badge {
+  position: absolute;
+  top: 4%;
+  left: 0;
+  z-index: 2;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 0.1rem;
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  background: var(--accent, var(--orange));
+  transform: translateX(-28%);
+  transition:
+    transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    background-color 300ms var(--ease);
+  pointer-events: none;
+}
+
+.showcase__badge.is-swapping {
+  transform: translateX(-28%) scale(0);
+}
+
+.showcase__badge-num {
+  color: var(--cream);
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.5rem;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.showcase__badge-label {
+  color: var(--cream);
+  font-size: 0.5625rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.showcase__dots {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dot {
+  display: block;
+  width: 10px;
+  height: 10px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(247, 233, 195, 0.35);
+  overflow: hidden;
+  cursor: pointer;
+  transition:
+    width 400ms var(--ease),
+    background-color 400ms var(--ease);
+}
+
+/* Keep the tap target at 44px without changing the visible dot size. */
+.dot::before {
+  content: "";
+  position: absolute;
+  inset: -17px -6px;
+}
+
+.dot-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.dot:hover {
+  background: rgba(247, 233, 195, 0.55);
+}
+
+.dot[aria-current="true"] {
+  width: 44px;
+  background: rgba(247, 233, 195, 0.25);
+}
+
+.dot__fill {
+  display: block;
+  width: 0;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--accent, var(--orange));
+}
+
+.dot[aria-current="true"] .dot__fill {
+  animation: dot-fill 4500ms linear forwards;
+}
+
+.hero__visual.is-paused .dot[aria-current="true"] .dot__fill {
+  animation-play-state: paused;
+}
+
+@keyframes dot-fill {
+  to { width: 100%; }
 }
 
 @media (min-width: 768px) {
@@ -632,18 +833,28 @@ button {
   }
 
   .hero__visual {
-    justify-content: center;
+    width: 100%;
     padding-bottom: 0;
   }
 
-  .hero__pack {
-    width: min(100%, 360px);
+  .showcase__stage {
+    width: 100%;
+    max-width: 340px;
+  }
+
+  .showcase__badge {
+    width: 88px;
+    height: 88px;
+  }
+
+  .showcase__badge-num {
+    font-size: 1.75rem;
   }
 }
 
 @media (min-width: 1280px) {
-  .hero__pack {
-    width: min(100%, 380px);
+  .showcase__stage {
+    max-width: 360px;
   }
 }
 
@@ -1488,5 +1699,31 @@ button {
   .menu-toggle__icon path,
   .site-nav__link {
     transition: none;
+  }
+
+  /* Hero showcase: no auto-advance, no motion. Dots switch instantly. */
+  .showcase__float {
+    animation: none;
+  }
+
+  .showcase__pack,
+  .showcase__name,
+  .showcase__badge,
+  .showcase__glow,
+  .dot {
+    transition: none;
+  }
+
+  .showcase__pack.is-active {
+    transform: none;
+  }
+
+  .showcase__pack.is-leaving {
+    transform: none;
+  }
+
+  .dot[aria-current="true"] .dot__fill {
+    animation: none;
+    width: 100%;
   }
 }

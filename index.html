@@ -19,7 +19,7 @@
         imagesrcset="/assets/img/masala-bhujia-pack-720.webp 720w, /assets/img/masala-bhujia-pack-1054.webp 1054w"
         imagesizes="(min-width: 1024px) 520px, (min-width: 600px) 420px, 72vw">
   <link rel="stylesheet" href="/assets/css/fonts.css?v=3">
-  <link rel="stylesheet" href="/assets/css/style.css?v=3">
+  <link rel="stylesheet" href="/assets/css/style.css?v=4">
   <script>document.documentElement.classList.replace('no-js', 'js');</script>
 </head>
 <body>
@@ -85,7 +85,7 @@
               <span class="hero__title-line">Same Snacks.</span>
               <span class="hero__title-line hero__title-line--accent">Complete Protein.</span>
             </h1>
-            <p class="hero__lede" data-reveal style="--i: 2">Bhujia, chakli and peanuts with 9 to 18 grams of protein a pack. Baked or roasted, never deep fried.</p>
+            <p class="hero__lede" data-reveal style="--i: 2">Five Indian snacks, rebuilt with 9 to 14 grams of protein a pack. Baked, never fried.</p>
             <div class="hero__actions" data-reveal style="--i: 3">
               <a class="btn btn--cream" href="#line-up">Pre-order the first batch</a>
               <a class="btn btn--outline" href="/products/masala-bhujia#nutrition">See the protein numbers</a>
@@ -97,16 +97,64 @@
             </ul>
           </div>
 
-          <div class="hero__visual" data-reveal style="--i: 5">
-            <a href="/products/masala-bhujia" aria-label="Masala Bhujia, pre-order">
-              <img class="hero__pack"
-                   src="/assets/img/masala-bhujia-pack-720.webp"
-                   srcset="/assets/img/masala-bhujia-pack-720.webp 720w, /assets/img/masala-bhujia-pack-1054.webp 1054w"
-                   sizes="(min-width: 1024px) 520px, (min-width: 600px) 420px, 72vw"
-                   width="720" height="981"
-                   alt="Masala Bhujia pack from Protein Poora: a kraft pouch, 14 g protein per pack, baked, not fried."
-                   fetchpriority="high" decoding="async">
-            </a>
+          <div class="hero__visual" data-reveal style="--i: 5" data-showcase
+               aria-roledescription="carousel" aria-label="Our snacks">
+            <p class="showcase__name" data-showcase-name>Masala Bhujia</p>
+
+            <div class="showcase__stage" data-showcase-stage>
+              <div class="showcase__glow" data-showcase-glow aria-hidden="true"></div>
+
+              <div class="showcase__float">
+                <img class="showcase__pack is-active"
+                     src="/assets/img/masala-bhujia-pack-720.webp"
+                     srcset="/assets/img/masala-bhujia-pack-720.webp 720w, /assets/img/masala-bhujia-pack-1054.webp 1054w"
+                     sizes="(min-width: 1024px) 360px, 70vw"
+                     width="720" height="981"
+                     alt="Masala Bhujia pack: a kraft pouch with a cream label."
+                     fetchpriority="high" decoding="async">
+                <img class="showcase__pack"
+                     src="/assets/img/chakli-pack-720.webp"
+                     srcset="/assets/img/chakli-pack-720.webp 720w, /assets/img/chakli-pack-1050.webp 1050w"
+                     sizes="(min-width: 1024px) 360px, 70vw"
+                     width="720" height="989"
+                     alt="Sweet Chilli Chakli pack: a kraft pouch with a pink label."
+                     loading="lazy" decoding="async">
+                <img class="showcase__pack"
+                     src="/assets/img/pudina-bhujia-pack-720.webp"
+                     srcset="/assets/img/pudina-bhujia-pack-720.webp 720w, /assets/img/pudina-bhujia-pack-1066.webp 1066w"
+                     sizes="(min-width: 1024px) 360px, 70vw"
+                     width="720" height="970"
+                     alt="Pudina Bhujia pack: a kraft pouch with a mint green label."
+                     loading="lazy" decoding="async">
+                <img class="showcase__pack"
+                     src="/assets/img/cheddar-chakli-pack-720.webp"
+                     srcset="/assets/img/cheddar-chakli-pack-720.webp 720w, /assets/img/cheddar-chakli-pack-1051.webp 1051w"
+                     sizes="(min-width: 1024px) 360px, 70vw"
+                     width="720" height="988"
+                     alt="Cheddar Cheese Chakli pack: a kraft pouch with a yellow label."
+                     loading="lazy" decoding="async">
+                <img class="showcase__pack"
+                     src="/assets/img/korean-bbq-peanuts-pack-720.webp"
+                     srcset="/assets/img/korean-bbq-peanuts-pack-720.webp 720w, /assets/img/korean-bbq-peanuts-pack-1058.webp 1058w"
+                     sizes="(min-width: 1024px) 360px, 70vw"
+                     width="720" height="984"
+                     alt="Korean BBQ Peanuts pack: a kraft pouch with an orange label."
+                     loading="lazy" decoding="async">
+              </div>
+
+              <div class="showcase__badge" data-showcase-badge aria-hidden="true">
+                <span class="showcase__badge-num" data-showcase-badge-num>14g</span>
+                <span class="showcase__badge-label">Protein</span>
+              </div>
+            </div>
+
+            <ul class="showcase__dots" data-showcase-dots>
+              <li class="dot-wrap"><button class="dot" type="button" aria-current="true" aria-label="Show Masala Bhujia"><span class="dot__fill"></span></button></li>
+              <li class="dot-wrap"><button class="dot" type="button" aria-current="false" aria-label="Show Sweet Chilli Chakli"><span class="dot__fill"></span></button></li>
+              <li class="dot-wrap"><button class="dot" type="button" aria-current="false" aria-label="Show Pudina Bhujia"><span class="dot__fill"></span></button></li>
+              <li class="dot-wrap"><button class="dot" type="button" aria-current="false" aria-label="Show Cheddar Cheese Chakli"><span class="dot__fill"></span></button></li>
+              <li class="dot-wrap"><button class="dot" type="button" aria-current="false" aria-label="Show Korean BBQ Peanuts"><span class="dot__fill"></span></button></li>
+            </ul>
           </div>
         </div>
       </section>
@@ -259,6 +307,6 @@
     </div>
   </footer>
 
-  <script src="/assets/js/main.js?v=3" defer></script>
+  <script src="/assets/js/main.js?v=4" defer></script>
 </body>
 </html>
