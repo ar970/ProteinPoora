@@ -298,22 +298,18 @@ button {
   user-select: none;
 }
 
+/* The real brand seal, reduced to cream marks on transparent so the navy
+   disc drops out and it reads as texture rather than a stack of logos. */
 .hero-deco__seal {
   position: absolute;
   top: var(--top);
   left: var(--left);
   width: var(--size);
   height: var(--size);
-  color: var(--cream);
+  background: url("../img/logo-seal-cream.png") center / contain no-repeat;
   opacity: 0.08;
   animation: seal-spin var(--dur, 60s) linear infinite;
   animation-direction: var(--dir, normal);
-}
-
-.hero-deco__seal svg {
-  display: block;
-  width: 100%;
-  height: 100%;
 }
 
 @keyframes seal-spin {
@@ -333,13 +329,25 @@ button {
 
 .wordmark {
   display: inline-flex;
-  align-items: baseline;
-  gap: 0.28em;
+  align-items: center;
+  gap: 0.55rem;
   color: var(--cream);
   font-family: var(--font-display);
   font-size: 1.625rem;
   line-height: 1;
   text-decoration: none;
+}
+
+.wordmark__seal {
+  flex: none;
+  width: 42px;
+  height: 42px;
+}
+
+.wordmark__text {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.28em;
 }
 
 .wordmark__latin {
@@ -466,6 +474,11 @@ button {
 @media (min-width: 1024px) {
   .site-header {
     padding-top: 1.5rem;
+  }
+
+  .wordmark__seal {
+    width: 48px;
+    height: 48px;
   }
 
   .wordmark {

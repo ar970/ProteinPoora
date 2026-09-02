@@ -119,6 +119,7 @@
     var badge = showcase.querySelector('[data-showcase-badge]');
     var badgeNum = showcase.querySelector('[data-showcase-badge-num]');
     var dotList = showcase.querySelector('[data-showcase-dots]');
+    var link = document.querySelector('[data-showcase-link]');
     var slides = Array.prototype.slice.call(showcase.querySelectorAll('.showcase__slide'));
     var frame = showcase.closest('.hero-frame') || showcase;
 
@@ -126,7 +127,8 @@
       return {
         name: slide.dataset.name,
         accent: slide.dataset.accent,
-        protein: slide.dataset.protein
+        protein: slide.dataset.protein,
+        url: slide.dataset.url
       };
     });
 
@@ -181,6 +183,11 @@
 
     var paint = function (product) {
       frame.style.setProperty('--accent', product.accent);
+      /* Point the protein-numbers button at whichever product is showing. */
+      if (link && product.url) {
+        link.setAttribute('href', product.url);
+        link.setAttribute('aria-label', 'See the protein numbers for ' + product.name);
+      }
     };
 
     var show = function (index) {
