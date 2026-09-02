@@ -579,12 +579,13 @@ button {
 .hero__visual {
   display: flex;
   justify-content: center;
-  align-items: flex-end;
+  align-items: center;
+  padding-bottom: 2.5rem;
 }
 
 .hero__pack {
-  width: min(72vw, 420px);
-  filter: drop-shadow(0 24px 32px rgba(8, 12, 40, 0.45));
+  width: min(56vw, 260px);
+  filter: drop-shadow(0 18px 28px rgba(8, 12, 40, 0.4));
 }
 
 @media (min-width: 768px) {
@@ -599,19 +600,18 @@ button {
 
 @media (min-width: 1024px) {
   .hero__inner {
-    grid-template-columns: 1.15fr 0.85fr;
-    align-items: end;
+    grid-template-columns: 1.2fr 0.8fr;
+    align-items: center;
     gap: 3rem;
     max-width: var(--container);
     margin-inline: auto;
-    padding: 3.5rem calc(var(--gutter) + 0.5rem) 0;
+    padding: 2.5rem calc(var(--gutter) + 0.5rem) 4.5rem;
     text-align: left;
   }
 
   .hero__copy {
     justify-items: start;
     gap: 1.5rem;
-    padding-bottom: 5.5rem;
   }
 
   .hero__lede {
@@ -632,17 +632,18 @@ button {
   }
 
   .hero__visual {
-    justify-content: flex-end;
+    justify-content: center;
+    padding-bottom: 0;
   }
 
   .hero__pack {
-    width: min(100%, 520px);
+    width: min(100%, 360px);
   }
 }
 
 @media (min-width: 1280px) {
-  .hero__copy {
-    padding-bottom: 6.5rem;
+  .hero__pack {
+    width: min(100%, 380px);
   }
 }
 
@@ -770,12 +771,22 @@ button {
 }
 
 /* --- Section: featured product / line-up ------------------------------- */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 300px));
+  justify-content: center;
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
 .product-card {
   position: relative;
   display: grid;
-  gap: 1.25rem;
+  grid-template-rows: auto 1fr;
   border: 1px solid var(--line);
-  border-radius: 20px;
+  border-radius: 16px;
   background: var(--paper);
   overflow: hidden;
   transition: border-color var(--t-fast) var(--ease);
@@ -788,21 +799,21 @@ button {
 .product-card__media {
   display: block;
   aspect-ratio: 1;
-  background: var(--cream-soft);
+  background: var(--tile);
 }
 
 .product-card__media img {
   width: 100%;
   height: 100%;
-  padding: 8%;
+  padding: 12%;
   object-fit: contain;
 }
 
 .product-card__body {
   display: grid;
   align-content: start;
-  gap: 0.5rem;
-  padding: 0 1.25rem 1.25rem;
+  gap: 0.3rem;
+  padding: 1rem 1rem 1.125rem;
 }
 
 .product-card__name {
@@ -810,8 +821,8 @@ button {
   color: var(--navy-ink);
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 1.375rem;
-  line-height: 1.15;
+  font-size: 1.125rem;
+  line-height: 1.2;
 }
 
 .product-card__name a {
@@ -828,21 +839,22 @@ button {
 .product-card__tagline {
   margin: 0;
   color: var(--text);
+  font-size: 0.9375rem;
 }
 
 .product-card__protein {
   margin: 0;
   color: var(--pack-blue);
+  font-size: 0.9375rem;
   font-weight: 500;
 }
 
 .product-card__buy {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 0.75rem 1rem;
-  margin-top: 0.5rem;
+  gap: 0.75rem;
+  margin-top: 0.6rem;
 }
 
 .product-card__buy .price__weight {
@@ -852,51 +864,6 @@ button {
 .product-card__actions {
   position: relative;
   z-index: 1;
-  display: flex;
-  flex: 1 1 100%;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.product-card__actions .btn {
-  flex: 1 1 auto;
-}
-
-@media (min-width: 768px) {
-  .product-card--feature {
-    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
-    align-items: center;
-    gap: 0;
-  }
-
-  .product-card--feature .product-card__media img {
-    padding: 6%;
-  }
-
-  .product-card--feature .product-card__actions {
-    flex: 0 1 auto;
-  }
-
-  .product-card--feature .product-card__actions .btn {
-    flex: 0 0 auto;
-  }
-
-  .product-card--feature .product-card__body {
-    gap: 0.75rem;
-    padding: 2.5rem;
-  }
-
-  .product-card--feature .product-card__name {
-    font-size: 2rem;
-  }
-
-  .product-card--feature .product-card__tagline {
-    font-size: 1.125rem;
-  }
-
-  .product-card--feature .product-card__buy {
-    margin-top: 1rem;
-  }
 }
 
 /* --- Section: product page ---------------------------------------------- */
@@ -950,7 +917,7 @@ button {
 .gallery__main {
   width: 100%;
   height: 100%;
-  padding: 6%;
+  padding: 9%;
   object-fit: contain;
 }
 
@@ -1086,7 +1053,7 @@ button {
 
 @media (min-width: 1024px) {
   .product {
-    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+    grid-template-columns: minmax(0, 460px) minmax(0, 1fr);
     align-items: start;
     gap: 4rem;
   }
