@@ -105,28 +105,32 @@
     }
   }
 
-  /* --- Hero showcase carousel -------------------------------------------- */
+  /* --- Hero showcase: coverflow carousel ---------------------------------
+     Reads its products from the DOM, so porting to a Liquid section means
+     emitting the slides from section blocks and changing nothing here. */
   var showcase = document.querySelector('[data-showcase]');
 
   if (showcase) {
-    var PRODUCTS = [
-      { name: 'Masala Bhujia', accent: '#E8862E', protein: '14g' },
-      { name: 'Sweet Chilli Chakli', accent: '#D94F2B', protein: '9g' },
-      { name: 'Pudina Bhujia', accent: '#E0A82E', protein: '14g' },
-      { name: 'Cheddar Cheese Chakli', accent: '#2E8B6F', protein: '9g' },
-      { name: 'Korean BBQ Peanuts', accent: '#C4462F', protein: '18g' }
-    ];
+    /* Cadence lives in CSS: the dot-fill animation is the clock. */
+    var FLIP = 250;
 
     var stage = showcase.querySelector('[data-showcase-stage]');
     var nameEl = showcase.querySelector('[data-showcase-name]');
-    var glow = showcase.querySelector('[data-showcase-glow]');
     var badge = showcase.querySelector('[data-showcase-badge]');
     var badgeNum = showcase.querySelector('[data-showcase-badge-num]');
-    var packs = Array.prototype.slice.call(showcase.querySelectorAll('.showcase__pack'));
-    var dots = Array.prototype.slice.call(showcase.querySelectorAll('.dot'));
-    var hero = showcase.closest('.hero') || showcase;
+    var dotList = showcase.querySelector('[data-showcase-dots]');
+    var slides = Array.prototype.slice.call(showcase.querySelectorAll('.showcase__slide'));
+    var frame = showcase.closest('.hero-frame') || showcase;
 
-    var reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+    var products = slides.map(function (slide) {
+      return {
+        name: slide.dataset.name,
+        accent: slide.dataset.accent,
+        protein: slide.dataset.protein
+      };
+    });
+
+    var count = products.length;
     var current = 0;
     var timers = [];
 
@@ -139,18 +143,35 @@
       timers.push(setTimeout(fn, ms));
     };
 
-    // "#E8862E" -> "rgba(232, 134, 46, 0.14)"
-    var glowColor = function (hex) {
-      var n = parseInt(hex.slice(1), 16);
-      return 'rgba(' + ((n >> 16) & 255) + ', ' + ((n >> 8) & 255) + ', ' + (n & 255) + ', 0.14)';
+    var reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    /* Build the dots from the slides so the count always matches. */
+    products.forEach(function (product, i) {
+      var li = document.createElement('li');
+      li.className = 'dot-wrap';
+      var button = document.createElement('button');
+      button.className = 'dot';
+      button.type = 'button';
+      button.setAttribute('aria-label', 'Show ' + product.name);
+      button.setAttribute('aria-current', i === 0 ? 'true' : 'false');
+      button.appendChild(document.createElement('span')).className = 'dot__fill';
+      li.appendChild(button);
+      dotList.appendChild(li);
+    });
+
+    var dots = Array.prototype.slice.call(dotList.querySelectorAll('.dot'));
+
+    /* Position every slide relative to the active one, wrapping both ways,
+       so one advance shifts the whole row a single slot left. */
+    var layout = function () {
+      slides.forEach(function (slide, i) {
+        var rel = i - current;
+        if (rel > count / 2) rel -= count;
+        if (rel < -count / 2) rel += count;
+        slide.dataset.rel = String(rel);
+      });
     };
 
-    var paintAccent = function (product) {
-      showcase.style.setProperty('--accent', product.accent);
-      glow.style.setProperty('--glow', glowColor(product.accent));
-    };
-
-    // Restart the dot's fill animation, which also drives auto-advance.
     var restartFill = function (index) {
       var fill = dots[index].querySelector('.dot__fill');
       fill.style.animation = 'none';
@@ -158,42 +179,33 @@
       fill.style.animation = '';
     };
 
-    var show = function (index) {
-      if (index === current) return;
-      clearTimers();
+    var paint = function (product) {
+      frame.style.setProperty('--accent', product.accent);
+    };
 
-      var previous = current;
-      current = (index + PRODUCTS.length) % PRODUCTS.length;
-      var product = PRODUCTS[current];
+    var show = function (index) {
+      var next = ((index % count) + count) % count;
+      if (next === current) return;
+
+      clearTimers();
+      current = next;
+      var product = products[current];
+
+      layout();
+      paint(product);
 
       dots.forEach(function (dot, i) {
         dot.setAttribute('aria-current', i === current ? 'true' : 'false');
       });
 
       if (reduced.matches) {
-        packs.forEach(function (pack, i) {
-          pack.classList.toggle('is-active', i === current);
-          pack.classList.remove('is-leaving');
-        });
         nameEl.textContent = product.name;
         badgeNum.textContent = product.protein;
-        paintAccent(product);
+        badge.style.setProperty('--badge-accent', product.accent);
         return;
       }
 
-      // Packs cross-fade: outgoing left, incoming from the right.
-      packs[previous].classList.remove('is-active');
-      packs[previous].classList.add('is-leaving');
-      packs[current].classList.remove('is-leaving');
-      packs[current].classList.add('is-active');
-      after(700, function () {
-        packs[previous].classList.remove('is-leaving');
-      });
-
-      // Glow cross-fades on its own 900ms transition.
-      paintAccent(product);
-
-      // Name lands 150ms after the pack starts moving.
+      /* Name: blur out to the left, in from the right. */
       nameEl.classList.add('is-out');
       after(150, function () {
         nameEl.textContent = product.name;
@@ -204,22 +216,28 @@
         });
       });
 
-      // Badge collapses, swaps, springs back.
-      badge.classList.add('is-swapping');
-      after(280, function () {
+      /* Badge: flip edge-on, swap at the halfway point, flip back. */
+      badge.classList.add('is-flipping');
+      after(FLIP, function () {
         badgeNum.textContent = product.protein;
-        badge.classList.remove('is-swapping');
+        badge.style.setProperty('--badge-accent', product.accent);
+        badge.classList.remove('is-flipping');
       });
 
       restartFill(current);
     };
 
-    // The dot fill is the clock: when it finishes, advance.
     dots.forEach(function (dot, i) {
       dot.addEventListener('click', function () {
+        if (i === current) {
+          restartFill(current);
+          return;
+        }
         show(i);
-        if (i === current) restartFill(current);
       });
+
+      /* The fill animation is the clock: when it ends, advance. Pausing the
+         animation therefore pauses advancement, with no separate timer. */
       dot.querySelector('.dot__fill').addEventListener('animationend', function () {
         if (i === current) show(current + 1);
       });
@@ -228,12 +246,12 @@
     var pause = function () { showcase.classList.add('is-paused'); };
     var resume = function () { showcase.classList.remove('is-paused'); };
 
-    hero.addEventListener('mouseenter', pause);
-    hero.addEventListener('mouseleave', resume);
+    stage.addEventListener('mouseenter', pause);
+    stage.addEventListener('mouseleave', resume);
     showcase.addEventListener('focusin', pause);
     showcase.addEventListener('focusout', resume);
 
-    // Swipe to change products.
+    /* Swipe to change products. */
     var startX = null;
     var startY = null;
 
@@ -254,27 +272,28 @@
 
     stage.addEventListener('pointercancel', function () { startX = null; });
 
-    paintAccent(PRODUCTS[0]);
-
-    // If the user turns reduced motion on or off, reset to a sane state.
     var applyMotionPreference = function () {
       clearTimers();
       if (reduced.matches) {
         current = 0;
-        packs.forEach(function (pack, i) {
-          pack.classList.toggle('is-active', i === 0);
-          pack.classList.remove('is-leaving');
-        });
+        layout();
         dots.forEach(function (dot, i) {
           dot.setAttribute('aria-current', i === 0 ? 'true' : 'false');
         });
-        nameEl.textContent = PRODUCTS[0].name;
-        badgeNum.textContent = PRODUCTS[0].protein;
-        paintAccent(PRODUCTS[0]);
+        nameEl.textContent = products[0].name;
+        badgeNum.textContent = products[0].protein;
+        badge.style.setProperty('--badge-accent', products[0].accent);
+        paint(products[0]);
       } else {
         restartFill(current);
       }
     };
+
+    layout();
+    paint(products[0]);
+    badge.style.setProperty('--badge-accent', products[0].accent);
+    nameEl.textContent = products[0].name;
+    badgeNum.textContent = products[0].protein;
 
     if (reduced.addEventListener) {
       reduced.addEventListener('change', applyMotionPreference);

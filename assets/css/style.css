@@ -33,6 +33,7 @@
 
   --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
   --ease-inout: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-spring: cubic-bezier(0.34, 1.42, 0.64, 1);
   --t-fast: 160ms;
   --t-base: 220ms;
 }
@@ -240,6 +241,16 @@ button {
 }
 
 /* --- Hero frame: navy card that holds header + hero -------------------- */
+
+/* Registered so the accent can be transitioned. Every accent-reactive
+   element reads var(--accent), so animating this one property cross-fades
+   the headline, eyebrow, chip dots, glow and card tint together. */
+@property --accent {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #F08A2A;
+}
+
 .hero-frame {
   position: relative;
   margin: var(--frame);
@@ -248,18 +259,65 @@ button {
   color: var(--cream);
   overflow: hidden;
   isolation: isolate;
+  transition: --accent 700ms ease;
 }
 
+/* Accent tint washed across the card, following the active product. */
 .hero-frame::before {
   content: "";
   position: absolute;
   inset: 0;
   z-index: -1;
-  background-image: url("../img/molecule.svg");
-  background-size: 560px auto;
-  background-position: -60px -40px;
-  opacity: 0.09;
+  background:
+    linear-gradient(155deg, color-mix(in srgb, var(--accent) 20%, transparent) 0%, transparent 55%),
+    radial-gradient(120% 90% at 88% 12%, color-mix(in srgb, var(--accent) 14%, transparent) 0%, transparent 60%);
   pointer-events: none;
+}
+
+/* --- Hero decoration: brand watermark and rotating seals ---------------- */
+.hero-deco {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.hero-deco__word {
+  position: absolute;
+  left: -0.14em;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--cream);
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(14rem, 40vw, 30rem);
+  line-height: 0.78;
+  opacity: 0.05;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.hero-deco__seal {
+  position: absolute;
+  top: var(--top);
+  left: var(--left);
+  width: var(--size);
+  height: var(--size);
+  color: var(--cream);
+  opacity: 0.08;
+  animation: seal-spin var(--dur, 60s) linear infinite;
+  animation-direction: var(--dir, normal);
+}
+
+.hero-deco__seal svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+@keyframes seal-spin {
+  to { transform: rotate(360deg); }
 }
 
 /* --- Section: header ---------------------------------------------------- */
@@ -458,9 +516,11 @@ button {
   justify-items: center;
 }
 
+/* Accent-reactive in the hero, where --accent is animated. Elsewhere
+   --accent falls back to its registered initial value, the brand orange. */
 .eyebrow {
   margin: 0;
-  color: var(--orange);
+  color: var(--accent);
   font-size: 0.75rem;
   font-weight: 600;
   letter-spacing: 0.14em;
@@ -487,7 +547,7 @@ button {
 }
 
 .hero__title-line--accent {
-  color: var(--orange);
+  color: var(--accent);
 }
 
 .hero__lede {
@@ -574,13 +634,11 @@ button {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: var(--orange);
+  background: var(--accent);
 }
 
-/* --- Hero showcase: rotating product carousel --------------------------- */
+/* --- Hero showcase: coverflow product carousel -------------------------- */
 
-/* Animatable custom property for the ambient glow. Where @property is not
-   supported the colour still applies, it just swaps instead of cross-fading. */
 @property --glow {
   syntax: "<color>";
   inherits: false;
@@ -592,40 +650,42 @@ button {
   justify-items: center;
   gap: 0.75rem;
   width: 100%;
-  margin-inline: auto;
   padding-bottom: 2.5rem;
 }
 
 .showcase__name {
   margin: 0;
-  color: var(--cream);
+  color: var(--accent);
   font-family: var(--font-display);
-  font-weight: 600;
+  font-weight: 700;
   font-size: clamp(1.25rem, 1rem + 1.2vw, 1.75rem);
   line-height: 1.2;
   text-align: center;
   transition:
     opacity 300ms var(--ease),
-    transform 300ms var(--ease);
+    transform 300ms var(--ease),
+    filter 300ms var(--ease);
 }
 
 .showcase__name.is-out {
   opacity: 0;
-  transform: translateY(-12px);
+  transform: translateX(-20px);
+  filter: blur(6px);
 }
 
 .showcase__name.is-enter {
   opacity: 0;
-  transform: translateY(12px);
+  transform: translateX(20px);
+  filter: blur(6px);
   transition: none;
 }
 
-/* Below 768px the carousel sits at 70% of the viewport, per the brief. */
 .showcase__stage {
   position: relative;
-  width: 70vw;
-  max-width: 300px;
+  width: 72vw;
+  max-width: 320px;
   aspect-ratio: 0.73;
+  perspective: 700px;
   touch-action: pan-y;
 }
 
@@ -634,20 +694,88 @@ button {
   left: 50%;
   top: 50%;
   z-index: 0;
-  width: 165%;
-  height: 165%;
+  width: 170%;
+  height: 170%;
   transform: translate(-50%, -50%);
   border-radius: 50%;
-  background: radial-gradient(closest-side, var(--glow), transparent 72%);
-  transition: --glow 900ms ease;
+  background: radial-gradient(closest-side, var(--accent), transparent 72%);
+  opacity: 0.14;
+  animation: glow-breathe 6s ease-in-out infinite;
   pointer-events: none;
 }
 
-/* One element carries the float, so the loop never restarts on a swap. */
-.showcase__float {
+@keyframes glow-breathe {
+  0%, 100% { opacity: 0.12; }
+  50%      { opacity: 0.18; }
+}
+
+/* Bleeds a little past the stage so the neighbouring pouches show, then
+   clips them. The badge lives outside this box so it is never cut. */
+.showcase__viewport {
+  position: absolute;
+  inset: 0 -20%;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.showcase__track {
+  position: absolute;
+  inset: 0 20%;
+}
+
+.showcase__track {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.showcase__slide {
   position: absolute;
   inset: 0;
-  z-index: 1;
+  opacity: 0;
+  transform: translateX(0) scale(0.42);
+  filter: blur(3px);
+  z-index: 0;
+  transition:
+    transform 550ms var(--ease-spring),
+    opacity 550ms var(--ease-spring),
+    filter 550ms var(--ease-spring);
+  pointer-events: none;
+}
+
+.showcase__slide[data-rel="0"] {
+  opacity: 1;
+  transform: translateX(0) scale(1);
+  filter: none;
+  z-index: 3;
+}
+
+.showcase__slide[data-rel="-1"] {
+  opacity: 0.3;
+  transform: translateX(-44%) scale(0.58);
+  filter: blur(2px);
+  z-index: 2;
+}
+
+.showcase__slide[data-rel="1"] {
+  opacity: 0.3;
+  transform: translateX(44%) scale(0.58);
+  filter: blur(2px);
+  z-index: 2;
+}
+
+.showcase__slide[data-rel="-2"] {
+  transform: translateX(-64%) scale(0.42);
+}
+
+.showcase__slide[data-rel="2"] {
+  transform: translateX(64%) scale(0.42);
+}
+
+/* The float runs on every slide so it never restarts on a product change. */
+.showcase__float {
+  width: 100%;
+  height: 100%;
   animation: showcase-float 5s ease-in-out infinite;
 }
 
@@ -657,35 +785,17 @@ button {
 }
 
 .showcase__pack {
-  position: absolute;
-  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: contain;
-  opacity: 0;
-  transform: translateX(40px) scale(0.92);
-  transition:
-    opacity 700ms var(--ease-inout),
-    transform 700ms var(--ease-inout);
   filter: drop-shadow(0 18px 28px rgba(8, 12, 40, 0.4));
-  pointer-events: none;
-}
-
-.showcase__pack.is-active {
-  opacity: 1;
-  transform: translateX(0) scale(1);
-}
-
-.showcase__pack.is-leaving {
-  opacity: 0;
-  transform: translateX(-40px) scale(0.92);
 }
 
 .showcase__badge {
   position: absolute;
   top: 4%;
   left: 0;
-  z-index: 2;
+  z-index: 4;
   display: grid;
   place-content: center;
   justify-items: center;
@@ -693,16 +803,15 @@ button {
   width: 76px;
   height: 76px;
   border-radius: 50%;
-  background: var(--accent, var(--orange));
-  transform: translateX(-28%);
-  transition:
-    transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1),
-    background-color 300ms var(--ease);
+  background: var(--badge-accent, var(--accent));
+  transform: translateX(-28%) rotateY(0deg);
+  transform-style: preserve-3d;
+  transition: transform 250ms var(--ease);
   pointer-events: none;
 }
 
-.showcase__badge.is-swapping {
-  transform: translateX(-28%) scale(0);
+.showcase__badge.is-flipping {
+  transform: translateX(-28%) rotateY(90deg);
 }
 
 .showcase__badge-num {
@@ -732,6 +841,12 @@ button {
   list-style: none;
 }
 
+.dot-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
 .dot {
   display: block;
   width: 10px;
@@ -747,17 +862,11 @@ button {
     background-color 400ms var(--ease);
 }
 
-/* Keep the tap target at 44px without changing the visible dot size. */
+/* Keeps a 44px tap target without enlarging the visible dot. */
 .dot::before {
   content: "";
   position: absolute;
   inset: -17px -6px;
-}
-
-.dot-wrap {
-  position: relative;
-  display: flex;
-  align-items: center;
 }
 
 .dot:hover {
@@ -774,11 +883,11 @@ button {
   width: 0;
   height: 100%;
   border-radius: 999px;
-  background: var(--accent, var(--orange));
+  background: var(--accent);
 }
 
 .dot[aria-current="true"] .dot__fill {
-  animation: dot-fill 4500ms linear forwards;
+  animation: dot-fill 3200ms linear forwards;
 }
 
 .hero__visual.is-paused .dot[aria-current="true"] .dot__fill {
@@ -828,10 +937,6 @@ button {
     justify-self: start;
   }
 
-  .hero-frame::before {
-    background-size: 720px auto;
-  }
-
   .hero__visual {
     width: 100%;
     padding-bottom: 0;
@@ -855,6 +960,25 @@ button {
 @media (min-width: 1280px) {
   .showcase__stage {
     max-width: 360px;
+  }
+}
+
+/* Phones: centre pouch only, at 72% width. */
+@media (max-width: 767px) {
+  .showcase__slide:not([data-rel="0"]) {
+    opacity: 0 !important;
+  }
+
+  .showcase__viewport {
+    inset: 0;
+  }
+
+  .showcase__track {
+    inset: 0;
+  }
+
+  .hero-deco__word {
+    font-size: clamp(11rem, 62vw, 20rem);
   }
 }
 
@@ -1702,24 +1826,18 @@ button {
   }
 
   /* Hero showcase: no auto-advance, no motion. Dots switch instantly. */
-  .showcase__float {
+  .showcase__float,
+  .showcase__glow,
+  .hero-deco__seal {
     animation: none;
   }
 
-  .showcase__pack,
+  .hero-frame,
+  .showcase__slide,
   .showcase__name,
   .showcase__badge,
-  .showcase__glow,
   .dot {
     transition: none;
-  }
-
-  .showcase__pack.is-active {
-    transform: none;
-  }
-
-  .showcase__pack.is-leaving {
-    transform: none;
   }
 
   .dot[aria-current="true"] .dot__fill {

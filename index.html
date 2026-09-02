@@ -19,7 +19,7 @@
         imagesrcset="/assets/img/masala-bhujia-pack-720.webp 720w, /assets/img/masala-bhujia-pack-1054.webp 1054w"
         imagesizes="(min-width: 1024px) 520px, (min-width: 600px) 420px, 72vw">
   <link rel="stylesheet" href="/assets/css/fonts.css?v=3">
-  <link rel="stylesheet" href="/assets/css/style.css?v=4">
+  <link rel="stylesheet" href="/assets/css/style.css?v=7">
   <script>document.documentElement.classList.replace('no-js', 'js');</script>
 </head>
 <body>
@@ -47,6 +47,35 @@
 
   <main id="main">
     <div class="hero-frame">
+
+      <!-- Decoration. Purely visual; in Liquid this is static section markup. -->
+      <div class="hero-deco" aria-hidden="true">
+        <span class="hero-deco__word">पूरा</span>
+
+        <svg width="0" height="0" style="position:absolute" focusable="false">
+          <symbol id="pp-seal" viewBox="0 0 100 100">
+            <g fill="none" stroke="currentColor" stroke-width="1.6">
+              <circle cx="50" cy="50" r="47"/>
+              <circle cx="50" cy="50" r="40" stroke-dasharray="3 5"/>
+              <circle cx="50" cy="50" r="27"/>
+              <path d="M50 34v10M50 44l-9 12M50 44l9 12" stroke-linecap="round"/>
+              <circle cx="50" cy="32" r="3.4"/>
+              <circle cx="39" cy="58" r="3.4"/>
+              <circle cx="61" cy="58" r="3.4"/>
+              <path d="M34 68h32" stroke-linecap="round"/>
+            </g>
+          </symbol>
+        </svg>
+
+        <span class="hero-deco__seal" style="--size:190px; --top:-6%; --left:4%;  --dur:72s; --dir:normal"><svg><use href="#pp-seal"/></svg></span>
+        <span class="hero-deco__seal" style="--size:120px; --top:58%; --left:12%; --dur:48s; --dir:reverse"><svg><use href="#pp-seal"/></svg></span>
+        <span class="hero-deco__seal" style="--size:220px; --top:64%; --left:32%; --dur:86s; --dir:normal"><svg><use href="#pp-seal"/></svg></span>
+        <span class="hero-deco__seal" style="--size:96px;  --top:6%;  --left:46%; --dur:41s; --dir:reverse"><svg><use href="#pp-seal"/></svg></span>
+        <span class="hero-deco__seal" style="--size:160px; --top:-8%; --left:74%; --dur:64s; --dir:normal"><svg><use href="#pp-seal"/></svg></span>
+        <span class="hero-deco__seal" style="--size:130px; --top:72%; --left:82%; --dur:55s; --dir:reverse"><svg><use href="#pp-seal"/></svg></span>
+        <span class="hero-deco__seal" style="--size:200px; --top:26%; --left:93%; --dur:78s; --dir:normal"><svg><use href="#pp-seal"/></svg></span>
+      </div>
+
 
       <!-- section: header -->
       <header class="site-header" role="banner">
@@ -97,6 +126,10 @@
             </ul>
           </div>
 
+          <!-- Showcase. Each slide carries its own data, so in Liquid this
+               becomes {% for block in section.blocks %} with the accent and
+               protein figure coming from block settings. The script reads the
+               DOM, never a hardcoded list. -->
           <div class="hero__visual" data-reveal style="--i: 5" data-showcase
                aria-roledescription="carousel" aria-label="Our snacks">
             <p class="showcase__name" data-showcase-name>Masala Bhujia</p>
@@ -104,42 +137,69 @@
             <div class="showcase__stage" data-showcase-stage>
               <div class="showcase__glow" data-showcase-glow aria-hidden="true"></div>
 
-              <div class="showcase__float">
-                <img class="showcase__pack is-active"
-                     src="/assets/img/masala-bhujia-pack-720.webp"
-                     srcset="/assets/img/masala-bhujia-pack-720.webp 720w, /assets/img/masala-bhujia-pack-1054.webp 1054w"
-                     sizes="(min-width: 1024px) 360px, 70vw"
-                     width="720" height="981"
-                     alt="Masala Bhujia pack: a kraft pouch with a cream label."
-                     fetchpriority="high" decoding="async">
-                <img class="showcase__pack"
-                     src="/assets/img/chakli-pack-720.webp"
-                     srcset="/assets/img/chakli-pack-720.webp 720w, /assets/img/chakli-pack-1050.webp 1050w"
-                     sizes="(min-width: 1024px) 360px, 70vw"
-                     width="720" height="989"
-                     alt="Sweet Chilli Chakli pack: a kraft pouch with a pink label."
-                     loading="lazy" decoding="async">
-                <img class="showcase__pack"
-                     src="/assets/img/pudina-bhujia-pack-720.webp"
-                     srcset="/assets/img/pudina-bhujia-pack-720.webp 720w, /assets/img/pudina-bhujia-pack-1066.webp 1066w"
-                     sizes="(min-width: 1024px) 360px, 70vw"
-                     width="720" height="970"
-                     alt="Pudina Bhujia pack: a kraft pouch with a mint green label."
-                     loading="lazy" decoding="async">
-                <img class="showcase__pack"
-                     src="/assets/img/cheddar-chakli-pack-720.webp"
-                     srcset="/assets/img/cheddar-chakli-pack-720.webp 720w, /assets/img/cheddar-chakli-pack-1051.webp 1051w"
-                     sizes="(min-width: 1024px) 360px, 70vw"
-                     width="720" height="988"
-                     alt="Cheddar Cheese Chakli pack: a kraft pouch with a yellow label."
-                     loading="lazy" decoding="async">
-                <img class="showcase__pack"
-                     src="/assets/img/korean-bbq-peanuts-pack-720.webp"
-                     srcset="/assets/img/korean-bbq-peanuts-pack-720.webp 720w, /assets/img/korean-bbq-peanuts-pack-1058.webp 1058w"
-                     sizes="(min-width: 1024px) 360px, 70vw"
-                     width="720" height="984"
-                     alt="Korean BBQ Peanuts pack: a kraft pouch with an orange label."
-                     loading="lazy" decoding="async">
+              <div class="showcase__viewport">
+                <ul class="showcase__track" data-showcase-track>
+                  <li class="showcase__slide" data-rel="0"
+                      data-name="Masala Bhujia" data-accent="#E8862E" data-protein="14g">
+                    <div class="showcase__float">
+                      <img class="showcase__pack"
+                           src="/assets/img/masala-bhujia-pack-720.webp"
+                           srcset="/assets/img/masala-bhujia-pack-720.webp 720w, /assets/img/masala-bhujia-pack-1054.webp 1054w"
+                           sizes="(min-width: 1024px) 360px, 72vw"
+                           width="720" height="981"
+                           alt="Masala Bhujia pack: a kraft pouch with a cream label."
+                           fetchpriority="high" decoding="async">
+                    </div>
+                  </li>
+                  <li class="showcase__slide" data-rel="1"
+                      data-name="Sweet Chilli Chakli" data-accent="#D94F2B" data-protein="9g">
+                    <div class="showcase__float">
+                      <img class="showcase__pack"
+                           src="/assets/img/chakli-pack-720.webp"
+                           srcset="/assets/img/chakli-pack-720.webp 720w, /assets/img/chakli-pack-1050.webp 1050w"
+                           sizes="(min-width: 1024px) 360px, 72vw"
+                           width="720" height="989"
+                           alt="Sweet Chilli Chakli pack: a kraft pouch with a pink label."
+                           loading="lazy" decoding="async">
+                    </div>
+                  </li>
+                  <li class="showcase__slide" data-rel="2"
+                      data-name="Pudina Bhujia" data-accent="#E0A82E" data-protein="14g">
+                    <div class="showcase__float">
+                      <img class="showcase__pack"
+                           src="/assets/img/pudina-bhujia-pack-720.webp"
+                           srcset="/assets/img/pudina-bhujia-pack-720.webp 720w, /assets/img/pudina-bhujia-pack-1066.webp 1066w"
+                           sizes="(min-width: 1024px) 360px, 72vw"
+                           width="720" height="970"
+                           alt="Pudina Bhujia pack: a kraft pouch with a mint green label."
+                           loading="lazy" decoding="async">
+                    </div>
+                  </li>
+                  <li class="showcase__slide" data-rel="-2"
+                      data-name="Cheddar Cheese Chakli" data-accent="#2E8B6F" data-protein="9g">
+                    <div class="showcase__float">
+                      <img class="showcase__pack"
+                           src="/assets/img/cheddar-chakli-pack-720.webp"
+                           srcset="/assets/img/cheddar-chakli-pack-720.webp 720w, /assets/img/cheddar-chakli-pack-1051.webp 1051w"
+                           sizes="(min-width: 1024px) 360px, 72vw"
+                           width="720" height="988"
+                           alt="Cheddar Cheese Chakli pack: a kraft pouch with a yellow label."
+                           loading="lazy" decoding="async">
+                    </div>
+                  </li>
+                  <li class="showcase__slide" data-rel="-1"
+                      data-name="Korean BBQ Peanuts" data-accent="#C4462F" data-protein="18g">
+                    <div class="showcase__float">
+                      <img class="showcase__pack"
+                           src="/assets/img/korean-bbq-peanuts-pack-720.webp"
+                           srcset="/assets/img/korean-bbq-peanuts-pack-720.webp 720w, /assets/img/korean-bbq-peanuts-pack-1058.webp 1058w"
+                           sizes="(min-width: 1024px) 360px, 72vw"
+                           width="720" height="984"
+                           alt="Korean BBQ Peanuts pack: a kraft pouch with an orange label."
+                           loading="lazy" decoding="async">
+                    </div>
+                  </li>
+                </ul>
               </div>
 
               <div class="showcase__badge" data-showcase-badge aria-hidden="true">
@@ -148,13 +208,7 @@
               </div>
             </div>
 
-            <ul class="showcase__dots" data-showcase-dots>
-              <li class="dot-wrap"><button class="dot" type="button" aria-current="true" aria-label="Show Masala Bhujia"><span class="dot__fill"></span></button></li>
-              <li class="dot-wrap"><button class="dot" type="button" aria-current="false" aria-label="Show Sweet Chilli Chakli"><span class="dot__fill"></span></button></li>
-              <li class="dot-wrap"><button class="dot" type="button" aria-current="false" aria-label="Show Pudina Bhujia"><span class="dot__fill"></span></button></li>
-              <li class="dot-wrap"><button class="dot" type="button" aria-current="false" aria-label="Show Cheddar Cheese Chakli"><span class="dot__fill"></span></button></li>
-              <li class="dot-wrap"><button class="dot" type="button" aria-current="false" aria-label="Show Korean BBQ Peanuts"><span class="dot__fill"></span></button></li>
-            </ul>
+            <ul class="showcase__dots" data-showcase-dots></ul>
           </div>
         </div>
       </section>
@@ -307,6 +361,6 @@
     </div>
   </footer>
 
-  <script src="/assets/js/main.js?v=4" defer></script>
+  <script src="/assets/js/main.js?v=7" defer></script>
 </body>
 </html>
