@@ -886,8 +886,10 @@ button {
   background: var(--accent);
 }
 
+/* This duration is the carousel's cadence: the fill's animationend is
+   what advances it, so changing this number changes the pace. */
 .dot[aria-current="true"] .dot__fill {
-  animation: dot-fill 3200ms linear forwards;
+  animation: dot-fill 2800ms linear forwards;
 }
 
 .hero__visual.is-paused .dot[aria-current="true"] .dot__fill {
