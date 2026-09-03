@@ -321,8 +321,10 @@
     if (thumbs === null) {
       thumbs = {};
       try {
-        var node = document.getElementById('pack-thumbs');
-        if (node) thumbs = JSON.parse(node.textContent);
+        var node = document.getElementById('catalogue');
+        if (node) {
+          JSON.parse(node.textContent).forEach(function (p) { thumbs[p.slug] = p.thumb; });
+        }
       } catch (err) {
         thumbs = {};
       }

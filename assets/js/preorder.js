@@ -1,12 +1,17 @@
 /* Protein पूरा — pre-order form.
  *
- * The line-up is read from /api/products, never from a list in this file, so
- * a price the admin changes is the price the customer sees and the price the
- * order is written at. The browser only ever sends slugs and quantities; the
- * server prices the order itself.
+ * The line-up is rendered from the catalogue in the page, so the form works
+ * before, and without, any request. Where the order goes depends on what is
+ * configured, and the page tries the simpler one first:
  *
- * For the Shopify port: the picker becomes {% for product in collection.products %}
- * and this script keeps only the quantity and summary behaviour.
+ *   1. Supabase, if assets/js/store-config.js has a project URL and anon key.
+ *      The browser writes the row itself. Nothing of ours is in the path.
+ *   2. Otherwise /api/preorders, which needs a database attached to the
+ *      Vercel project. That path re-prices every order server-side.
+ *
+ * For the Shopify port: the catalogue becomes
+ * {% for product in collection.products %}, the submit becomes /cart/add, and
+ * this script keeps only the quantity and summary behaviour.
  */
 (function () {
   'use strict';
@@ -23,14 +28,26 @@
   var confirmEl = document.getElementById('confirm');
 
   var thumbs = {};
+  var catalogue = [];
   try {
-    var raw = document.getElementById('pack-thumbs');
-    if (raw) thumbs = JSON.parse(raw.textContent);
+    var raw = document.getElementById('catalogue');
+    if (raw) {
+      catalogue = JSON.parse(raw.textContent);
+      catalogue.forEach(function (p) {
+        p.status = p.status || 'available';
+        thumbs[p.slug] = p.thumb;
+      });
+    }
   } catch (err) {
-    thumbs = {};
+    catalogue = [];
   }
 
-  var products = [];
+  // Supabase is optional. With it, the browser writes the order straight to
+  // the table and no server of ours is involved at all.
+  var supa = window.PP_SUPABASE || {};
+  var useSupabase = Boolean(supa.url && supa.anonKey);
+
+  var products = catalogue.slice();
   var chosen = Object.create(null); // slug -> qty
 
   var cart = window.PPCart || null;
@@ -318,27 +335,96 @@
     submitBtn.disabled = true;
     say('Placing your pre-order…');
 
-    fetch('/api/preorders', {
+    (useSupabase ? sendToSupabase(payload) : sendToApi(payload))
+      .then(function (order) { showConfirmation(order, payload.email); })
+      .catch(function (err) {
+        submitBtn.disabled = false;
+        say(err.message || 'We could not place that pre-order. Please try again.', 'error');
+      });
+  });
+
+  function sendToApi(payload) {
+    return fetch('/api/preorders', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
-    })
-      .then(function (res) {
-        return res.json().then(function (data) { return { ok: res.ok, data: data }; });
-      })
-      .then(function (result) {
-        if (!result.ok) {
-          submitBtn.disabled = false;
-          say(result.data.error || 'We could not place that pre-order. Please try again.', 'error');
-          return;
-        }
-        showConfirmation(result.data, payload.email);
-      })
-      .catch(function () {
-        submitBtn.disabled = false;
-        say('We could not reach the server. Please check your connection and try again.', 'error');
+    }).then(function (res) {
+      return res.json().catch(function () { return {}; }).then(function (data) {
+        if (!res.ok) throw new Error(data.error || 'We could not place that pre-order.');
+        return data;
       });
-  });
+    }, function () {
+      throw new Error('We could not reach the server. Please check your connection and try again.');
+    });
+  }
+
+  /**
+   * Writes the row itself, using the public anon key. The table's row-level
+   * security allows insert and nothing else, so this cannot read anybody's
+   * order back — including its own, which is why the reference is generated
+   * here rather than read from the response.
+   */
+  function sendToSupabase(payload) {
+    var priced = payload.items.map(function (line) {
+      var product = products.filter(function (p) { return p.slug === line.slug; })[0] || {};
+      return {
+        slug: line.slug,
+        name: product.name || line.slug,
+        qty: line.qty,
+        price_paise: product.price_paise || 0
+      };
+    });
+    var total = priced.reduce(function (sum, i) { return sum + i.price_paise * i.qty; }, 0);
+    var reference = makeReference();
+
+    var row = {
+      reference: reference,
+      status: 'pending',
+      customer_name: payload.customer_name,
+      email: payload.email,
+      phone: payload.phone,
+      address1: payload.address1,
+      address2: payload.address2,
+      city: payload.city,
+      state: payload.state,
+      pincode: payload.pincode,
+      notes: payload.notes,
+      items: priced,
+      total_paise: total
+    };
+
+    var base = String(supa.url).replace(/\/+$/, '');
+    return fetch(base + '/rest/v1/' + (supa.table || 'preorders'), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        apikey: supa.anonKey,
+        Authorization: 'Bearer ' + supa.anonKey,
+        Prefer: 'return=minimal'
+      },
+      body: JSON.stringify(row)
+    }).then(function (res) {
+      if (res.ok) {
+        return { reference: reference, items: priced, total: total / 100, status: 'pending' };
+      }
+      return res.text().then(function (body) {
+        console.error('[preorder] supabase rejected the row:', res.status, body);
+        throw new Error('We could not save your pre-order. Please try again, or email us.');
+      });
+    }, function () {
+      throw new Error('We could not reach the server. Please check your connection and try again.');
+    });
+  }
+
+  /** PP- plus six characters, skipping ones that are ambiguous when read out. */
+  function makeReference() {
+    var alphabet = '23456789ABCDEFGHJKLMNPQRTUVWXY';
+    var out = '';
+    var bytes = new Uint8Array(6);
+    (window.crypto || window.msCrypto).getRandomValues(bytes);
+    for (var i = 0; i < bytes.length; i += 1) out += alphabet[bytes[i] % alphabet.length];
+    return 'PP-' + out;
+  }
 
   function showConfirmation(order, email) {
     // The order is on the server now; leaving it in the cart would invite a
@@ -399,33 +485,42 @@
     chosen[preselect] = Math.min(20, Math.max(1, isNaN(wanted) ? 1 : wanted));
   }
 
-  fetch('/api/products', { headers: { Accept: 'application/json' } })
-    .then(function (res) {
-      if (res.ok) return res.json();
-      return res.json().catch(function () { return {}; }).then(function (data) {
-        var err = new Error(data.error || 'unavailable');
-        err.code = data.code;
-        throw err;
+  // The picker is drawn from the catalogue in the page, so it is on screen
+  // before any request is made and stays there whatever a request does.
+  dropUnavailable();
+  renderPicker();
+  renderSummary();
+  syncCart();
+
+  // With Supabase configured there is no products API to consult. Otherwise
+  // refresh from it, so a price or an availability change the admin makes
+  // shows up here. A failure is not fatal: the catalogue already rendered.
+  if (!useSupabase) {
+    fetch('/api/products', { headers: { Accept: 'application/json' } })
+      .then(function (res) { return res.ok ? res.json() : null; })
+      .then(function (data) {
+        if (!data || !Array.isArray(data.products) || !data.products.length) return;
+        products = data.products.map(function (live) {
+          var known = catalogue.filter(function (c) { return c.slug === live.slug; })[0] || {};
+          return Object.assign({}, known, live);
+        });
+        products.forEach(function (p) { if (p.thumb) thumbs[p.slug] = p.thumb; });
+        dropUnavailable();
+        renderPicker();
+        renderSummary();
+        syncCart();
+      })
+      .catch(function () {
+        // Leave the catalogue on screen. The order still posts, and the server
+        // prices and validates it when it arrives.
       });
-    })
-    .then(function (data) {
-      products = data.products || [];
-      // Drop anything no longer on sale, so the summary cannot show a line the
-      // server would refuse.
-      Object.keys(chosen).forEach(function (slug) {
-        var match = products.filter(function (p) { return p.slug === slug; })[0];
-        if (!match || match.status !== 'available') delete chosen[slug];
-      });
-      renderPicker();
-      renderSummary();
-      syncCart();
-    })
-    .catch(function (err) {
-      products = [];
-      renderPicker(err);
-      say(err && err.code === 'NO_DATABASE'
-        ? 'Pre-orders are not switched on yet.'
-        : 'We could not load the line-up. Please refresh the page.', 'error');
-      submitBtn.disabled = true;
+  }
+
+  /** Never offer a line the order would be refused for. */
+  function dropUnavailable() {
+    Object.keys(chosen).forEach(function (slug) {
+      var match = products.filter(function (p) { return p.slug === slug; })[0];
+      if (!match || match.status !== 'available') delete chosen[slug];
     });
+  }
 })();

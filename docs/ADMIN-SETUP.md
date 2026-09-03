@@ -1,26 +1,54 @@
-# Pre-orders and the admin panel — setup
+# Pre-orders — setup
 
-The storefront is still static files. Three serverless functions sit alongside
-them to take pre-orders and back the admin panel:
+There are two ways to store pre-orders. **Pick one.**
 
-| Route | Who | What it does |
+| | What you do | Where you read orders |
 | --- | --- | --- |
-| `/api/products` | public reads, admin writes | the price list |
-| `/api/preorders` | public writes, admin reads | the order book |
-| `/api/admin` | public | sign in, sign out, session check |
+| **A. Straight to Supabase** *(no Vercel settings)* | Run one SQL file, send two public values | Supabase → Table Editor |
+| **B. Through this site's own API** | Attach a database to the Vercel project | `/admin` on your own site |
 
-Customers pre-order at **`/preorder`**. You manage everything at **`/admin`**,
-linked from the footer of every page.
+**A is the shorter road** and touches nothing in Vercel. B gives you the
+built-in `/admin` panel with status changes and CSV export.
 
-**One thing must be set up in Vercel before pre-orders work: a database.**
-Signing in to `/admin` works immediately, but until a database is connected
-there is nowhere to keep an order — `/preorder` says pre-orders are not
-switched on yet and disables its submit button, and `/admin` shows the step
-with a *Check again* button.
+Either way the storefront, the cart and the pre-order form work already: the
+line-up is rendered from the page itself, so it is never blank and never waits
+on a server.
 
 ---
 
-## 1. Add a database
+## A. Straight to Supabase
+
+Orders go from the customer's browser into your Supabase table. No serverless
+function, no environment variables, no redeploys to remember.
+
+**1. Create the table.** Supabase → **SQL Editor** → **New query** → paste
+[`docs/supabase-setup.sql`](supabase-setup.sql) → **Run**. It creates the
+table and locks it so the public can *add* an order and nothing else — no
+reading, editing or deleting.
+
+**2. Fill in two values.** Supabase → **Settings** → **API**, copy:
+
+- **Project URL** — `https://<something>.supabase.co`
+- **anon** / **publishable** key — a long string starting `eyJ` or `sb_`
+
+Put them in [`assets/js/store-config.js`](../assets/js/store-config.js).
+
+Both are public by design: the anon key is *made* to sit in browser code, and
+committing it is normal. What protects your orders is the policy from step 1.
+**Never** put the `service_role` / `secret` key there — that one is a real
+password and would hand anyone the whole database.
+
+**3. Read your orders** in Supabase → **Table Editor** → `preorders`. Sort by
+`created_at`, export CSV from the same screen.
+
+That is the whole of it. Nothing needs redeploying by hand — pushing the config
+change deploys itself.
+
+---
+
+## B. Through this site's own API
+
+### Attach a database to Vercel
 
 Vercel does not store data by itself — a serverless function forgets everything
 between requests. Any Postgres works (Neon, Supabase, Railway); the quickest
@@ -71,7 +99,7 @@ enough to tell "nothing attached" from "wrong password" from "not redeployed".
 The tables are created on the first request, and the five current snacks are
 inserted at their present prices. Nothing to run by hand.
 
-## 2. Change the password (later, but do change it)
+## Admin sign-in (route B)
 
 Sign-in works as soon as the site deploys, with:
 
