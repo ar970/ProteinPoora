@@ -10,8 +10,8 @@
   <link rel="icon" href="/assets/img/favicon-32.png" sizes="32x32">
   <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
   <link rel="stylesheet" href="/assets/css/fonts.css?v=3">
-  <link rel="stylesheet" href="/assets/css/style.css?v=21">
-  <link rel="stylesheet" href="/assets/css/admin.css?v=21">
+  <link rel="stylesheet" href="/assets/css/style.css?v=22">
+  <link rel="stylesheet" href="/assets/css/admin.css?v=22">
   <script>document.documentElement.classList.replace('no-js', 'js');</script>
 </head>
 <body>
@@ -66,19 +66,19 @@
     <!-- Dashboard ----------------------------------------------------------->
     <div id="dash" hidden>
 
-      <!-- Shown while the built-in password is still in use. -->
-      <div class="card banner" id="pw-notice" hidden>
-        <h2 class="banner__title">Change your password when you get a minute</h2>
-        <p class="banner__body">You are signed in with the password built into the code. It is in a public repository, so anyone who finds this page can read it and see your customers' addresses.</p>
-        <p class="banner__body">To change it: Vercel dashboard → this project → <b>Settings</b> → <b>Environment Variables</b> → add <code>ADMIN_PASSWORD</code> with the password you want, then <b>Deployments</b> → <b>Redeploy</b>. Add <code>ADMIN_USERNAME</code> too if you want a different name than <code>archit</code>.</p>
+      <!-- Advice, not a blocker: one line, and it can be dismissed. -->
+      <div class="slimbar" id="pw-notice" hidden>
+        <p>Anyone can read your password in the public repo. Set <code>ADMIN_PASSWORD</code> in Vercel when you get a minute.</p>
+        <button class="slimbar__x" type="button" id="pw-dismiss" aria-label="Dismiss">×</button>
       </div>
 
       <!-- Shown until a database is connected. Nothing can be stored without one. -->
       <div class="card banner banner--stop" id="db-notice" hidden>
         <h2 class="banner__title">Connect a database to start taking pre-orders</h2>
         <p class="banner__body">Vercel forgets everything between requests, so there is nowhere to keep an order yet. Until this is done the pre-order form will not load and nothing can be saved.</p>
-        <p class="step__path"><b>Vercel dashboard</b> → this project → <b>Storage</b> → <b>Create Database</b> → <b>Neon</b> → <b>Connect</b></p>
-        <p class="banner__body">The free tier is far more than this needs, and there is nothing to copy or paste — Vercel fills in the connection details itself. It takes effect on the next deployment, so if the button below still says no database, open <b>Deployments</b> and choose <b>Redeploy</b>.</p>
+        <p class="step__path"><b>Vercel dashboard</b> → this project → <b>Storage</b> → <b>Create Database</b> → <b>Neon</b> or <b>Supabase</b> → <b>Connect</b></p>
+        <p class="banner__body">Connecting it from the <b>Supabase</b> dashboard is not enough on its own — the connection has to reach <i>this Vercel project</i>. Either connect it through Vercel\u2019s Storage tab, or paste the pooled connection string into <b>Settings → Environment Variables</b> as <code>DATABASE_URL</code>. Either way it only takes effect on a <b>new deployment</b>: open <b>Deployments</b> and choose <b>Redeploy</b>.</p>
+        <div class="diag" id="db-diag" hidden></div>
         <p><button class="btn btn--navy btn--tiny" type="button" id="recheck">Check again</button></p>
       </div>
 
@@ -203,6 +203,6 @@
     </div>
   </main>
 
-  <script src="/assets/js/admin.js?v=21" defer></script>
+  <script src="/assets/js/admin.js?v=22" defer></script>
 </body>
 </html>

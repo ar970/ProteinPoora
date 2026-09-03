@@ -564,3 +564,86 @@ tr.detail > td {
   font-size: 0.75rem;
   font-weight: 400;
 }
+
+/* --- Slim advisory bar --------------------------------------------------- */
+.slimbar {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding: 0.55rem 0.75rem 0.55rem 1rem;
+  border-radius: 10px;
+  background: #FDF3E2;
+  color: #7A5312;
+  font-size: 0.875rem;
+}
+
+.slimbar p {
+  flex: 1;
+  margin: 0;
+}
+
+.slimbar code {
+  padding: 0.05rem 0.3rem;
+  border-radius: 4px;
+  background: rgba(122, 83, 18, 0.12);
+  font-size: 0.8125rem;
+}
+
+.slimbar__x {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: inherit;
+  font-size: 1.125rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.slimbar__x:hover {
+  background: rgba(122, 83, 18, 0.12);
+}
+
+/* --- Connection diagnosis ------------------------------------------------ */
+.diag {
+  margin: 0 0 0.9rem;
+  padding: 0.85rem 1rem;
+  border-radius: 10px;
+  background: var(--tile);
+  color: var(--text);
+  font-size: 0.875rem;
+}
+
+.diag p {
+  margin: 0 0 0.5rem;
+}
+
+.diag p:last-child {
+  margin-bottom: 0;
+}
+
+.diag__h {
+  color: var(--navy-ink);
+  font-weight: 700;
+}
+
+.diag__msg {
+  padding: 0.4rem 0.6rem;
+  border-radius: 6px;
+  background: #FCEAE7;
+  color: #8E2617;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.8125rem;
+  overflow-wrap: anywhere;
+}
+
+.diag__list {
+  margin: 0 0 0.5rem;
+  padding-left: 1.1rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.8125rem;
+}

@@ -31,15 +31,22 @@ route is Vercel's own marketplace:
 3. Connect it to the project. Vercel injects `DATABASE_URL` automatically.
 
 There is nothing to copy or paste: Vercel injects the connection details
-itself. The variable it uses depends on the provider — Neon and Vercel Postgres
-set `POSTGRES_URL`, others set `DATABASE_URL` — and the code accepts any of
-`DATABASE_URL`, `POSTGRES_URL`, `POSTGRES_PRISMA_URL`, `DATABASE_POSTGRES_URL`,
-`POSTGRES_URL_NON_POOLING` and `DATABASE_URL_UNPOOLED`, preferring a pooled one.
+itself, under whatever name the provider or your chosen prefix produces. The
+name does not matter — the code takes the first variable whose *value* is a
+`postgres://` URL, prefers a pooled host, and can assemble one from separate
+host/user/password/database variables if a provider injects those instead.
 
-If you set the database up somewhere else, add `DATABASE_URL` by hand under
-**Settings → Environment Variables**, and use the **pooled** connection string
-— the one with `-pooler` in the host. Serverless functions open and drop
-connections constantly and a direct string will run out of them.
+**Connecting a database in the Supabase or Neon dashboard is not enough.** The
+connection has to reach *this Vercel project*. Either connect it through
+Vercel's Storage tab, or copy the **pooled** connection string (the one with
+`pooler` in the host, port 6543 on Supabase) into **Settings → Environment
+Variables** as `DATABASE_URL`. A direct, non-pooled string will run out of
+connections, because serverless functions open and drop them constantly.
+
+If it still says no database, `/admin` shows what the server can actually see:
+the names of every database-related variable in the deployment, or the real
+connection error if a string is present but does not work. That is usually
+enough to tell "nothing attached" from "wrong password" from "not redeployed".
 
 The tables are created on the first request, and the five current snacks are
 inserted at their present prices. Nothing to run by hand.

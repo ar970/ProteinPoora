@@ -51,15 +51,21 @@ module.exports = async function handler(req, res) {
 
     if (req.method === 'GET') {
       const s = auth.session(req);
-      return send(res, 200, {
+
+      // Actually try the connection rather than checking a variable exists, so
+      // "connected but the password is wrong" is not reported as working. The
+      // detail is only for someone signed in: it names environment variables.
+      const check = await db.diagnose();
+      const payload = {
         configured,
-        // The panel explains the remaining setup, so it needs to know about
-        // the database and about whether the password is still the built-in one.
-        database: Boolean(db.connectionString()),
+        database: check.ok,
         defaultPassword: auth.credentials().isDefault,
         authenticated: Boolean(s),
         username: s ? s.username : null
-      });
+      };
+      if (s && !check.ok) payload.diagnosis = check;
+
+      return send(res, 200, payload);
     }
 
     const body = await readJson(req);

@@ -493,11 +493,57 @@
 
   /* --- boot ------------------------------------------------------------- */
 
-  var status = { database: false, defaultPassword: false };
+  var status = { database: false, defaultPassword: false, diagnosis: null };
+
+  var PW_DISMISSED = 'pp_admin_pw_notice_dismissed';
+
+  function pwDismissed() {
+    try { return window.localStorage.getItem(PW_DISMISSED) === '1'; } catch (e) { return false; }
+  }
+
+  $('pw-dismiss').addEventListener('click', function () {
+    try { window.localStorage.setItem(PW_DISMISSED, '1'); } catch (e) { /* fine */ }
+    $('pw-notice').hidden = true;
+  });
+
+  /** Says what the server can actually see, so "no database" is diagnosable. */
+  function paintDiagnosis() {
+    var box = $('db-diag');
+    var d = status.diagnosis;
+    box.textContent = '';
+    if (!d) { box.hidden = true; return; }
+    box.hidden = false;
+
+    if (d.reason === 'failed') {
+      box.appendChild(el('p', 'diag__h', 'A database is configured, but connecting to it failed.'));
+      if (d.host) box.appendChild(el('p', null, 'Host: ' + d.host));
+      if (d.message) box.appendChild(el('p', 'diag__msg', d.message));
+      box.appendChild(el('p', null,
+        'Usually the password in the connection string, or a direct (non-pooled) host. ' +
+        'In Supabase use the Connection Pooling string, port 6543.'));
+      return;
+    }
+
+    box.appendChild(el('p', 'diag__h', 'No connection string reached this deployment.'));
+    var vars = (d.vars || []).filter(function (n) { return !/^(npm_|VERCEL_)/.test(n); });
+    if (vars.length) {
+      box.appendChild(el('p', null, 'Database-ish variables it can see:'));
+      var ul = el('ul', 'diag__list');
+      vars.forEach(function (n) { ul.appendChild(el('li', null, n)); });
+      box.appendChild(ul);
+      box.appendChild(el('p', null,
+        'None of these holds a postgres:// string. Add the pooled connection string as DATABASE_URL.'));
+    } else {
+      box.appendChild(el('p', null,
+        'It can see no database variables at all — so nothing is attached to this project yet, ' +
+        'or it was added after the last deployment. Redeploy after adding it.'));
+    }
+  }
 
   function paintNotices() {
-    $('pw-notice').hidden = !status.defaultPassword;
+    $('pw-notice').hidden = !status.defaultPassword || pwDismissed();
     $('db-notice').hidden = status.database;
+    paintDiagnosis();
     // With no database there is nothing to list; the panels would only show
     // "could not load" rows under a notice that already explains why.
     $('panel-orders').hidden = !status.database;
@@ -509,6 +555,7 @@
     return api('/api/admin').then(function (data) {
       status.database = Boolean(data.database);
       status.defaultPassword = Boolean(data.defaultPassword);
+      status.diagnosis = data.diagnosis || null;
       return data;
     });
   }
@@ -521,6 +568,7 @@
       .then(function () {
         paintNotices();
         if (status.database) {
+          document.querySelector('.tabs').hidden = false;
           loadOrders();
           loadProducts();
         }

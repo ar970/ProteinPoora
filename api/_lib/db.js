@@ -63,18 +63,6 @@ const SCHEMA = `
   CREATE INDEX IF NOT EXISTS preorders_status_idx  ON preorders (status);
 `;
 
-/**
- * The connection string, under whichever name the provider used.
- *
- * Connecting a database through Vercel's marketplace injects the variables
- * itself, and the name depends on the provider: Neon and Vercel Postgres set
- * POSTGRES_URL, Supabase sets POSTGRES_URL too, others set DATABASE_URL.
- * Accepting all of them means connecting a database is enough on its own —
- * nobody has to notice the name and copy it into a second variable.
- *
- * Pooled names come first: serverless invocations are short-lived and would
- * otherwise exhaust a direct connection limit.
- */
 const URL_VARS = [
   'DATABASE_URL',
   'POSTGRES_URL',
@@ -84,12 +72,73 @@ const URL_VARS = [
   'DATABASE_URL_UNPOOLED'
 ];
 
+const IS_PG_URL = /^postgres(ql)?:\/\//i;
+
+/**
+ * The connection string, however the provider chose to name it.
+ *
+ * Guessing names does not work: Vercel's marketplace lets you pick a prefix
+ * when connecting a database, so Supabase can arrive as POSTGRES_URL,
+ * SUPABASE_POSTGRES_URL, or anything else. So the known names are tried first
+ * and then *any* variable whose value is a Postgres URL, which covers every
+ * prefix and provider. Finally the pieces are assembled by hand, for
+ * integrations that inject host/user/password/database separately and no URL.
+ */
 function connectionString() {
   for (const name of URL_VARS) {
-    const value = process.env[name];
-    if (value && value.trim()) return value.trim();
+    const value = (process.env[name] || '').trim();
+    if (value) return value;
   }
-  return '';
+
+  // Any variable holding a Postgres URL. Pooled hosts first: serverless
+  // invocations are short-lived and would exhaust a direct connection limit.
+  const found = Object.keys(process.env)
+    .filter((name) => IS_PG_URL.test((process.env[name] || '').trim()))
+    .sort((a, b) => score(b) - score(a));
+  if (found.length) return process.env[found[0]].trim();
+
+  return assembled();
+}
+
+function score(name) {
+  const value = process.env[name] || '';
+  let n = 0;
+  if (/pooler|pgbouncer/i.test(value)) n += 4;      // a pooled host
+  if (/NON_POOLING|UNPOOLED|DIRECT/i.test(name)) n -= 4;
+  if (/PRISMA/i.test(name)) n -= 1;                 // carries Prisma-only params
+  if (/^(DATABASE|POSTGRES)_URL$/i.test(name)) n += 2;
+  return n;
+}
+
+/** Builds a URL from separately injected parts, if a provider does that. */
+function assembled() {
+  const pick = (suffix) => {
+    const key = Object.keys(process.env)
+      .filter((name) => name.toUpperCase().endsWith(suffix))
+      .sort((a, b) => a.length - b.length)[0];
+    return key ? (process.env[key] || '').trim() : '';
+  };
+
+  const host = pick('POSTGRES_HOST');
+  const user = pick('POSTGRES_USER');
+  const password = pick('POSTGRES_PASSWORD');
+  const database = pick('POSTGRES_DATABASE') || pick('POSTGRES_DB');
+  if (!host || !user || !password) return '';
+
+  return `postgres://${encodeURIComponent(user)}:${encodeURIComponent(password)}` +
+    `@${host}/${encodeURIComponent(database || 'postgres')}`;
+}
+
+/**
+ * Names — never values — of the variables that look database-related, so the
+ * admin panel can say what it can actually see when nothing works. Values hold
+ * the password, so they never leave the server.
+ */
+function visibleVars() {
+  return Object.keys(process.env)
+    .filter((name) => /POSTGRES|DATABASE|SUPABASE|NEON|PG(HOST|USER|DATABASE|PORT)/i.test(name))
+    .filter((name) => !/PASSWORD|SECRET|KEY|TOKEN/i.test(name))
+    .sort();
 }
 
 /**
@@ -156,4 +205,37 @@ async function query(text, params) {
   return pool().query(text, params);
 }
 
-module.exports = { query, ready, pool, connectionString, SEED_PRODUCTS };
+/**
+ * Actually connect, so the panel can tell "no variable" apart from "wrong
+ * password" apart from "works". A string being present proves nothing.
+ */
+async function diagnose() {
+  const url = connectionString();
+  if (!url) return { ok: false, reason: 'missing', vars: visibleVars() };
+  try {
+    await pool().query('SELECT 1');
+    return { ok: true, host: hostOf(url) };
+  } catch (err) {
+    return { ok: false, reason: 'failed', host: hostOf(url), message: scrub(err.message) };
+  }
+}
+
+/** Host only — the rest of the string carries the password. */
+function hostOf(url) {
+  try {
+    return new URL(url).host;
+  } catch {
+    return '';
+  }
+}
+
+/** Never let a connection string reach the browser, whatever the driver says. */
+function scrub(message) {
+  return String(message || '')
+    .replace(/postgres(ql)?:\/\/\S+/gi, '[connection string]')
+    .slice(0, 300);
+}
+
+module.exports = {
+  query, ready, pool, connectionString, visibleVars, diagnose, SEED_PRODUCTS
+};
