@@ -1,17 +1,18 @@
 # Protein पूरा — website
 
-Static site for [proteinpoora.shop](https://proteinpoora.shop), hosted on Vercel. Plain HTML, CSS and a few lines of JavaScript, no build step. The structure mirrors Shopify sections so it can be ported to a Liquid theme later.
+Storefront for [proteinpoora.shop](https://proteinpoora.shop), hosted on Vercel. The shop pages are plain HTML, CSS and a little JavaScript with no build step; three serverless functions in `api/` take pre-orders and back the admin panel. The structure mirrors Shopify sections so it can be ported to a Liquid theme later.
 
 ## Preview locally
 
-Any static server from the repo root works. For example:
+The shop pages are static, but `/preorder` and `/admin` need the API, so use the dev server — it routes `/api/*` to the same handlers Vercel runs:
 
 ```bash
-python3 -m http.server 8000
-# then open http://localhost:8000
+npm install
+DATABASE_URL='postgres://…' ADMIN_USERNAME='archit' ADMIN_PASSWORD='…' node scripts/dev-server.js
+# then open http://127.0.0.1:3000
 ```
 
-Paths are absolute (`/assets/...`), so serve from the repo root, not by opening `index.html` directly.
+Paths are absolute (`/assets/...`), so serve from the repo root, not by opening `index.html` directly. See [docs/ADMIN-SETUP.md](docs/ADMIN-SETUP.md) for the database and credentials.
 
 ## Deploy to Vercel
 
@@ -25,8 +26,14 @@ Import the repository in Vercel. Framework preset: **Other**. Build command: non
 | `products/masala-bhujia/index.html` | Product page: gallery with lightbox, buy box, nutrition table. Served at `/products/masala-bhujia`. |
 | `assets/css/style.css` | All styles. Tokens at the top match `design-system/proteinpoora/MASTER.md`. |
 | `assets/css/fonts.css` | Self-hosted Baloo 2 and DM Sans. |
-| `assets/js/main.js` | Mobile menu toggle only. The page works without it. |
-| `assets/img/` | Hero pack image (two sizes, WebP with transparency), molecule pattern, favicon. |
+| `assets/js/main.js` | Menu toggle, gallery, hero carousel, scroll reveal. The pages work without it. |
+| `assets/img/` | Pack shots and lifestyle photos (WebP, two sizes each, transparent backgrounds), logo and favicons. Re-exported artwork is **renamed**, never overwritten — see the caching note in `design-system/proteinpoora/MASTER.md`. |
+| `preorder/index.html` | Pre-order form: product picker, customer details, address. Served at `/preorder`. |
+| `admin/index.html` | Admin panel, linked from every footer. Served at `/admin`. |
+| `api/` | Serverless functions: `products.js`, `preorders.js`, `admin.js`, plus shared `_lib/`. |
+| `assets/css/admin.css` | Admin panel styles. Loaded only by `/admin`. |
+| `assets/js/preorder.js`, `assets/js/admin.js` | Page scripts for the two new pages. |
+| `scripts/dev-server.js` | Local server that mounts the real API handlers. |
 | `design-system/` | Design spec: colors, type, spacing, section order, Shopify plan. |
 
 ## Swapping the hero image
@@ -42,9 +49,20 @@ Snapshots live in the gallery on the product page. To add one:
 
 Clicking a thumbnail swaps the main image; clicking the main image opens it full-size. Left and right arrow keys move between photos.
 
-## Pre-order button
+## Pre-orders and the admin panel
 
-The button on the product page is a placeholder. It reports that checkout isn't connected yet. When the Shopify store exists, replace it with the Shopify Buy Button or the theme's product form.
+Customers pre-order at `/preorder`; the buttons on the line-up cards and product
+pages link straight through, carrying the chosen snack and quantity. Orders land
+in Postgres and you manage them at `/admin`, linked from the footer of every
+page.
+
+Nothing works until `DATABASE_URL`, `ADMIN_USERNAME` and `ADMIN_PASSWORD` are
+set in the Vercel project. The credentials are deliberately not in this
+repository — it is public, and the panel shows customer addresses.
+**[docs/ADMIN-SETUP.md](docs/ADMIN-SETUP.md) has the steps.**
+
+There is no payment step. The form takes a list of interested customers before
+the first batch is ready; taking money is a job for the Shopify store.
 
 ## Fonts
 

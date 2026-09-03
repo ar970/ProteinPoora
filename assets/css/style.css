@@ -1022,6 +1022,11 @@ button {
   border-color: var(--navy-deep);
 }
 
+.btn--block {
+  display: flex;
+  width: 100%;
+}
+
 .btn--ghost {
   background: transparent;
   border-color: var(--line);
@@ -1940,6 +1945,21 @@ button {
   font-size: 0.8125rem;
 }
 
+.footer__sep {
+  margin: 0 0.5rem;
+}
+
+.footer__admin {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: color var(--t-fast) var(--ease);
+}
+
+.footer__admin:hover {
+  color: var(--cream);
+}
+
 @media (min-width: 768px) {
   .footer {
     padding: 3rem var(--gutter);
@@ -2031,4 +2051,341 @@ button {
     animation: none;
     width: 100%;
   }
+}
+
+/* ==========================================================================
+   Pre-order checkout
+   One section in Shopify terms: the picker maps to line items and the address
+   block to the customer/shipping address, so the markup stays close to what
+   the cart and checkout templates already expect.
+   ========================================================================== */
+
+/* --- Form controls ------------------------------------------------------- */
+.input,
+.textarea,
+.select {
+  width: 100%;
+  min-height: 48px;
+  padding: 0.7rem 0.85rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--paper);
+  color: var(--navy-ink);
+  font: inherit;
+  transition: border-color var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease);
+}
+
+.textarea {
+  min-height: 96px;
+  resize: vertical;
+}
+
+.select {
+  appearance: none;
+  padding-right: 2.4rem;
+  /* Chevron drawn inline so the control needs no extra request. */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8' fill='none' stroke='%231A2456' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M1 1.5 6 6.5l5-5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.9rem center;
+  background-size: 12px 8px;
+  cursor: pointer;
+}
+
+.input::placeholder,
+.textarea::placeholder {
+  color: #9AA0B4;
+}
+
+.input:focus-visible,
+.textarea:focus-visible,
+.select:focus-visible {
+  outline: none;
+  border-color: var(--orange);
+  box-shadow: 0 0 0 3px rgba(240, 138, 42, 0.25);
+}
+
+.field__hint {
+  margin: 0;
+  color: var(--text);
+  font-size: 0.8125rem;
+}
+
+.field__error {
+  margin: 0;
+  color: var(--error);
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+
+/* Empty by default, so a clean form is not padded out by reserved space. */
+.field__error:empty {
+  display: none;
+}
+
+.field__optional {
+  color: var(--text);
+  font-weight: 400;
+}
+
+.field.is-invalid .input,
+.field.is-invalid .textarea,
+.field.is-invalid .select {
+  border-color: var(--error);
+}
+
+.field__label .req {
+  color: var(--error);
+}
+
+/* --- Checkout layout ----------------------------------------------------- */
+.checkout {
+  display: grid;
+  gap: 2rem;
+  align-items: start;
+}
+
+@media (min-width: 900px) {
+  .checkout {
+    grid-template-columns: minmax(0, 1.5fr) minmax(300px, 0.95fr);
+    gap: 2.75rem;
+  }
+}
+
+.checkout__step {
+  margin: 0 0 1.75rem;
+  padding: 0;
+  border: 0;
+}
+
+.checkout__step:last-of-type {
+  margin-bottom: 0;
+}
+
+.checkout__legend {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+  margin-bottom: 0.35rem;
+  padding: 0;
+  color: var(--navy-ink);
+  font-family: var(--font-display);
+  font-size: 1.375rem;
+  font-weight: 700;
+}
+
+.checkout__num {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: var(--cream);
+  font-size: 0.9375rem;
+}
+
+.checkout__note {
+  margin: 0 0 1.1rem 2.4rem;
+  color: var(--text);
+  font-size: 0.9375rem;
+}
+
+.form-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: 620px) {
+  .form-grid--2 {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .form-grid .span-2 {
+    grid-column: 1 / -1;
+  }
+}
+
+/* --- Product picker ------------------------------------------------------ */
+.picker {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.picker__row {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr) auto;
+  gap: 0.9rem;
+  align-items: center;
+  padding: 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--paper);
+  transition: border-color var(--t-fast) var(--ease), background-color var(--t-fast) var(--ease);
+}
+
+.picker__row.is-chosen {
+  border-color: var(--navy);
+  background: var(--cream-soft);
+}
+
+.picker__row.is-out {
+  opacity: 0.6;
+}
+
+.picker__thumb {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+}
+
+.picker__name {
+  margin: 0;
+  color: var(--navy-ink);
+  font-weight: 600;
+}
+
+.picker__meta {
+  margin: 0;
+  color: var(--text);
+  font-size: 0.8125rem;
+}
+
+.picker__out {
+  color: var(--error);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+/* Below ~400px the name wraps awkwardly between the thumb and the stepper.
+   Reclaiming the space from the thumbnail keeps each row to one line. */
+@media (max-width: 420px) {
+  .picker__row {
+    grid-template-columns: 40px minmax(0, 1fr) auto;
+    gap: 0.6rem;
+    padding: 0.6rem;
+  }
+
+  .picker__thumb {
+    width: 40px;
+    height: 40px;
+  }
+
+  .picker__meta {
+    font-size: 0.75rem;
+  }
+}
+
+/* --- Order summary ------------------------------------------------------- */
+.summary {
+  position: sticky;
+  top: 1.25rem;
+  padding: 1.25rem;
+  border-radius: 18px;
+  background: var(--cream-soft);
+  box-shadow: 0 10px 26px rgba(8, 14, 46, 0.1);
+}
+
+.summary__title {
+  margin: 0 0 0.9rem;
+  color: var(--navy-ink);
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.summary__lines {
+  display: grid;
+  gap: 0.6rem;
+  margin: 0 0 1rem;
+  padding: 0;
+  list-style: none;
+}
+
+.summary__line {
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  color: var(--navy-ink);
+  font-size: 0.9375rem;
+}
+
+.summary__line span:last-child {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.summary__empty {
+  margin: 0 0 1rem;
+  color: var(--text);
+  font-size: 0.9375rem;
+}
+
+.summary__total {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 0.9rem;
+  border-top: 1px solid rgba(30, 45, 120, 0.15);
+  color: var(--navy-ink);
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.summary__total span:last-child {
+  font-variant-numeric: tabular-nums;
+}
+
+.summary__note {
+  margin: 0.9rem 0 0;
+  color: var(--text);
+  font-size: 0.8125rem;
+}
+
+.form-status {
+  margin: 0.75rem 0 0;
+  min-height: 1.2em;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.form-status[data-tone="error"] {
+  color: var(--error);
+}
+
+/* --- Confirmation -------------------------------------------------------- */
+.confirm {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+  border-radius: 20px;
+  background: var(--cream-soft);
+  text-align: center;
+}
+
+.confirm__ref {
+  display: inline-block;
+  margin: 0.75rem 0 0.25rem;
+  padding: 0.4rem 1rem;
+  border-radius: var(--radius-pill);
+  background: var(--navy);
+  color: var(--cream);
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.confirm__lines {
+  display: grid;
+  gap: 0.4rem;
+  margin: 1.25rem 0;
+  padding: 1.25rem 0;
+  border-block: 1px solid rgba(30, 45, 120, 0.15);
+  list-style: none;
+  text-align: left;
 }

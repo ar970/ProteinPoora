@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en" class="no-js">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pre-order — Protein पूरा</title>
+  <meta name="description" content="Pre-order the first batch of Protein पूरा snacks. Tell us where to send them and we ship as soon as the batch is ready.">
+  <meta name="theme-color" content="#1E2D78">
+  <meta name="robots" content="noindex">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Pre-order — Protein पूरा">
+  <meta property="og:description" content="Pre-order the first batch of Protein पूरा snacks.">
+
+  <link rel="icon" href="/assets/img/favicon-32.png" sizes="32x32">
+  <link rel="icon" href="/assets/img/logo-192.png" sizes="192x192">
+  <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
+  <link rel="preload" href="/assets/fonts/baloo-2-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/assets/fonts/baloo-2-devanagari-wordmark.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/assets/fonts/dm-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/assets/css/fonts.css?v=3">
+  <link rel="stylesheet" href="/assets/css/style.css?v=16">
+  <script>document.documentElement.classList.replace('no-js', 'js');</script>
+</head>
+<body>
+  <a class="skip-link" href="#content">Skip to content</a>
+
+  <!-- section: announcement-ticker -->
+  <div class="ticker" role="region" aria-label="Announcements">
+    <div class="ticker__track">
+      <ul class="ticker__list">
+        <li class="ticker__item">First batch · Pre-order open</li>
+        <li class="ticker__item">9–18 g protein per pack</li>
+        <li class="ticker__item">Never deep fried</li>
+        <li class="ticker__item">No palm oil</li>
+        <li class="ticker__item">Made in India</li>
+      </ul>
+      <ul class="ticker__list" aria-hidden="true">
+        <li class="ticker__item">First batch · Pre-order open</li>
+        <li class="ticker__item">9–18 g protein per pack</li>
+        <li class="ticker__item">Never deep fried</li>
+        <li class="ticker__item">No palm oil</li>
+        <li class="ticker__item">Made in India</li>
+      </ul>
+    </div>
+  </div>
+
+  <main id="main">
+    <div class="hero-frame hero-frame--compact">
+
+      <!-- section: header -->
+      <header class="site-header" role="banner">
+        <a class="wordmark" href="/">
+          <img class="wordmark__seal" src="/assets/img/logo-96.png" alt="" width="96" height="96" decoding="async">
+          <span class="wordmark__text">
+            <span class="wordmark__latin">Protein</span>
+            <span class="wordmark__hindi">पूरा<svg class="wordmark__swoosh" viewBox="0 0 60 10" aria-hidden="true" focusable="false"><path d="M2 7.5C16 3 38 2 58 4.5" fill="none" stroke="#F08A2A" stroke-width="2.4" stroke-linecap="round"/></svg></span>
+          </span>
+        </a>
+
+        <nav class="site-nav" id="site-nav" aria-label="Main">
+          <ul class="site-nav__list">
+            <li><a class="site-nav__link" href="/#line-up">Shop</a></li>
+            <li><a class="site-nav__link" href="/#story">Our story</a></li>
+            <li><a class="site-nav__link" href="/#faq">FAQ</a></li>
+          </ul>
+        </nav>
+
+        <div class="header__actions">
+          <a class="btn btn--cream btn--sm" href="#choose">Pre-order</a>
+          <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
+            <span class="visually-hidden menu-toggle__label">Open menu</span>
+            <svg class="menu-toggle__icon" viewBox="0 0 20 20" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <path class="bar-top" d="M3 4h14"/>
+              <path class="bar-mid" d="M3 10h14"/>
+              <path class="bar-bottom" d="M3 16h14"/>
+            </svg>
+          </button>
+        </div>
+      </header>
+
+    </div>
+
+    <!-- section: preorder-form -->
+    <section class="section" id="content" aria-labelledby="page-title">
+      <div class="section__inner">
+        <nav class="crumbs" aria-label="Breadcrumb"><a href="/#line-up">← All snacks</a></nav>
+
+        <div class="section__head">
+          <div>
+            <h1 class="section__title" id="page-title">Pre-order the first batch</h1>
+            <p class="section__sub">Pay nothing today. Tell us what you want and where to send it, and we will email you to confirm before the batch ships.</p>
+          </div>
+        </div>
+
+        <!-- Shown once the order is accepted; replaces the form. -->
+        <div class="confirm" id="confirm" hidden>
+          <h2 class="section__title">Pre-order received</h2>
+          <p class="section__sub">Keep this reference — we will use it in every email about your order.</p>
+          <p class="confirm__ref" id="confirm-ref">PP-------</p>
+          <ul class="confirm__lines" id="confirm-lines"></ul>
+          <p class="summary__total"><span>Total</span> <span id="confirm-total">₹0</span></p>
+          <p class="summary__note">We will email <b id="confirm-email"></b> to confirm. Nothing has been charged.</p>
+          <p style="margin-top:1.5rem"><a class="btn btn--navy" href="/#line-up">Back to the snacks</a></p>
+        </div>
+
+
+        <!-- Pack shots for the picker. In Liquid these come straight from
+             product.featured_image and this block disappears. -->
+        <script type="application/json" id="pack-thumbs">
+        {
+          "masala-bhujia": "/assets/img/masala-bhujia-pack-720.webp",
+          "pudina-bhujia": "/assets/img/pudina-bhujia-pack-720.webp",
+          "sweet-chilli-chakli": "/assets/img/chakli-pack-720-v2.webp",
+          "cheddar-cheese-chakli": "/assets/img/cheddar-chakli-pack-720-v2.webp",
+          "korean-bbq-peanuts": "/assets/img/korean-bbq-peanuts-pack-720-v2.webp"
+        }
+        </script>
+        <form class="checkout" id="preorder-form" novalidate>
+          <div>
+            <fieldset class="checkout__step" id="choose">
+              <legend class="checkout__legend"><span class="checkout__num" aria-hidden="true">1</span> Choose your snacks</legend>
+              <p class="checkout__note">Pick as many as you like, up to 20 packs of each.</p>
+              <ul class="picker" id="picker" data-loading>
+                <li class="summary__empty">Loading the line-up…</li>
+              </ul>
+            </fieldset>
+
+            <fieldset class="checkout__step">
+              <legend class="checkout__legend"><span class="checkout__num" aria-hidden="true">2</span> Your details</legend>
+              <div class="form-grid form-grid--2">
+                <div class="field span-2">
+                  <label class="field__label" for="customer_name">Full name <span class="req" aria-hidden="true">*</span></label>
+                  <input class="input" id="customer_name" name="customer_name" type="text" autocomplete="name" required maxlength="80">
+                  <p class="field__error" data-error-for="customer_name"></p>
+                </div>
+                <div class="field">
+                  <label class="field__label" for="email">Email <span class="req" aria-hidden="true">*</span></label>
+                  <input class="input" id="email" name="email" type="email" autocomplete="email" required maxlength="200">
+                  <p class="field__error" data-error-for="email"></p>
+                </div>
+                <div class="field">
+                  <label class="field__label" for="phone">Mobile number <span class="req" aria-hidden="true">*</span></label>
+                  <input class="input" id="phone" name="phone" type="tel" autocomplete="tel" inputmode="numeric" required placeholder="10 digits">
+                  <p class="field__error" data-error-for="phone"></p>
+                </div>
+              </div>
+            </fieldset>
+
+            <fieldset class="checkout__step">
+              <legend class="checkout__legend"><span class="checkout__num" aria-hidden="true">3</span> Delivery address</legend>
+              <div class="form-grid form-grid--2">
+                <div class="field span-2">
+                  <label class="field__label" for="address1">Flat, house, street <span class="req" aria-hidden="true">*</span></label>
+                  <input class="input" id="address1" name="address1" type="text" autocomplete="address-line1" required maxlength="160">
+                  <p class="field__error" data-error-for="address1"></p>
+                </div>
+                <div class="field span-2">
+                  <label class="field__label" for="address2">Area, landmark <span class="field__optional">(optional)</span></label>
+                  <input class="input" id="address2" name="address2" type="text" autocomplete="address-line2" maxlength="160">
+                  <p class="field__error" data-error-for="address2"></p>
+                </div>
+                <div class="field">
+                  <label class="field__label" for="city">City <span class="req" aria-hidden="true">*</span></label>
+                  <input class="input" id="city" name="city" type="text" autocomplete="address-level2" required maxlength="60">
+                  <p class="field__error" data-error-for="city"></p>
+                </div>
+                <div class="field">
+                  <label class="field__label" for="state">State <span class="req" aria-hidden="true">*</span></label>
+                  <select class="select" id="state" name="state" required autocomplete="address-level1">
+                    <option value="">Choose a state</option>
+                  </select>
+                  <p class="field__error" data-error-for="state"></p>
+                </div>
+                <div class="field">
+                  <label class="field__label" for="pincode">PIN code <span class="req" aria-hidden="true">*</span></label>
+                  <input class="input" id="pincode" name="pincode" type="text" autocomplete="postal-code" inputmode="numeric" required maxlength="6" placeholder="6 digits">
+                  <p class="field__error" data-error-for="pincode"></p>
+                </div>
+                <div class="field span-2">
+                  <label class="field__label" for="notes">Anything we should know? <span class="field__optional">(optional)</span></label>
+                  <textarea class="textarea" id="notes" name="notes" maxlength="500" placeholder="Delivery instructions, a gift note, anything else."></textarea>
+                  <p class="field__error" data-error-for="notes"></p>
+                </div>
+              </div>
+            </fieldset>
+          </div>
+
+          <aside class="summary" aria-labelledby="summary-title">
+            <h2 class="summary__title" id="summary-title">Your pre-order</h2>
+            <p class="summary__empty" id="summary-empty">Nothing chosen yet.</p>
+            <ul class="summary__lines" id="summary-lines"></ul>
+            <p class="summary__total"><span>Total</span> <span id="summary-total">₹0</span></p>
+            <p style="margin-top:1.15rem">
+              <button class="btn btn--navy btn--block" type="submit" id="submit-btn">Place pre-order</button>
+            </p>
+            <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
+            <p class="summary__note">Pay nothing now. We take payment only once the first batch is ready to ship, and we will email you first.</p>
+          </aside>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <!-- section: footer -->
+  <footer class="footer">
+    <div class="footer__inner">
+      <div>
+        <a class="wordmark" href="/">
+          <img class="wordmark__seal" src="/assets/img/logo-96.png" alt="" width="96" height="96" decoding="async">
+          <span class="wordmark__text">
+            <span class="wordmark__latin">Protein</span>
+            <span class="wordmark__hindi">पूरा<svg class="wordmark__swoosh" viewBox="0 0 60 10" aria-hidden="true" focusable="false"><path d="M2 7.5C16 3 38 2 58 4.5" fill="none" stroke="#F08A2A" stroke-width="2.4" stroke-linecap="round"/></svg></span>
+          </span>
+        </a>
+        <p class="footer__tag">Protein-packed Indian snacks. Pre-order the first batch.</p>
+      </div>
+      <nav class="footer__nav" aria-label="Footer">
+        <ul>
+          <li><a href="/#line-up">Shop</a></li>
+          <li><a href="/products/masala-bhujia">Masala Bhujia</a></li>
+          <li><a href="/products/pudina-bhujia">Pudina Bhujia</a></li>
+          <li><a href="/products/sweet-chilli-chakli">Sweet Chilli Chakli</a></li>
+          <li><a href="/products/cheddar-cheese-chakli">Cheddar Cheese Chakli</a></li>
+          <li><a href="/products/korean-bbq-peanuts">Korean BBQ Peanuts</a></li>
+          <li><a href="/#faq">FAQ</a></li>
+        </ul>
+      </nav>
+      <p class="footer__legal">© 2026 Protein पूरा. Made in India.<span class="footer__sep" aria-hidden="true">·</span><a class="footer__admin" href="/admin">Admin</a></p>
+    </div>
+  </footer>
+
+  <dialog class="lightbox" id="lightbox" aria-label="Product photo">
+    <img class="lightbox__img" src="/assets/img/masala-bhujia-pack-1054.webp" alt="Masala Bhujia pack" width="1054" height="1436">
+    <div class="lightbox__bar">
+      <button class="lightbox__btn" type="button" data-prev aria-label="Previous photo">
+        <svg viewBox="0 0 20 20" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4l-6 6 6 6"/></svg>
+      </button>
+      <button class="lightbox__btn" type="button" data-close aria-label="Close">
+        <svg viewBox="0 0 20 20" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 5l10 10M15 5L5 15"/></svg>
+      </button>
+      <button class="lightbox__btn" type="button" data-next aria-label="Next photo">
+        <svg viewBox="0 0 20 20" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4l6 6-6 6"/></svg>
+      </button>
+    </div>
+  </dialog>
+
+  <script src="/assets/js/main.js?v=16" defer></script>
+  <script src="/assets/js/preorder.js?v=16" defer></script>
+</body>
+</html>

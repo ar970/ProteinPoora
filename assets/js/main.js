@@ -346,13 +346,20 @@
     qty.querySelector('[data-qty-up]').addEventListener('click', function () { step(1); });
   }
 
-  /* --- Pre-order button (placeholder until Shopify is connected) -------- */
-  var cartButton = document.querySelector('[data-add-to-cart]');
-  var cartStatus = document.querySelector('.buy__status');
+  /* --- Pre-order button -------------------------------------------------
+   * Carries the product and the chosen quantity across to the pre-order form,
+   * so the stepper above it is not thrown away. When this becomes a Shopify
+   * theme the same button posts to /cart/add instead.
+   */
+  var preorderButton = document.querySelector('[data-preorder]');
 
-  if (cartButton && cartStatus) {
-    cartButton.addEventListener('click', function () {
-      cartStatus.textContent = 'Checkout isn’t connected yet. Pre-orders open with the Shopify store.';
+  if (preorderButton) {
+    preorderButton.addEventListener('click', function () {
+      var slug = preorderButton.getAttribute('data-preorder');
+      var input = document.querySelector('.qty__input');
+      var wanted = input ? parseInt(input.value, 10) : 1;
+      var packs = Math.min(20, Math.max(1, isNaN(wanted) ? 1 : wanted));
+      window.location.href = '/preorder?product=' + encodeURIComponent(slug) + '&qty=' + packs;
     });
   }
 })();

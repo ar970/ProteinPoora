@@ -135,6 +135,34 @@ locales/    en.default.json, en.default.schema.json
 - LCP ≤ 2.0 s on a mid-range phone over 4G. CLS < 0.1: every image has width/height or aspect-ratio.
 - No third-party scripts in the theme. No web font from a CDN.
 
+## Pre-orders and admin
+
+The shop pages stay static. Three serverless functions in `api/` sit beside
+them, and the split between what they own and what the markup owns is the same
+split Shopify enforces:
+
+- **The database owns commerce**: name, slug, price, pack size, protein figure,
+  availability, sort order. These become Shopify product fields.
+- **The markup owns the story**: photography, ingredients, allergens, the
+  nutrition tables, the flavour copy. These become theme sections and
+  metafields.
+
+Nothing that a customer reads as *content* goes in the database, because none of
+it would survive the port. Nothing that changes with a business decision stays
+hardcoded in HTML, because the admin has to be able to change it.
+
+Rules that hold regardless of storage:
+
+- Money is stored as an integer number of **paise**. Never a float.
+- The browser sends slugs and quantities. **The server prices the order**, on
+  write, from the products table. A client-supplied amount is ignored.
+- Each order stores its own copy of its line items and their prices, so editing
+  or deleting a product never rewrites an order already placed.
+- Admin credentials come from environment variables and never from the
+  repository, which is public.
+
+Full setup and behaviour: `docs/ADMIN-SETUP.md`.
+
 ## Caching on Vercel — the rename rule
 
 `vercel.json` serves `/assets/fonts/` and `/assets/img/` as

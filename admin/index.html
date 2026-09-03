@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en" class="no-js">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin — Protein पूरा</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#1E2D78">
+
+  <link rel="icon" href="/assets/img/favicon-32.png" sizes="32x32">
+  <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
+  <link rel="stylesheet" href="/assets/css/fonts.css?v=3">
+  <link rel="stylesheet" href="/assets/css/style.css?v=16">
+  <link rel="stylesheet" href="/assets/css/admin.css?v=16">
+  <script>document.documentElement.classList.replace('no-js', 'js');</script>
+</head>
+<body>
+  <header class="abar">
+    <a class="abar__brand" href="/">
+      <img src="/assets/img/logo-96.png" alt="" width="32" height="32" decoding="async">
+      Protein पूरा
+      <span class="abar__tag">Admin</span>
+    </a>
+    <div class="abar__right" id="whoami" hidden>
+      <span class="abar__who">Signed in as <b id="who-name"></b></span>
+      <button class="btn btn--outline btn--sm" type="button" id="signout">Sign out</button>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <!-- Sign in ------------------------------------------------------------->
+    <section class="card login" id="login" hidden aria-labelledby="login-title">
+      <h1 class="h" id="login-title">Sign in</h1>
+      <p class="sub">This panel holds customer names, phone numbers and addresses. Do not sign in on a shared computer.</p>
+      <p class="msg" id="login-msg" role="status" aria-live="polite"></p>
+      <form id="login-form" novalidate>
+        <div class="field">
+          <label class="field__label" for="username">Username</label>
+          <input class="input" id="username" name="username" type="text" autocomplete="username" required autocapitalize="none" spellcheck="false">
+        </div>
+        <div class="field">
+          <label class="field__label" for="password">Password</label>
+          <input class="input" id="password" name="password" type="password" autocomplete="current-password" required>
+        </div>
+        <p style="margin:1.25rem 0 0">
+          <button class="btn btn--navy btn--block" type="submit" id="login-btn">Sign in</button>
+        </p>
+      </form>
+    </section>
+
+    <!-- Dashboard ----------------------------------------------------------->
+    <div id="dash" hidden>
+      <div class="tabs" role="tablist" aria-label="Admin sections">
+        <button class="tab" type="button" role="tab" id="tab-orders" aria-controls="panel-orders" aria-selected="true">Pre-orders</button>
+        <button class="tab" type="button" role="tab" id="tab-products" aria-controls="panel-products" aria-selected="false">Products</button>
+      </div>
+
+      <!-- Pre-orders -->
+      <section id="panel-orders" role="tabpanel" aria-labelledby="tab-orders">
+        <div class="stats" id="stats"></div>
+
+        <div class="card">
+          <div class="toolbar">
+            <div class="toolbar__group">
+              <label class="field__label" for="filter">Show</label>
+              <select class="select" id="filter">
+                <option value="">All pre-orders</option>
+                <option value="pending">Pending</option>
+                <option value="confirmed">Confirmed</option>
+                <option value="shipped">Shipped</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+            </div>
+            <div class="toolbar__group">
+              <button class="btn btn--outline btn--tiny" type="button" id="refresh">Refresh</button>
+              <a class="btn btn--navy btn--tiny" id="export" href="/api/preorders?format=csv">Download CSV</a>
+            </div>
+          </div>
+
+          <p class="msg" id="orders-msg" role="status" aria-live="polite"></p>
+
+          <div class="tablewrap">
+            <table class="data" id="orders-table">
+              <thead>
+                <tr>
+                  <th scope="col">Reference</th>
+                  <th scope="col">Placed</th>
+                  <th scope="col">Customer</th>
+                  <th scope="col">Items</th>
+                  <th scope="col" class="num">Total</th>
+                  <th scope="col">Status</th>
+                  <th scope="col"><span class="visually-hidden">Details</span></th>
+                </tr>
+              </thead>
+              <tbody id="orders-body">
+                <tr><td colspan="7" class="empty">Loading…</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Products -->
+      <section id="panel-products" role="tabpanel" aria-labelledby="tab-products" hidden>
+        <div class="card">
+          <h2 class="h">Products</h2>
+          <p class="sub">Price and availability live here. Photos, ingredients and the nutrition tables stay in the product pages — change those in the code so they carry over to Shopify.</p>
+
+          <p class="msg" id="products-msg" role="status" aria-live="polite"></p>
+
+          <div class="tablewrap">
+            <table class="data" id="products-table">
+              <thead>
+                <tr>
+                  <th scope="col">Name</th>
+                  <th scope="col">Slug</th>
+                  <th scope="col" class="num">Price ₹</th>
+                  <th scope="col">Pack</th>
+                  <th scope="col">Protein</th>
+                  <th scope="col">Status</th>
+                  <th scope="col" class="num">Order</th>
+                  <th scope="col"><span class="visually-hidden">Actions</span></th>
+                </tr>
+              </thead>
+              <tbody id="products-body">
+                <tr><td colspan="8" class="empty">Loading…</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2 class="h">Add a product</h2>
+          <p class="sub">This adds a snack to the pre-order form so you can start taking orders. It does not create a product page — that is still a code change.</p>
+          <p class="msg" id="add-msg" role="status" aria-live="polite"></p>
+          <form id="add-form" class="form-grid form-grid--2" novalidate>
+            <div class="field">
+              <label class="field__label" for="new-name">Name</label>
+              <input class="input" id="new-name" name="name" type="text" required maxlength="80">
+            </div>
+            <div class="field">
+              <label class="field__label" for="new-slug">Slug</label>
+              <input class="input" id="new-slug" name="slug" type="text" required maxlength="80" placeholder="peri-peri-bhujia" autocapitalize="none" spellcheck="false">
+            </div>
+            <div class="field">
+              <label class="field__label" for="new-price">Price in ₹</label>
+              <input class="input" id="new-price" name="price" type="text" inputmode="decimal" required placeholder="99">
+            </div>
+            <div class="field">
+              <label class="field__label" for="new-pack">Pack size</label>
+              <input class="input" id="new-pack" name="pack_size" type="text" maxlength="20" placeholder="60 g">
+            </div>
+            <div class="field">
+              <label class="field__label" for="new-protein">Protein</label>
+              <input class="input" id="new-protein" name="protein" type="text" maxlength="20" placeholder="14 g">
+            </div>
+            <div class="field">
+              <label class="field__label" for="new-status">Status</label>
+              <select class="select" id="new-status" name="status">
+                <option value="hidden">Hidden (not on the form yet)</option>
+                <option value="available">Available</option>
+                <option value="sold_out">Sold out</option>
+              </select>
+            </div>
+            <p class="span-2" style="margin:0.5rem 0 0">
+              <button class="btn btn--navy" type="submit" id="add-btn">Add product</button>
+            </p>
+          </form>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script src="/assets/js/admin.js?v=16" defer></script>
+</body>
+</html>

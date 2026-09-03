@@ -1,4 +1,7 @@
 .claude
 design-system
+docs
+scripts
 README.md
 .gitignore
+node_modules
