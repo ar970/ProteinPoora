@@ -22,7 +22,7 @@ Import the repository in Vercel. Framework preset: **Other**. Build command: non
 
 | Path | What |
 |---|---|
-| `index.html` | Homepage: ticker, header, hero, the line-up, footer. Sections are marked with `<!-- section: … -->` comments. |
+| `index.html` | Homepage: ticker, header, hero, the line-up, FAQ, footer. Sections are marked with `<!-- section: … -->` comments. |
 | `products/masala-bhujia/index.html` | Product page: gallery with lightbox, buy box, nutrition table. Served at `/products/masala-bhujia`. |
 | `assets/css/style.css` | All styles. Tokens at the top match `design-system/proteinpoora/MASTER.md`. |
 | `assets/css/fonts.css` | Self-hosted Baloo 2 and DM Sans. |
@@ -50,6 +50,14 @@ Snapshots live in the gallery on the product page. To add one:
 2. In `products/masala-bhujia/index.html`, copy one of the `<li>` blocks inside `<ul class="thumbs">` and point its `data-src`, `data-srcset`, `data-large`, `data-alt` and the thumbnail `<img>` at the new files.
 
 Clicking a thumbnail swaps the main image; clicking the main image opens it full-size. Left and right arrow keys move between photos.
+
+## FAQ
+
+Ten questions on the homepage at `#faq`, which the header and every footer already linked to. Built from `<details>`/`<summary>` on the same `.acc` accordion the product pages use, so it opens and closes with no JavaScript at all and keeps working with scripts off.
+
+Every answer is taken from something the site already states — the protein figures and claims on the cards, the ingredient and allergen panels on the product pages, the storage line, and what `/preorder` promises ("we will email to confirm, nothing has been charged"). If you change one of those, change the answer with it.
+
+Two answers are deliberately vague because the facts are not settled: there is no shipping date, and there is no contact address anywhere on the site, so "can I cancel" says to quote the `PP-` reference rather than naming an inbox. Both are worth firming up.
 
 ## Meta Pixel
 

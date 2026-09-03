@@ -1900,6 +1900,32 @@ button {
   height: 20px;
 }
 
+/* --- Section: FAQ ------------------------------------------------------- */
+
+/* The accordion is the product page's, reused. Answers are set narrow: the
+   container is 1200px wide and a line of prose that long is unreadable. */
+.faq {
+  max-width: 46rem;
+}
+
+.faq .acc__head {
+  font-size: 1rem;
+  padding: 1.05rem 0;
+}
+
+.faq .acc__body {
+  padding-bottom: 1.15rem;
+}
+
+.faq .acc__body p {
+  margin: 0 0 0.6rem;
+  max-width: 60ch;
+}
+
+.faq .acc__body p:last-child {
+  margin-bottom: 0;
+}
+
 /* --- Section: footer ------------------------------------------------------ */
 .footer {
   margin: var(--frame);
