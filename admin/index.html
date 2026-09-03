@@ -10,8 +10,8 @@
   <link rel="icon" href="/assets/img/favicon-32.png" sizes="32x32">
   <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
   <link rel="stylesheet" href="/assets/css/fonts.css?v=3">
-  <link rel="stylesheet" href="/assets/css/style.css?v=18">
-  <link rel="stylesheet" href="/assets/css/admin.css?v=18">
+  <link rel="stylesheet" href="/assets/css/style.css?v=19">
+  <link rel="stylesheet" href="/assets/css/admin.css?v=19">
   <script>document.documentElement.classList.replace('no-js', 'js');</script>
 </head>
 <body>
@@ -28,6 +28,50 @@
   </header>
 
   <main class="wrap">
+
+    <!-- Setup, shown until the project has what it needs --------------------->
+    <section class="card setup" id="setup" hidden aria-labelledby="setup-title">
+      <h1 class="h" id="setup-title">Finish setting up</h1>
+      <p class="sub">Two things have to exist in Vercel before pre-orders can be taken. Neither can live in the code: this repository is public, and Vercel has nowhere to keep orders on its own.</p>
+
+      <ol class="steps">
+        <li class="step" data-step="database">
+          <div class="step__head">
+            <span class="step__num">1</span>
+            <h2 class="step__title">Connect a database</h2>
+            <span class="step__state" data-state>checking…</span>
+          </div>
+          <div class="step__body">
+            <p>In the Vercel dashboard, open this project, then:</p>
+            <p class="step__path"><b>Storage</b> → <b>Create Database</b> → <b>Neon</b> → <b>Connect</b></p>
+            <p>The free tier is far more than this needs. There is nothing to copy or paste — Vercel adds the connection details itself, and any of the usual variable names will be picked up.</p>
+          </div>
+        </li>
+
+        <li class="step" data-step="credentials">
+          <div class="step__head">
+            <span class="step__num">2</span>
+            <h2 class="step__title">Set your sign-in details</h2>
+            <span class="step__state" data-state>checking…</span>
+          </div>
+          <div class="step__body">
+            <p>Same project, then:</p>
+            <p class="step__path"><b>Settings</b> → <b>Environment Variables</b> → <b>Add</b></p>
+            <table class="vars">
+              <tbody>
+                <tr><td><code>ADMIN_USERNAME</code></td><td>archit</td></tr>
+                <tr><td><code>ADMIN_PASSWORD</code></td><td>the password you want</td></tr>
+              </tbody>
+            </table>
+            <p>Tick all three environments (Production, Preview, Development). These are not in the code because this panel lists customers' names, phone numbers and home addresses, and anyone can read a public repository.</p>
+          </div>
+        </li>
+      </ol>
+
+      <p class="msg" data-tone="warn">Already added them? Environment variables only take effect on a <b>new deployment</b>. Open <b>Deployments</b>, and on the most recent one choose <b>Redeploy</b>.</p>
+
+      <p><button class="btn btn--navy" type="button" id="recheck">Check again</button></p>
+    </section>
 
     <!-- Sign in ------------------------------------------------------------->
     <section class="card login" id="login" hidden aria-labelledby="login-title">
@@ -172,6 +216,6 @@
     </div>
   </main>
 
-  <script src="/assets/js/admin.js?v=18" defer></script>
+  <script src="/assets/js/admin.js?v=19" defer></script>
 </body>
 </html>

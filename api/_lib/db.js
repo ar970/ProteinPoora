@@ -7,9 +7,10 @@
  * plain module shared by the three handlers rather than a route of its own.
  *
  * Works against any Postgres — Neon, Supabase, Vercel Postgres, Railway, or a
- * local server during development. Set DATABASE_URL to a *pooled* connection
- * string: serverless invocations are short-lived and each one would otherwise
- * hold a direct connection open.
+ * local server during development. Connecting one through Vercel's marketplace
+ * is enough: see connectionString() for the variable names that are accepted.
+ * Prefer a *pooled* string, since serverless invocations are short-lived and
+ * each one would otherwise hold a direct connection open.
  *
  * Money is stored as an integer number of paise. Floating point rupees drift
  * once you start summing line items, and this table is the order record.
@@ -63,13 +64,42 @@ const SCHEMA = `
 `;
 
 /**
+ * The connection string, under whichever name the provider used.
+ *
+ * Connecting a database through Vercel's marketplace injects the variables
+ * itself, and the name depends on the provider: Neon and Vercel Postgres set
+ * POSTGRES_URL, Supabase sets POSTGRES_URL too, others set DATABASE_URL.
+ * Accepting all of them means connecting a database is enough on its own —
+ * nobody has to notice the name and copy it into a second variable.
+ *
+ * Pooled names come first: serverless invocations are short-lived and would
+ * otherwise exhaust a direct connection limit.
+ */
+const URL_VARS = [
+  'DATABASE_URL',
+  'POSTGRES_URL',
+  'POSTGRES_PRISMA_URL',
+  'DATABASE_POSTGRES_URL',
+  'POSTGRES_URL_NON_POOLING',
+  'DATABASE_URL_UNPOOLED'
+];
+
+function connectionString() {
+  for (const name of URL_VARS) {
+    const value = process.env[name];
+    if (value && value.trim()) return value.trim();
+  }
+  return '';
+}
+
+/**
  * One pool per warm container. Vercel may reuse a container across
  * invocations, so caching on globalThis avoids opening a new pool each time.
  */
 function pool() {
-  const url = process.env.DATABASE_URL;
+  const url = connectionString();
   if (!url) {
-    const err = new Error('DATABASE_URL is not set. See docs/ADMIN-SETUP.md.');
+    const err = new Error('No database is connected. See docs/ADMIN-SETUP.md.');
     err.statusCode = 503;
     err.code = 'NO_DATABASE';
     throw err;
@@ -126,4 +156,4 @@ async function query(text, params) {
   return pool().query(text, params);
 }
 
-module.exports = { query, ready, pool, SEED_PRODUCTS };
+module.exports = { query, ready, pool, connectionString, SEED_PRODUCTS };

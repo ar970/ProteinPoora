@@ -485,27 +485,54 @@
 
   /* --- boot ------------------------------------------------------------- */
 
-  api('/api/admin')
-    .then(function (data) {
-      var missing = [];
-      if (!data.database) missing.push('a database (DATABASE_URL)');
-      if (!data.configured) missing.push('sign-in details (ADMIN_USERNAME and ADMIN_PASSWORD)');
+  /** Marks one setup step done or outstanding. */
+  function markStep(name, done) {
+    var step = document.querySelector('.step[data-step="' + name + '"]');
+    if (!step) return;
+    step.classList.toggle('is-done', done);
+    var state = step.querySelector('[data-state]');
+    state.textContent = done ? 'Done' : 'Not yet';
+  }
 
-      if (missing.length) {
-        showLogin(
-          'Setup is not finished. This project still needs ' + missing.join(' and ') +
-          ' in its Vercel environment variables, then a redeploy. Until then no pre-order can be placed. ' +
-          'The steps are in docs/ADMIN-SETUP.md in the repository.',
-          'warn'
-        );
-        // Nothing here can work yet; offering the form only invites confusion.
-        if (!data.configured) $('login-form').hidden = true;
-        return;
-      }
-      if (data.authenticated) showDash(data.username);
-      else showLogin();
-    })
-    .catch(function () {
-      showLogin('Could not reach the server. Please refresh.', 'error');
+  function showSetup(data) {
+    $('setup').hidden = false;
+    loginCard.hidden = true;
+    dash.hidden = true;
+    whoami.hidden = true;
+    markStep('database', Boolean(data.database));
+    markStep('credentials', Boolean(data.configured));
+  }
+
+  function boot() {
+    return api('/api/admin')
+      .then(function (data) {
+        // Both halves have to be in place: without a database there is nothing
+        // to read or write, and without credentials no sign-in can succeed.
+        if (!data.database || !data.configured) {
+          showSetup(data);
+          return false;
+        }
+        $('setup').hidden = true;
+        if (data.authenticated) showDash(data.username);
+        else showLogin();
+        return true;
+      })
+      .catch(function () {
+        $('setup').hidden = true;
+        showLogin('Could not reach the server. Please refresh.', 'error');
+        return false;
+      });
+  }
+
+  $('recheck').addEventListener('click', function () {
+    var btn = $('recheck');
+    btn.disabled = true;
+    btn.textContent = 'Checking…';
+    boot().then(function (ready) {
+      btn.disabled = false;
+      btn.textContent = ready ? 'Check again' : 'Still not ready — check again';
     });
+  });
+
+  boot();
 })();

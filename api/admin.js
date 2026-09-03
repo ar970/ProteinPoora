@@ -9,6 +9,7 @@
  */
 
 const auth = require('./_lib/auth.js');
+const db = require('./_lib/db.js');
 const { readJson, send, fail, guard, onError, badRequest } = require('./_lib/http.js');
 
 // Throttling lives in the container's memory, so it slows an attacker down
@@ -54,7 +55,7 @@ module.exports = async function handler(req, res) {
         configured,
         // The panel is the place the setup is explained, so it needs to know
         // about the database too — not just about the credentials.
-        database: Boolean(process.env.DATABASE_URL),
+        database: Boolean(db.connectionString()),
         authenticated: Boolean(s),
         username: s ? s.username : null
       });

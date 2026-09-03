@@ -29,7 +29,13 @@ route is Vercel's own marketplace:
 2. Choose **Neon** (Postgres). The free tier is far more than this needs.
 3. Connect it to the project. Vercel injects `DATABASE_URL` automatically.
 
-If you set it up somewhere else, add `DATABASE_URL` by hand under
+There is nothing to copy or paste: Vercel injects the connection details
+itself. The variable it uses depends on the provider — Neon and Vercel Postgres
+set `POSTGRES_URL`, others set `DATABASE_URL` — and the code accepts any of
+`DATABASE_URL`, `POSTGRES_URL`, `POSTGRES_PRISMA_URL`, `DATABASE_POSTGRES_URL`,
+`POSTGRES_URL_NON_POOLING` and `DATABASE_URL_UNPOOLED`, preferring a pooled one.
+
+If you set the database up somewhere else, add `DATABASE_URL` by hand under
 **Settings → Environment Variables**, and use the **pooled** connection string
 — the one with `-pooler` in the host. Serverless functions open and drop
 connections constantly and a direct string will run out of them.
@@ -46,7 +52,10 @@ inserted at their present prices. Nothing to run by hand.
 | `ADMIN_USERNAME` | `archit` |
 | `ADMIN_PASSWORD` | the password you chose |
 
-Then **redeploy** — environment variables are read at deploy time.
+Then **redeploy**. Environment variables are only picked up by a *new*
+deployment, so adding them to an existing project changes nothing until you
+open **Deployments** and choose **Redeploy** on the most recent one. `/admin`
+shows a live checklist of which of the two steps are still outstanding.
 
 The password is deliberately not written down here. This file is in the public
 repository too, so printing it would leak it just as surely as putting it in the

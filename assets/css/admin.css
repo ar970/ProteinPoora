@@ -466,3 +466,129 @@ tr.detail > td {
     font-size: 1rem;
   }
 }
+
+/* --- Setup checklist ----------------------------------------------------- */
+.setup {
+  max-width: 640px;
+  margin: clamp(1.5rem, 6vh, 3rem) auto 0;
+}
+
+.steps {
+  display: grid;
+  gap: 1rem;
+  margin: 0 0 1.25rem;
+  padding: 0;
+  list-style: none;
+  counter-reset: none;
+}
+
+.step {
+  padding: 1rem 1.15rem;
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--pending);
+  border-radius: 12px;
+  background: var(--paper);
+}
+
+.step.is-done {
+  border-left-color: var(--shipped);
+  background: #F6FBF9;
+}
+
+.step__head {
+  display: flex;
+  gap: 0.65rem;
+  align-items: center;
+}
+
+.step__num {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: var(--cream);
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+
+.step.is-done .step__num {
+  background: var(--shipped);
+}
+
+.step__title {
+  flex: 1;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.0625rem;
+  font-weight: 700;
+}
+
+.step__state {
+  flex: none;
+  padding: 0.15rem 0.6rem;
+  border-radius: var(--radius-pill);
+  background: var(--pending);
+  color: #fff;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.step.is-done .step__state {
+  background: var(--shipped);
+}
+
+.step__body {
+  margin-top: 0.6rem;
+  padding-left: calc(26px + 0.65rem);
+  color: var(--text);
+  font-size: 0.9375rem;
+}
+
+.step__body p {
+  margin: 0 0 0.6rem;
+}
+
+.step__body p:last-child {
+  margin-bottom: 0;
+}
+
+.step__path {
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  background: var(--tile);
+  color: var(--navy-ink);
+}
+
+.step.is-done .step__body {
+  display: none;
+}
+
+.vars {
+  width: 100%;
+  margin: 0 0 0.6rem;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.vars td {
+  padding: 0.35rem 0.5rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.vars td:first-child {
+  width: 1%;
+  white-space: nowrap;
+}
+
+.vars code {
+  padding: 0.1rem 0.35rem;
+  border-radius: 5px;
+  background: var(--tile);
+  color: var(--navy-ink);
+  font-size: 0.8125rem;
+}
