@@ -54,21 +54,25 @@ Clicking a thumbnail swaps the main image; clicking the main image opens it full
 
 ## Packs that tear open
 
-Hovering a line-up card rips the top off the pouch and throws the snack out of it. Each pack spills its own contents — bhujia strands, chilli slices, cheese cubes, peanuts.
+Hovering a line-up card rips the top off the pouch, heaps the snack up in the opening and throws the rest of it into the air. Each pack spills its own contents — bhujia strands, mint bhujia, chakli, cheddar, peanuts.
 
 The pack is not a second photograph. `assets/js/tear.js` clones the card's existing `<img>` twice and clips the copies along the same ragged line, one keeping what is above it and one what is below, so they fit together invisibly and come apart when torn. Cloning costs no download. Nothing is built until a card is first hovered, so a visitor who never hovers never fetches a piece; once the pack closes again the halves come back out of the page and the original `<img>` goes back in, leaving the card exactly as it shipped.
+
+The snack is in two layers. The heap sits *behind* the front of the pack, so the torn edge cuts across it and the pouch reads as full rather than as having a hole in it; the thrown pieces sit in front. Both are drawn from the same handful of cut-outs, reused turned over and at other angles.
+
+**A piece is never displayed larger than it was cut.** That single rule is what keeps the burst sharp — the first version enlarged 60px crumbs to 120px and went soft — so `.bit img` takes its width from the file, and the per-piece `--s` never exceeds 1.
 
 The card is tagged in `index.html`:
 
 ```html
-<div class="product-card__media" data-tear="masala-bhujia" data-bits="6">
+<div class="product-card__media" data-tear="masala-bhujia" data-bits="7">
 ```
 
-`data-tear` is the slug, and the pieces are `assets/img/bits/<slug>-1.webp` … `-<data-bits>.webp`. To add a pack, add cut-outs under that naming and tag its media box.
+`data-tear` is the slug and `data-bits` is how many cut-outs that pack has: `assets/img/bits/<slug>-1.webp` … `-<data-bits>.webp`. To add a pack, add cut-outs under that naming and tag its media box.
 
 Where there is no hover (a phone), each pack tears open once, the first time it is scrolled to, and closes itself after two seconds. Under `prefers-reduced-motion: reduce` nothing is built at all.
 
-To cut pieces from a new photo, add a source and its boxes to `scripts/extract-pieces.py` and run it — it keys each box against its own local background and keeps the largest blob, so give it a box with a margin of background around the piece.
+To cut pieces from a new photo, add a source and its boxes to `scripts/extract-pieces.py` and run it with `--sheet` to get a contact sheet of what came out. Cut from the **lifestyle photo**, not the pack artwork: a strand lying loose on the table is photographed several times larger there. Give each box a margin of background around the piece, and say which side of the ground the food sits on — without that, the shadow is keyed along with the piece.
 
 ## Pre-orders and the admin panel
 

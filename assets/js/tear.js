@@ -32,9 +32,11 @@
 
   if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-  var PIECES = 6;          // default; a card may declare fewer
+  var CUTOUTS = 6;         // distinct pieces a pack has, unless it says otherwise
+  var BURST = 16;          // how many are actually thrown
+  var MOUND = 9;           // and how many make the heap in the mouth
   var OPEN_MS = 2000;      // how long the touch version stays open
-  var SETTLE_MS = 900;     // longest piece transition plus its delay
+  var SETTLE_MS = 1000;    // longest piece transition plus its delay
 
   /* A tiny deterministic generator, so a given card scatters its pieces the
      same way on every visit rather than reshuffling on each hover. */
@@ -56,7 +58,7 @@
     if (box.__stage) return true;
 
     var slug = box.getAttribute('data-tear');
-    var count = parseInt(box.getAttribute('data-bits'), 10) || PIECES;
+    var cutouts = parseInt(box.getAttribute('data-bits'), 10) || CUTOUTS;
     var pack = box.querySelector('img');
     if (!slug || !pack) return false;
 
@@ -68,34 +70,28 @@
     inside.className = 'tear__inside';
     stage.appendChild(inside);
 
-    // The pieces sit between the two halves of the pack, so they read as
-    // coming out of the opening rather than floating in front of it.
-    var bits = document.createElement('span');
-    bits.className = 'tear__bits';
     var rand = seeded(hash(slug));
+    var file = 0;
 
-    for (var i = 0; i < count; i += 1) {
+    function piece(x, y, rot, scale, delay, flip) {
       var bit = document.createElement('span');
       bit.className = 'bit';
-
-      // Fan out and up from the tear, wider and higher towards the middle of
-      // the burst so it looks thrown rather than evenly placed.
-      var t = (i + 0.5) / count;
-      var spread = (t - 0.5) * 2;                    // -1 … 1
-      var x = spread * (22 + rand() * 14);           // % of the card
-      var y = -(7 + Math.cos(spread * 1.4) * 14 + rand() * 8);
-      var rot = spread * 90 + (rand() * 60 - 30);
-      var scale = 0.8 + rand() * 0.5;
-      var delay = Math.round(rand() * 130);
-
       bit.style.setProperty('--x', x.toFixed(1) + '%');
       bit.style.setProperty('--y', y.toFixed(1) + '%');
       bit.style.setProperty('--r', rot.toFixed(0) + 'deg');
+      // Never above 1: a piece is displayed at the size it was cut, and
+      // enlarging it is what made the first version of this look soft.
       bit.style.setProperty('--s', scale.toFixed(2));
+      bit.style.setProperty('--f', flip ? '-1' : '1');
       bit.style.setProperty('--d', delay + 'ms');
 
       var img = document.createElement('img');
-      img.src = '/assets/img/bits/' + slug + '-' + (i + 1) + '.webp';
+      // More pieces are used than there are cut-outs, so the same strand comes
+      // back turned over and at another angle -- which is what a photograph of
+      // a pack being emptied actually looks like. The browser downloads each
+      // file once however many times it appears.
+      file += 1;
+      img.src = '/assets/img/bits/' + slug + '-' + (file % cutouts + 1) + '.webp';
       img.alt = '';
       img.decoding = 'async';
       // Belt and braces: if a file is ever missing, its piece removes itself
@@ -104,7 +100,39 @@
         if (this.parentNode) this.parentNode.remove();
       });
       bit.appendChild(img);
-      bits.appendChild(bit);
+      return bit;
+    }
+
+    /* The heap in the mouth of the pouch. It goes behind the front of the
+       pack, so the pack's own torn edge cuts across it and only what stands
+       proud of the tear shows -- the pack reads as full rather than as having
+       a hole cut in it. */
+    var heap = document.createElement('span');
+    heap.className = 'tear__bits tear__bits--heap';
+    for (var m = 0; m < MOUND; m += 1) {
+      var mt = (m + 0.5) / MOUND;
+      var mx = (mt - 0.5) * 2 * (16 + rand() * 8);
+      // Highest through the middle of the heap, as a poured pile is.
+      var my = -(Math.cos((mt - 0.5) * 3.1) * 4.5 + rand() * 2.5);
+      heap.appendChild(piece(mx, my, rand() * 200 - 100, 0.72 + rand() * 0.28,
+                             Math.round(rand() * 90), m % 2));
+    }
+    stage.appendChild(heap);
+
+    // ... and the pieces thrown clear of it, in front of the pack.
+    var bits = document.createElement('span');
+    bits.className = 'tear__bits';
+    for (var i = 0; i < BURST; i += 1) {
+      // Fan up and out from the tear, highest through the middle and thrown
+      // wide at the edges, with every other one left tumbling near the mouth
+      // so the pack reads as spilling rather than as firing.
+      var t = (i + 0.5) / BURST;
+      var spread = (t - 0.5) * 2;                    // -1 … 1
+      var reach = i % 2 ? 0.4 : 1;
+      var x = spread * (20 + rand() * 14) * reach;   // % of the card
+      var y = -(6 + Math.cos(spread * 1.5) * 18 + rand() * 8) * reach;
+      bits.appendChild(piece(x, y, spread * 120 + (rand() * 90 - 45),
+                             0.6 + rand() * 0.4, Math.round(rand() * 220), i % 2));
     }
     stage.appendChild(bits);   // the halves are inserted ahead of this
 

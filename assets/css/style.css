@@ -2726,44 +2726,53 @@ button {
    not through the middle of the label. */
 .tear__body {
   clip-path: polygon(
-    0 16%, 6% 19.4%, 12% 13.8%, 19% 18.6%, 26% 13.2%, 33% 18%, 40% 14%,
-    47% 19.2%, 54% 14.6%, 61% 18.8%, 68% 13.4%, 75% 18.2%, 82% 13.9%, 89% 19%,
-    95% 14.2%, 100% 16.4%, 100% 100%, 0 100%
+    0 15.8%, 5% 18.9%, 9% 13.6%, 15% 17.4%, 21% 12.9%, 25% 16.2%, 31% 19.1%,
+    36% 14.2%, 43% 18.4%, 48% 13.1%, 53% 17.8%, 58% 15.2%, 64% 19.4%, 70% 13.8%,
+    74% 16.9%, 80% 12.7%, 86% 18.2%, 91% 14.6%, 96% 17.4%, 100% 15.1%,
+    100% 100%, 0 100%
   );
 }
 
 .tear__lid {
   clip-path: polygon(
-    0 0, 100% 0, 100% 16.4%, 95% 14.2%, 89% 19%, 82% 13.9%, 75% 18.2%, 68% 13.4%,
-    61% 18.8%, 54% 14.6%, 47% 19.2%, 40% 14%, 33% 18%, 26% 13.2%, 19% 18.6%,
-    12% 13.8%, 6% 19.4%, 0 16%
+    0 0, 100% 0,
+    100% 15.1%, 96% 17.4%, 91% 14.6%, 86% 18.2%, 80% 12.7%, 74% 16.9%,
+    70% 13.8%, 64% 19.4%, 58% 15.2%, 53% 17.8%, 48% 13.1%, 43% 18.4%,
+    36% 14.2%, 31% 19.1%, 25% 16.2%, 21% 12.9%, 15% 17.4%, 9% 13.6%,
+    5% 18.9%, 0 15.8%
   );
-  /* Hinged on the tear itself, so the flap peels rather than flies. */
+  /* Hinged on the tear itself, so the flap peels rather than flies. It goes
+     with it: what the pack photography shows is an open pouch spilling, not a
+     lid hanging in the air beside one. */
   transform-origin: 16% 16%;
-  transition: transform 460ms var(--ease-spring), opacity 460ms var(--ease);
+  transition: transform 520ms var(--ease-spring), opacity 420ms var(--ease) 120ms;
   z-index: 2;
 }
 
 .is-torn .tear__lid {
-  transform: translate(-2%, -5%) rotate(-13deg);
+  transform: translate(-4%, -11%) rotate(-9deg);
+  opacity: 0;
 }
 
-/* The dark inside of the pouch, uncovered as the lid comes away. */
+/* The back wall of the pouch, uncovered as the lid comes away. It has to span
+   the whole width of the pack: anything narrower and the page's navy shows
+   through the opening, which reads as a hole cut in the pack rather than as a
+   pack that has been torn open. */
 .tear__inside {
   position: absolute;
-  left: 27%;
-  right: 27%;
-  top: 12.5%;
-  height: 4.4%;
-  border-radius: 46% 46% 34% 34% / 84% 84% 26% 26%;
-  background: linear-gradient(#3A2614 0%, #55381E 60%, #7A5730 100%);
-  filter: blur(0.4px);
+  left: 21%;
+  right: 21%;
+  top: 10.5%;
+  height: 9.5%;
+  border-radius: 30% 30% 22% 22% / 52% 52% 16% 16%;
+  background: linear-gradient(#2E1D0D 0%, #4A2F17 48%, #7A5730 100%);
+  filter: blur(0.5px);
   opacity: 0;
   transition: opacity 260ms var(--ease) 60ms;
 }
 
 .is-torn .tear__inside {
-  opacity: 0.92;
+  opacity: 0.94;
 }
 
 /* --- The snack coming out -------------------------------------------------
@@ -2777,6 +2786,17 @@ button {
   pointer-events: none;
 }
 
+/* The heap in the mouth sits behind the front of the pack, so the torn edge
+   cuts across it and the pouch reads as full. It is inside the bag, so it is
+   lit a shade down from the pieces out in the open. */
+.tear__bits--heap {
+  z-index: 0;
+}
+
+.product-card__media .tear__bits--heap .bit img {
+  filter: brightness(0.88) drop-shadow(0 2px 3px rgba(8, 16, 48, 0.5));
+}
+
 .bit {
   position: absolute;
   inset: 0;
@@ -2788,24 +2808,30 @@ button {
   transform: translate(var(--x), var(--y));
 }
 
-.bit img {
+/* A piece is drawn at the size it was cut from the photograph and never
+   larger -- blowing a 60px crumb up to 120px is what made the first version of
+   this look soft -- so width and height are the file's own, against the
+   `width: 100%` the card gives the pack it is sitting inside. These selectors
+   carry the card so they outrank that rule and the hover scale with it. */
+.product-card__media .bit img {
   position: absolute;
   left: 50%;
   top: 15%;
-  width: 30%;
+  width: auto;
   height: auto;
+  max-width: none;
   opacity: 0;
-  transform: translate(-50%, -50%) rotate(0deg) scale(0.35);
+  transform: translate(-50%, -50%) rotate(0deg) scale(0.3);
   transform-origin: 50% 50%;
-  filter: drop-shadow(0 4px 6px rgba(12, 20, 60, 0.35));
+  filter: drop-shadow(0 4px 7px rgba(8, 16, 48, 0.45));
   transition:
-    transform 680ms var(--ease-spring) var(--d),
-    opacity 240ms var(--ease) var(--d);
+    transform 700ms var(--ease-spring) var(--d),
+    opacity 220ms var(--ease) var(--d);
 }
 
-.is-torn .bit img {
+.product-card__media.is-torn .bit img {
   opacity: 1;
-  transform: translate(-50%, -50%) rotate(var(--r)) scale(var(--s));
+  transform: translate(-50%, -50%) rotate(var(--r)) scale(calc(var(--s) * var(--f)), var(--s));
 }
 
 /* The pack normally grows a little on hover. With the tear running, that would
