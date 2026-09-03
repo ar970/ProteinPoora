@@ -518,9 +518,8 @@
       box.appendChild(el('p', 'diag__h', 'A database is configured, but connecting to it failed.'));
       if (d.host) box.appendChild(el('p', null, 'Host: ' + d.host));
       if (d.message) box.appendChild(el('p', 'diag__msg', d.message));
-      box.appendChild(el('p', null,
-        'Usually the password in the connection string, or a direct (non-pooled) host. ' +
-        'In Supabase use the Connection Pooling string, port 6543.'));
+      box.appendChild(el('p', 'diag__fix', d.hint ||
+        'Check the connection string in Vercel, then redeploy.'));
       return;
     }
 

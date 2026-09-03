@@ -647,3 +647,11 @@ tr.detail > td {
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 0.8125rem;
 }
+
+/* The actionable half of a diagnosis, set apart from the driver's own words. */
+.diag__fix {
+  padding: 0.5rem 0.7rem;
+  border-left: 3px solid var(--confirmed);
+  background: var(--paper);
+  color: var(--navy-ink);
+}

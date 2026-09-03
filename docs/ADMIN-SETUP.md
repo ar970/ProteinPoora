@@ -38,10 +38,30 @@ host/user/password/database variables if a provider injects those instead.
 
 **Connecting a database in the Supabase or Neon dashboard is not enough.** The
 connection has to reach *this Vercel project*. Either connect it through
-Vercel's Storage tab, or copy the **pooled** connection string (the one with
-`pooler` in the host, port 6543 on Supabase) into **Settings → Environment
-Variables** as `DATABASE_URL`. A direct, non-pooled string will run out of
-connections, because serverless functions open and drop them constantly.
+Vercel's Storage tab, or paste a connection string into **Settings →
+Environment Variables** as `DATABASE_URL`.
+
+### Supabase: it must be the pooler string
+
+Supabase gives two connection strings and only one of them works here.
+
+| | Host | Works on Vercel? |
+| --- | --- | --- |
+| Direct | `db.<ref>.supabase.co` | **No** |
+| Transaction pooler | `aws-0-<region>.pooler.supabase.com`, port 6543 | Yes |
+
+The direct host resolves over IPv6 only on projects created since early 2024,
+and Vercel's functions have no IPv6 egress — so it fails with
+`getaddrinfo ENOTFOUND` even though the string is perfectly correct. It is also
+the wrong shape for serverless regardless: functions open and drop connections
+constantly and would exhaust a direct connection limit.
+
+In Supabase: **Connect → Connection pooling → Transaction pooler**, and copy
+that URI. Note the username is `postgres.<project-ref>`, not `postgres`, and
+you have to substitute your real password for `[YOUR-PASSWORD]`.
+
+`/admin` recognises this specific failure and says so, rather than leaving you
+to guess from a DNS error.
 
 If it still says no database, `/admin` shows what the server can actually see:
 the names of every database-related variable in the deployment, or the real

@@ -216,8 +216,56 @@ async function diagnose() {
     await pool().query('SELECT 1');
     return { ok: true, host: hostOf(url) };
   } catch (err) {
-    return { ok: false, reason: 'failed', host: hostOf(url), message: scrub(err.message) };
+    const host = hostOf(url);
+    return {
+      ok: false,
+      reason: 'failed',
+      host,
+      message: scrub(err.message),
+      hint: explain(host, err)
+    };
   }
+}
+
+/**
+ * Turn a driver error into the thing to actually go and do.
+ *
+ * The first case is the one that catches people out: Supabase's *direct*
+ * host, db.<ref>.supabase.co, resolves only over IPv6 on projects created
+ * since early 2024, and Vercel's functions have no IPv6 egress. It looks like
+ * a broken hostname but the connection details are perfectly correct — the
+ * fix is to use the pooler host instead, which is reachable over IPv4.
+ */
+function explain(host, err) {
+  const code = err && err.code;
+  const message = String((err && err.message) || '');
+  // host carries the port for display; match on the name alone.
+  const name = String(host || '').replace(/:\d+$/, '');
+
+  if (/^db\.[^.]+\.supabase\.co$/i.test(name) &&
+      (code === 'ENOTFOUND' || code === 'ENETUNREACH' || code === 'EHOSTUNREACH')) {
+    return 'This is Supabase\u2019s direct connection host, which only answers over IPv6 — ' +
+      'and Vercel functions cannot reach IPv6. Use the pooled string instead: in Supabase open ' +
+      'Connect \u2192 Connection pooling and copy the Transaction pooler URI. Its host looks like ' +
+      'aws-0-<region>.pooler.supabase.com on port 6543, and its username is postgres.<project-ref>. ' +
+      'Put that in DATABASE_URL and redeploy.';
+  }
+  if (/password authentication failed/i.test(message) || code === '28P01') {
+    return 'The host answered but rejected the password. Copy the connection string again from your ' +
+      'database provider — if it contains [YOUR-PASSWORD] you need to substitute the real one.';
+  }
+  if (code === 'ENOTFOUND') {
+    return 'That hostname does not resolve. Check the connection string was copied whole, with no ' +
+      'line break in the middle.';
+  }
+  if (code === 'ETIMEDOUT' || code === 'ECONNREFUSED') {
+    return 'The host did not accept the connection. If your provider has network restrictions, ' +
+      'it needs to allow connections from anywhere, since Vercel functions have no fixed IP.';
+  }
+  if (/self.signed|certificate/i.test(message)) {
+    return 'A TLS problem. The connection string may need ?sslmode=require on the end.';
+  }
+  return '';
 }
 
 /** Host only — the rest of the string carries the password. */
