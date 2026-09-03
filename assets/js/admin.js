@@ -85,6 +85,7 @@
     dash.hidden = true;
     whoami.hidden = true;
     loginCard.hidden = false;
+    $('login-hint').hidden = !status.defaultPassword;
     if (message) note($('login-msg'), message, tone || 'error');
     var user = $('username');
     if (user) user.focus();
@@ -112,7 +113,7 @@
       body: {
         action: 'login',
         username: $('username').value.trim(),
-        password: $('password').value
+        password: $('password').value.trim()
       }
     })
       .then(function (data) {

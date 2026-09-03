@@ -509,3 +509,58 @@ tr.detail > td {
   color: var(--navy-ink);
   font-size: 0.9375rem;
 }
+
+/* --- Sign-in hint, shown only while the built-in password is in use ------- */
+.hint {
+  margin: 0 0 1.25rem;
+  padding: 0.9rem 1rem;
+  border: 1px dashed var(--line);
+  border-radius: 10px;
+  background: var(--cream-soft);
+}
+
+.hint__title {
+  margin: 0 0 0.5rem;
+  color: var(--navy-ink);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.hint__creds {
+  margin: 0 0 0.6rem;
+  border-collapse: collapse;
+  font-size: 0.9375rem;
+}
+
+.hint__creds td {
+  padding: 0.15rem 0.75rem 0.15rem 0;
+  color: var(--text);
+}
+
+.hint__creds td:last-child {
+  padding-right: 0;
+}
+
+.hint__creds code,
+.hint__note code {
+  padding: 0.1rem 0.4rem;
+  border-radius: 5px;
+  background: var(--paper);
+  color: var(--navy-ink);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  user-select: all;
+}
+
+.hint__note {
+  margin: 0;
+  color: var(--text);
+  font-size: 0.8125rem;
+}
+
+.hint__note code {
+  font-size: 0.75rem;
+  font-weight: 400;
+}

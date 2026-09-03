@@ -10,8 +10,8 @@
   <link rel="icon" href="/assets/img/favicon-32.png" sizes="32x32">
   <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
   <link rel="stylesheet" href="/assets/css/fonts.css?v=3">
-  <link rel="stylesheet" href="/assets/css/style.css?v=20">
-  <link rel="stylesheet" href="/assets/css/admin.css?v=20">
+  <link rel="stylesheet" href="/assets/css/style.css?v=21">
+  <link rel="stylesheet" href="/assets/css/admin.css?v=21">
   <script>document.documentElement.classList.replace('no-js', 'js');</script>
 </head>
 <body>
@@ -34,6 +34,20 @@
       <h1 class="h" id="login-title">Sign in</h1>
       <p class="sub">Pre-orders, and who placed them. This panel holds customer names, phone numbers and addresses, so do not sign in on a shared computer.</p>
       <p class="msg" id="login-msg" role="status" aria-live="polite"></p>
+
+      <!-- Only while the built-in password is in use. The moment ADMIN_PASSWORD
+           is set in Vercel this disappears, because there is nothing to show. -->
+      <div class="hint" id="login-hint" hidden>
+        <p class="hint__title">Sign in with</p>
+        <table class="hint__creds">
+          <tbody>
+            <tr><td>Username</td><td><code>archit</code></td></tr>
+            <tr><td>Password</td><td><code>proteinpoora123</code></td></tr>
+          </tbody>
+        </table>
+        <p class="hint__note">Type it exactly — no space before or after. These are the built-in details, readable by anyone; setting <code>ADMIN_PASSWORD</code> in Vercel replaces them and removes this box.</p>
+      </div>
+
       <form id="login-form" novalidate>
         <div class="field">
           <label class="field__label" for="username">Username</label>
@@ -189,6 +203,6 @@
     </div>
   </main>
 
-  <script src="/assets/js/admin.js?v=20" defer></script>
+  <script src="/assets/js/admin.js?v=21" defer></script>
 </body>
 </html>
