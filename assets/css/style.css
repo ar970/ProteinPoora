@@ -1900,6 +1900,73 @@ button {
   height: 20px;
 }
 
+/* --- Section: our story ------------------------------------------------- */
+.story-section {
+  padding-bottom: 1rem;
+}
+
+.story {
+  display: grid;
+  gap: 1.75rem;
+  align-items: center;
+}
+
+@media (min-width: 900px) {
+  .story {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.85fr);
+    gap: 3.5rem;
+  }
+}
+
+/* The eyebrow is cream-on-navy in the hero; here it is on the page ground. */
+.story__eyebrow {
+  margin-bottom: 0.6rem;
+  color: var(--orange);
+}
+
+.story__copy p {
+  max-width: 54ch;
+  color: var(--text);
+  font-size: 1.0625rem;
+  line-height: 1.65;
+}
+
+.story__copy .section__title {
+  margin-bottom: 1.1rem;
+}
+
+/* The line the section is really about, set apart from the telling of it. */
+.story__note {
+  margin-top: 1.4rem;
+  padding-top: 1.1rem;
+  border-top: 2px solid var(--line);
+  color: var(--navy-ink);
+  font-weight: 500;
+}
+
+.story__note b {
+  font-family: var(--font-display);
+  font-weight: 800;
+}
+
+.story__figure {
+  margin: 0;
+  order: -1;              /* the picture leads on a phone, the words on a desktop */
+}
+
+@media (min-width: 900px) {
+  .story__figure {
+    order: 0;
+  }
+}
+
+.story__figure img {
+  width: 100%;
+  height: auto;
+  border-radius: 20px;
+  box-shadow: 0 14px 34px rgba(8, 14, 46, 0.22);
+}
+
 /* --- Section: FAQ ------------------------------------------------------- */
 
 /* The accordion is the product page's, reused. Answers are set narrow: the

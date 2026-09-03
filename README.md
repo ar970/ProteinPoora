@@ -22,7 +22,7 @@ Import the repository in Vercel. Framework preset: **Other**. Build command: non
 
 | Path | What |
 |---|---|
-| `index.html` | Homepage: ticker, header, hero, the line-up, FAQ, footer. Sections are marked with `<!-- section: … -->` comments. |
+| `index.html` | Homepage: ticker, header, hero, the line-up, our story, FAQ, footer. Sections are marked with `<!-- section: … -->` comments. |
 | `products/masala-bhujia/index.html` | Product page: gallery with lightbox, buy box, nutrition table. Served at `/products/masala-bhujia`. |
 | `assets/css/style.css` | All styles. Tokens at the top match `design-system/proteinpoora/MASTER.md`. |
 | `assets/css/fonts.css` | Self-hosted Baloo 2 and DM Sans. |
@@ -34,7 +34,7 @@ Import the repository in Vercel. Framework preset: **Other**. Build command: non
 | `assets/css/admin.css` | Admin panel styles. Loaded only by `/admin`. |
 | `assets/js/cart.js` | Cart state, header count and drawer. Loaded on every storefront page. |
 | `assets/js/preorder.js`, `assets/js/admin.js` | Page scripts for the checkout and the admin panel. |
-| `sources/open/` | Photographs of each pack torn open with its contents flying, as shot. Nothing on the site uses them yet; they are kept out of the deploy by `.vercelignore`. |
+| `sources/open/` | Photographs of each pack torn open with its contents flying, as shot. `assets/img/story-bhujia-*.webp` is resized from the masala one; the rest are unused. Kept out of the deploy by `.vercelignore`. |
 | `scripts/dev-server.js` | Local server that mounts the real API handlers. |
 | `design-system/` | Design spec: colors, type, spacing, section order, Shopify plan. |
 
@@ -50,6 +50,16 @@ Snapshots live in the gallery on the product page. To add one:
 2. In `products/masala-bhujia/index.html`, copy one of the `<li>` blocks inside `<ul class="thumbs">` and point its `data-src`, `data-srcset`, `data-large`, `data-alt` and the thumbnail `<img>` at the new files.
 
 Clicking a thumbnail swaps the main image; clicking the main image opens it full-size. Left and right arrow keys move between photos.
+
+## Our story
+
+At `#story` on the homepage, between the line-up and the FAQ — the other section the nav was linking to and did not have.
+
+It is 144 words, and that is the point of it. The brief was 18–35, so it is written the way that reader talks: one concrete image they already own (the steel dabba on the fridge), the moment it turned on them (the first gym membership, the first label read), the thing they settled for instead, and what we did about it. The claims in the third paragraph are the same ones the cards carry, so it earns the sentiment rather than only asserting it. The closing line does the brand name: पूरा means complete.
+
+Keep it short if you edit it. The section is a story, not an About page, and every sentence past this length costs a reader.
+
+The photograph is `sources/open/masala-bhujia.webp` resized. The lifestyle shots (`*-snap-1-*`) were the obvious pick but they carry marketing callouts burnt into the image, including a "21% protein per serve" that reads against the per-pack figures used everywhere else on the site.
 
 ## FAQ
 
