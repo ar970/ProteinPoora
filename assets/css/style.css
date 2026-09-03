@@ -1122,26 +1122,66 @@ button {
   list-style: none;
 }
 
-/* --- Product grid (collection / line-up) -------------------------------- */
+/* --- Shared decoration: scattered rotating brand seals ------------------ */
+.seal-field {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.seal-field__seal {
+  position: absolute;
+  top: var(--top);
+  left: var(--left);
+  width: var(--size);
+  height: var(--size);
+  background: url("../img/logo-seal-cream.png") center / contain no-repeat;
+  opacity: 0.06;
+  animation: seal-spin var(--dur, 60s) linear infinite;
+  animation-direction: var(--dir, normal);
+}
+
+/* --- Section: navy variant --------------------------------------------- */
+.section--navy {
+  position: relative;
+  isolation: isolate;
+  background: #17397A;
+}
+
+.section--navy .section__inner {
+  position: relative;
+  z-index: 1;
+}
+
+.section--navy .section__title {
+  color: var(--cream);
+}
+
+.section--navy .section__sub {
+  color: rgba(247, 233, 195, 0.75);
+}
+
+/* --- Product grid (line-up) --------------------------------------------- */
 .product-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.75rem;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.25rem;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 640px) {
   .product-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 1.25rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
 @media (min-width: 1024px) {
   .product-grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
@@ -1150,113 +1190,220 @@ button {
   display: flex;
   flex-direction: column;
   height: 100%;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  background: var(--paper);
-  overflow: hidden;
-  transition: border-color var(--t-fast) var(--ease);
+  padding: 1rem 1.15rem 1.15rem;
+  border-radius: 20px;
+  background: #F5EDDC;
+  box-shadow: 0 10px 26px rgba(8, 14, 46, 0.22);
+  transition:
+    transform 260ms var(--ease),
+    box-shadow 260ms var(--ease);
 }
 
 .product-card:hover {
-  border-color: var(--pack-blue);
+  transform: translateY(-4px);
+  box-shadow: 0 20px 44px rgba(8, 14, 46, 0.34);
 }
 
+/* Reveal on scroll, staggered by --i. */
+.product-grid > li {
+  opacity: 0;
+  transform: translateY(20px);
+  transition:
+    opacity 600ms var(--ease),
+    transform 600ms var(--ease);
+  transition-delay: calc(var(--i, 0) * 80ms);
+}
+
+.product-grid.is-in > li {
+  opacity: 1;
+  transform: none;
+}
+
+/* The pouch sits straight on the cream, no tile behind it. Sized to the
+   pouch's own aspect so it nearly reaches the card's inner edges and the
+   badge lands on its corner rather than floating beside it. */
 .product-card__media {
   position: relative;
-  display: block;
-  aspect-ratio: 1;
-  background: var(--tile);
+  width: 86%;
+  margin: 0 auto 0.9rem;
+  aspect-ratio: 0.73;
 }
 
 .product-card__media img {
   width: 100%;
   height: 100%;
-  padding: 10%;
   object-fit: contain;
+  filter: drop-shadow(0 14px 20px rgba(23, 57, 122, 0.28));
+  transition: transform 260ms var(--ease);
+}
+
+.product-card:hover .product-card__media img {
+  transform: scale(1.04);
 }
 
 .product-card__badge {
   position: absolute;
-  top: 0.5rem;
-  left: 0.5rem;
+  top: -10px;
+  right: -18px;
   z-index: 2;
-  padding: 0.25rem 0.55rem;
-  border-radius: var(--radius-pill);
-  background: var(--orange);
-  color: var(--navy-ink);
-  font-size: 0.6875rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  line-height: 1.4;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 0.05rem;
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  background: var(--accent);
 }
 
-.product-card__body {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  gap: 0.5rem;
-  padding: 0.75rem;
+.product-card__badge b {
+  color: var(--cream);
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.125rem;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.product-card__badge small {
+  color: var(--cream);
+  font-size: 0.4375rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  line-height: 1;
 }
 
 .product-card__name {
-  margin: 0;
+  margin: 0 0 0.3rem;
   color: var(--navy-ink);
-  font-family: var(--font-body);
-  font-size: 0.8125rem;
+  font-family: var(--font-display);
   font-weight: 700;
-  line-height: 1.35;
-  letter-spacing: 0.01em;
-  text-transform: uppercase;
+  font-size: 1.375rem;
+  line-height: 1.15;
 }
 
 .product-card__name a {
   text-decoration: none;
 }
 
-/* Stretch the name link over the whole card; the button sits above it */
+/* Stretches the link over the card; the button sits above it. */
 .product-card__name a::after {
   content: "";
   position: absolute;
   inset: 0;
+  border-radius: 20px;
 }
 
-.product-card__size {
-  align-self: flex-start;
-  padding: 0.2rem 0.55rem;
-  border: 1px solid var(--line);
-  border-radius: 6px;
-  color: var(--text);
-  font-size: 0.75rem;
-  line-height: 1.5;
+.product-card__desc {
+  margin: 0 0 0.9rem;
+  color: rgba(26, 36, 86, 0.7);
+  font-size: 0.9375rem;
+  line-height: 1.45;
 }
 
-.product-card__price {
+.product-card__stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 0 0 0.9rem;
+}
+
+.product-card__stats > div {
   display: flex;
-  align-items: baseline;
-  gap: 0.4rem;
-  margin: auto 0 0;
+  flex-direction: column-reverse;
+  gap: 0.15rem;
+  padding-inline: 0.5rem;
+  text-align: center;
+}
+
+.product-card__stats > div:first-child {
+  padding-left: 0;
+}
+
+.product-card__stats > div:last-child {
+  padding-right: 0;
+}
+
+.product-card__stats > div + div {
+  border-left: 1px solid rgba(26, 36, 86, 0.25);
+}
+
+.product-card__stats dd {
+  margin: 0;
   color: var(--navy-ink);
-  font-size: 1.0625rem;
   font-weight: 700;
+  font-size: 1rem;
+  line-height: 1.1;
   font-variant-numeric: tabular-nums;
 }
 
-.product-card__protein {
-  margin: 0;
-  color: var(--pack-blue);
-  font-size: 0.8125rem;
-  font-weight: 500;
+.product-card__stats dt {
+  color: rgba(26, 36, 86, 0.6);
+  font-size: 0.5625rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  line-height: 1.2;
 }
 
-.product-card__actions {
+.product-card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0 0 1rem;
+  padding: 0;
+  list-style: none;
+}
+
+.product-card__tags li {
+  padding: 0.2rem 0.6rem;
+  border: 1.5px solid rgba(26, 36, 86, 0.4);
+  border-radius: var(--radius-pill);
+  color: var(--navy-ink);
+  font-size: 0.75rem;
+  line-height: 1.4;
+}
+
+.product-card__buy {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: auto;
+}
+
+.product-card__price {
+  margin: 0;
+  color: var(--navy-ink);
+  font-weight: 700;
+  font-size: 1.375rem;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.product-card__btn {
   position: relative;
   z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 1.25rem;
+  border-radius: var(--radius-pill);
+  background: var(--navy);
+  color: var(--cream);
+  font-weight: 600;
+  font-size: 0.9375rem;
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    background-color 200ms var(--ease),
+    transform 200ms var(--ease);
 }
 
-.btn--block {
-  display: flex;
-  width: 100%;
+.product-card__btn:hover {
+  background: var(--accent);
+  transform: translateY(-2px);
 }
 
 /* --- Section: product page ---------------------------------------------- */
@@ -1845,8 +1992,31 @@ button {
   /* Hero showcase: no auto-advance, no motion. Dots switch instantly. */
   .showcase__float,
   .showcase__glow,
-  .hero-deco__seal {
+  .hero-deco__seal,
+  .seal-field__seal {
     animation: none;
+  }
+
+  /* Line-up cards: visible immediately, no lift or scale on hover. */
+  .product-grid > li {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .product-card,
+  .product-card__media img,
+  .product-card__btn {
+    transition: none;
+  }
+
+  .product-card:hover,
+  .product-card__btn:hover {
+    transform: none;
+  }
+
+  .product-card:hover .product-card__media img {
+    transform: none;
   }
 
   .hero-frame,

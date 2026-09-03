@@ -21,7 +21,7 @@
         imagesrcset="/assets/img/masala-bhujia-pack-720.webp 720w, /assets/img/masala-bhujia-pack-1054.webp 1054w"
         imagesizes="(min-width: 1024px) 520px, (min-width: 600px) 420px, 72vw">
   <link rel="stylesheet" href="/assets/css/fonts.css?v=3">
-  <link rel="stylesheet" href="/assets/css/style.css?v=11">
+  <link rel="stylesheet" href="/assets/css/style.css?v=13">
   <script>document.documentElement.classList.replace('no-js', 'js');</script>
 </head>
 <body>
@@ -206,7 +206,16 @@
     </div>
 
     <!-- section: featured-collection (the line-up) -->
-    <section class="section" id="line-up" aria-labelledby="lineup-title">
+    <section class="section section--navy" id="line-up" aria-labelledby="lineup-title">
+      <div class="seal-field" aria-hidden="true">
+        <span class="seal-field__seal" style="--size:200px; --top:-8%; --left:3%; --dur:74s; --dir:normal"></span>
+        <span class="seal-field__seal" style="--size:130px; --top:62%; --left:18%; --dur:52s; --dir:reverse"></span>
+        <span class="seal-field__seal" style="--size:170px; --top:-6%; --left:44%; --dur:88s; --dir:normal"></span>
+        <span class="seal-field__seal" style="--size:110px; --top:70%; --left:58%; --dur:45s; --dir:reverse"></span>
+        <span class="seal-field__seal" style="--size:210px; --top:8%; --left:88%; --dur:66s; --dir:normal"></span>
+        <span class="seal-field__seal" style="--size:140px; --top:66%; --left:94%; --dur:58s; --dir:reverse"></span>
+      </div>
+
       <div class="section__inner">
         <div class="section__head">
           <div>
@@ -215,109 +224,144 @@
           </div>
         </div>
 
-        <ul class="product-grid">
-          <li>
-            <article class="product-card">
-              <span class="product-card__badge">First batch</span>
+        <ul class="product-grid" data-reveal-grid>
+          <li style="--i: 0">
+            <article class="product-card" style="--accent: #E8862E">
               <div class="product-card__media">
                 <img src="/assets/img/masala-bhujia-pack-720.webp"
                      srcset="/assets/img/masala-bhujia-pack-720.webp 720w, /assets/img/masala-bhujia-pack-1054.webp 1054w"
-                     sizes="(min-width: 1024px) 280px, (min-width: 768px) 30vw, 46vw"
+                     sizes="(min-width: 1024px) 340px, (min-width: 640px) 44vw, 88vw"
                      width="720" height="981"
-                     alt=""
+                     alt="Masala Bhujia pack: a kraft pouch with a cream label."
                      loading="lazy" decoding="async">
+                <span class="product-card__badge" aria-hidden="true"><b>14g</b><small>Per pack</small></span>
               </div>
-              <div class="product-card__body">
-                <h3 class="product-card__name"><a href="/products/masala-bhujia">Masala Bhujia | 14 g protein per pack</a></h3>
-                <p class="product-card__size">60 g</p>
+              <h3 class="product-card__name"><a href="/products/masala-bhujia">Masala Bhujia</a></h3>
+              <p class="product-card__desc">The everyday bhujia, baked and loaded with protein.</p>
+              <dl class="product-card__stats">
+                <div><dt>Protein</dt><dd>14 g</dd></div>
+                <div><dt>Pack size</dt><dd>60 g</dd></div>
+                <div><dt>Calories</dt><dd>280</dd></div>
+              </dl>
+              <ul class="product-card__tags">
+                <li>Baked, not fried</li>
+                <li>100% veg</li>
+              </ul>
+              <div class="product-card__buy">
                 <p class="product-card__price">₹99</p>
-                <div class="product-card__actions">
-                  <a class="btn btn--navy btn--sm btn--block" href="/products/masala-bhujia">Pre-order</a>
-                </div>
+                <a class="product-card__btn" href="/products/masala-bhujia">Pre-order</a>
               </div>
             </article>
           </li>
-          <li>
-            <article class="product-card">
-              <span class="product-card__badge">First batch</span>
+          <li style="--i: 1">
+            <article class="product-card" style="--accent: #E0A82E">
               <div class="product-card__media">
                 <img src="/assets/img/pudina-bhujia-pack-720.webp"
                      srcset="/assets/img/pudina-bhujia-pack-720.webp 720w, /assets/img/pudina-bhujia-pack-1066.webp 1066w"
-                     sizes="(min-width: 1024px) 280px, (min-width: 768px) 30vw, 46vw"
+                     sizes="(min-width: 1024px) 340px, (min-width: 640px) 44vw, 88vw"
                      width="720" height="970"
-                     alt=""
+                     alt="Pudina Bhujia pack: a kraft pouch with a mint green label."
                      loading="lazy" decoding="async">
+                <span class="product-card__badge" aria-hidden="true"><b>14g</b><small>Per pack</small></span>
               </div>
-              <div class="product-card__body">
-                <h3 class="product-card__name"><a href="/products/pudina-bhujia">Pudina Bhujia | 14 g protein per pack</a></h3>
-                <p class="product-card__size">60 g</p>
+              <h3 class="product-card__name"><a href="/products/pudina-bhujia">Pudina Bhujia</a></h3>
+              <p class="product-card__desc">Cool mint, sharp finish, same crunch.</p>
+              <dl class="product-card__stats">
+                <div><dt>Protein</dt><dd>14 g</dd></div>
+                <div><dt>Pack size</dt><dd>60 g</dd></div>
+                <div><dt>Calories</dt><dd>&ndash;</dd></div>
+              </dl>
+              <ul class="product-card__tags">
+                <li>Baked, not fried</li>
+                <li>100% veg</li>
+              </ul>
+              <div class="product-card__buy">
                 <p class="product-card__price">₹99</p>
-                <div class="product-card__actions">
-                  <a class="btn btn--navy btn--sm btn--block" href="/products/pudina-bhujia">Pre-order</a>
-                </div>
+                <a class="product-card__btn" href="/products/pudina-bhujia">Pre-order</a>
               </div>
             </article>
           </li>
-          <li>
-            <article class="product-card">
-              <span class="product-card__badge">First batch</span>
+          <li style="--i: 2">
+            <article class="product-card" style="--accent: #D94F2B">
               <div class="product-card__media">
                 <img src="/assets/img/chakli-pack-720.webp"
                      srcset="/assets/img/chakli-pack-720.webp 720w, /assets/img/chakli-pack-1050.webp 1050w"
-                     sizes="(min-width: 1024px) 280px, (min-width: 768px) 30vw, 46vw"
+                     sizes="(min-width: 1024px) 340px, (min-width: 640px) 44vw, 88vw"
                      width="720" height="989"
-                     alt=""
+                     alt="Sweet Chilli Chakli pack: a kraft pouch with a pink label."
                      loading="lazy" decoding="async">
+                <span class="product-card__badge" aria-hidden="true"><b>9g</b><small>Per pack</small></span>
               </div>
-              <div class="product-card__body">
-                <h3 class="product-card__name"><a href="/products/sweet-chilli-chakli">Sweet Chilli Chakli | 9 g protein per pack</a></h3>
-                <p class="product-card__size">50 g</p>
+              <h3 class="product-card__name"><a href="/products/sweet-chilli-chakli">Sweet Chilli Chakli</a></h3>
+              <p class="product-card__desc">Sweet first, heat after. Dangerously snackable.</p>
+              <dl class="product-card__stats">
+                <div><dt>Protein</dt><dd>9 g</dd></div>
+                <div><dt>Pack size</dt><dd>50 g</dd></div>
+                <div><dt>Calories</dt><dd>271</dd></div>
+              </dl>
+              <ul class="product-card__tags">
+                <li>Baked, not fried</li>
+                <li>100% veg</li>
+              </ul>
+              <div class="product-card__buy">
                 <p class="product-card__price">₹89</p>
-                <div class="product-card__actions">
-                  <a class="btn btn--navy btn--sm btn--block" href="/products/sweet-chilli-chakli">Pre-order</a>
-                </div>
+                <a class="product-card__btn" href="/products/sweet-chilli-chakli">Pre-order</a>
               </div>
             </article>
           </li>
-          <li>
-            <article class="product-card">
-              <span class="product-card__badge">First batch</span>
+          <li style="--i: 3">
+            <article class="product-card" style="--accent: #2E8B6F">
               <div class="product-card__media">
                 <img src="/assets/img/cheddar-chakli-pack-720.webp"
                      srcset="/assets/img/cheddar-chakli-pack-720.webp 720w, /assets/img/cheddar-chakli-pack-1051.webp 1051w"
-                     sizes="(min-width: 1024px) 280px, (min-width: 768px) 30vw, 46vw"
+                     sizes="(min-width: 1024px) 340px, (min-width: 640px) 44vw, 88vw"
                      width="720" height="988"
-                     alt=""
+                     alt="Cheddar Cheese Chakli pack: a kraft pouch with a yellow label."
                      loading="lazy" decoding="async">
+                <span class="product-card__badge" aria-hidden="true"><b>9g</b><small>Per pack</small></span>
               </div>
-              <div class="product-card__body">
-                <h3 class="product-card__name"><a href="/products/cheddar-cheese-chakli">Cheddar Cheese Chakli | 9 g protein per pack</a></h3>
-                <p class="product-card__size">50 g</p>
+              <h3 class="product-card__name"><a href="/products/cheddar-cheese-chakli">Cheddar Cheese Chakli</a></h3>
+              <p class="product-card__desc">Sharp cheddar on a classic South Indian spiral.</p>
+              <dl class="product-card__stats">
+                <div><dt>Protein</dt><dd>9 g</dd></div>
+                <div><dt>Pack size</dt><dd>50 g</dd></div>
+                <div><dt>Calories</dt><dd>271</dd></div>
+              </dl>
+              <ul class="product-card__tags">
+                <li>Baked, not fried</li>
+                <li>100% veg</li>
+              </ul>
+              <div class="product-card__buy">
                 <p class="product-card__price">₹89</p>
-                <div class="product-card__actions">
-                  <a class="btn btn--navy btn--sm btn--block" href="/products/cheddar-cheese-chakli">Pre-order</a>
-                </div>
+                <a class="product-card__btn" href="/products/cheddar-cheese-chakli">Pre-order</a>
               </div>
             </article>
           </li>
-          <li>
-            <article class="product-card">
-              <span class="product-card__badge">First batch</span>
+          <li style="--i: 4">
+            <article class="product-card" style="--accent: #C4462F">
               <div class="product-card__media">
                 <img src="/assets/img/korean-bbq-peanuts-pack-720.webp"
                      srcset="/assets/img/korean-bbq-peanuts-pack-720.webp 720w, /assets/img/korean-bbq-peanuts-pack-1058.webp 1058w"
-                     sizes="(min-width: 1024px) 280px, (min-width: 768px) 30vw, 46vw"
+                     sizes="(min-width: 1024px) 340px, (min-width: 640px) 44vw, 88vw"
                      width="720" height="984"
-                     alt=""
+                     alt="Korean BBQ Peanuts pack: a kraft pouch with an orange label."
                      loading="lazy" decoding="async">
+                <span class="product-card__badge" aria-hidden="true"><b>18g</b><small>Per pack</small></span>
               </div>
-              <div class="product-card__body">
-                <h3 class="product-card__name"><a href="/products/korean-bbq-peanuts">Korean BBQ Peanuts | 18 g protein per pack</a></h3>
-                <p class="product-card__size">65 g</p>
+              <h3 class="product-card__name"><a href="/products/korean-bbq-peanuts">Korean BBQ Peanuts</a></h3>
+              <p class="product-card__desc">Smoke, chilli and soy on roasted peanuts.</p>
+              <dl class="product-card__stats">
+                <div><dt>Protein</dt><dd>18 g</dd></div>
+                <div><dt>Pack size</dt><dd>65 g</dd></div>
+                <div><dt>Calories</dt><dd>415</dd></div>
+              </dl>
+              <ul class="product-card__tags">
+                <li>Baked, not fried</li>
+                <li>100% veg</li>
+              </ul>
+              <div class="product-card__buy">
                 <p class="product-card__price">₹99</p>
-                <div class="product-card__actions">
-                  <a class="btn btn--navy btn--sm btn--block" href="/products/korean-bbq-peanuts">Pre-order</a>
-                </div>
+                <a class="product-card__btn" href="/products/korean-bbq-peanuts">Pre-order</a>
               </div>
             </article>
           </li>
@@ -354,6 +398,6 @@
     </div>
   </footer>
 
-  <script src="/assets/js/main.js?v=11" defer></script>
+  <script src="/assets/js/main.js?v=13" defer></script>
 </body>
 </html>

@@ -308,6 +308,27 @@
     applyMotionPreference();
   }
 
+  /* --- Reveal the line-up cards on scroll -------------------------------- */
+  var revealGrid = document.querySelector('[data-reveal-grid]');
+
+  if (revealGrid) {
+    var wantsMotion = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (wantsMotion && 'IntersectionObserver' in window) {
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add('is-in');
+          observer.unobserve(entry.target);
+        });
+      }, { rootMargin: '0px 0px -12% 0px' });
+      observer.observe(revealGrid);
+    } else {
+      /* No observer, or motion is not wanted: show the cards outright. */
+      revealGrid.classList.add('is-in');
+    }
+  }
+
   /* --- Quantity stepper -------------------------------------------------- */
   var qty = document.querySelector('[data-qty]');
 
