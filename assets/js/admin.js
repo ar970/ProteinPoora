@@ -95,6 +95,8 @@
     dash.hidden = false;
     whoami.hidden = false;
     $('who-name').textContent = username;
+    paintNotices();
+    if (!status.database) return;
     loadOrders();
     loadProducts();
   }
@@ -115,7 +117,9 @@
     })
       .then(function (data) {
         $('password').value = '';
-        showDash(data.username);
+        refreshStatus()
+          .catch(function () { /* keep whatever we already knew */ })
+          .then(function () { showDash(data.username); });
       })
       .catch(function (err) {
         note($('login-msg'), err.message, 'error');
@@ -138,6 +142,7 @@
 
   tabs.forEach(function (entry, index) {
     entry.tab.addEventListener('click', function () {
+      if (!status.database) return;
       tabs.forEach(function (other, i) {
         other.tab.setAttribute('aria-selected', String(i === index));
         other.panel.hidden = i !== index;
@@ -485,54 +490,51 @@
 
   /* --- boot ------------------------------------------------------------- */
 
-  /** Marks one setup step done or outstanding. */
-  function markStep(name, done) {
-    var step = document.querySelector('.step[data-step="' + name + '"]');
-    if (!step) return;
-    step.classList.toggle('is-done', done);
-    var state = step.querySelector('[data-state]');
-    state.textContent = done ? 'Done' : 'Not yet';
+  /* --- boot ------------------------------------------------------------- */
+
+  var status = { database: false, defaultPassword: false };
+
+  function paintNotices() {
+    $('pw-notice').hidden = !status.defaultPassword;
+    $('db-notice').hidden = status.database;
+    // With no database there is nothing to list; the panels would only show
+    // "could not load" rows under a notice that already explains why.
+    $('panel-orders').hidden = !status.database;
+    $('panel-products').hidden = true;
+    document.querySelector('.tabs').hidden = !status.database;
   }
 
-  function showSetup(data) {
-    $('setup').hidden = false;
-    loginCard.hidden = true;
-    dash.hidden = true;
-    whoami.hidden = true;
-    markStep('database', Boolean(data.database));
-    markStep('credentials', Boolean(data.configured));
-  }
-
-  function boot() {
-    return api('/api/admin')
-      .then(function (data) {
-        // Both halves have to be in place: without a database there is nothing
-        // to read or write, and without credentials no sign-in can succeed.
-        if (!data.database || !data.configured) {
-          showSetup(data);
-          return false;
-        }
-        $('setup').hidden = true;
-        if (data.authenticated) showDash(data.username);
-        else showLogin();
-        return true;
-      })
-      .catch(function () {
-        $('setup').hidden = true;
-        showLogin('Could not reach the server. Please refresh.', 'error');
-        return false;
-      });
+  function refreshStatus() {
+    return api('/api/admin').then(function (data) {
+      status.database = Boolean(data.database);
+      status.defaultPassword = Boolean(data.defaultPassword);
+      return data;
+    });
   }
 
   $('recheck').addEventListener('click', function () {
     var btn = $('recheck');
     btn.disabled = true;
     btn.textContent = 'Checking…';
-    boot().then(function (ready) {
-      btn.disabled = false;
-      btn.textContent = ready ? 'Check again' : 'Still not ready — check again';
-    });
+    refreshStatus()
+      .then(function () {
+        paintNotices();
+        if (status.database) {
+          loadOrders();
+          loadProducts();
+        }
+        btn.textContent = status.database ? 'Check again' : 'Still no database — check again';
+      })
+      .catch(function () { btn.textContent = 'Check again'; })
+      .finally(function () { btn.disabled = false; });
   });
 
-  boot();
+  refreshStatus()
+    .then(function (data) {
+      if (data.authenticated) showDash(data.username);
+      else showLogin();
+    })
+    .catch(function () {
+      showLogin('Could not reach the server. Please refresh.', 'error');
+    });
 })();

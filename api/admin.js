@@ -53,9 +53,10 @@ module.exports = async function handler(req, res) {
       const s = auth.session(req);
       return send(res, 200, {
         configured,
-        // The panel is the place the setup is explained, so it needs to know
-        // about the database too — not just about the credentials.
+        // The panel explains the remaining setup, so it needs to know about
+        // the database and about whether the password is still the built-in one.
         database: Boolean(db.connectionString()),
+        defaultPassword: auth.credentials().isDefault,
         authenticated: Boolean(s),
         username: s ? s.username : null
       });
@@ -69,14 +70,6 @@ module.exports = async function handler(req, res) {
     }
 
     if (action !== 'login') throw badRequest('Unknown action.');
-
-    if (!configured) {
-      return fail(
-        res, 503,
-        'Admin sign-in is not configured yet. Set ADMIN_USERNAME and ADMIN_PASSWORD in the Vercel project.',
-        { code: 'NOT_CONFIGURED' }
-      );
-    }
 
     const rec = attemptsFor(clientIp(req));
     if (rec.count >= MAX_ATTEMPTS) {

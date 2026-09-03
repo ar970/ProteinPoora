@@ -10,8 +10,8 @@
   <link rel="icon" href="/assets/img/favicon-32.png" sizes="32x32">
   <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
   <link rel="stylesheet" href="/assets/css/fonts.css?v=3">
-  <link rel="stylesheet" href="/assets/css/style.css?v=19">
-  <link rel="stylesheet" href="/assets/css/admin.css?v=19">
+  <link rel="stylesheet" href="/assets/css/style.css?v=20">
+  <link rel="stylesheet" href="/assets/css/admin.css?v=20">
   <script>document.documentElement.classList.replace('no-js', 'js');</script>
 </head>
 <body>
@@ -29,54 +29,10 @@
 
   <main class="wrap">
 
-    <!-- Setup, shown until the project has what it needs --------------------->
-    <section class="card setup" id="setup" hidden aria-labelledby="setup-title">
-      <h1 class="h" id="setup-title">Finish setting up</h1>
-      <p class="sub">Two things have to exist in Vercel before pre-orders can be taken. Neither can live in the code: this repository is public, and Vercel has nowhere to keep orders on its own.</p>
-
-      <ol class="steps">
-        <li class="step" data-step="database">
-          <div class="step__head">
-            <span class="step__num">1</span>
-            <h2 class="step__title">Connect a database</h2>
-            <span class="step__state" data-state>checking…</span>
-          </div>
-          <div class="step__body">
-            <p>In the Vercel dashboard, open this project, then:</p>
-            <p class="step__path"><b>Storage</b> → <b>Create Database</b> → <b>Neon</b> → <b>Connect</b></p>
-            <p>The free tier is far more than this needs. There is nothing to copy or paste — Vercel adds the connection details itself, and any of the usual variable names will be picked up.</p>
-          </div>
-        </li>
-
-        <li class="step" data-step="credentials">
-          <div class="step__head">
-            <span class="step__num">2</span>
-            <h2 class="step__title">Set your sign-in details</h2>
-            <span class="step__state" data-state>checking…</span>
-          </div>
-          <div class="step__body">
-            <p>Same project, then:</p>
-            <p class="step__path"><b>Settings</b> → <b>Environment Variables</b> → <b>Add</b></p>
-            <table class="vars">
-              <tbody>
-                <tr><td><code>ADMIN_USERNAME</code></td><td>archit</td></tr>
-                <tr><td><code>ADMIN_PASSWORD</code></td><td>the password you want</td></tr>
-              </tbody>
-            </table>
-            <p>Tick all three environments (Production, Preview, Development). These are not in the code because this panel lists customers' names, phone numbers and home addresses, and anyone can read a public repository.</p>
-          </div>
-        </li>
-      </ol>
-
-      <p class="msg" data-tone="warn">Already added them? Environment variables only take effect on a <b>new deployment</b>. Open <b>Deployments</b>, and on the most recent one choose <b>Redeploy</b>.</p>
-
-      <p><button class="btn btn--navy" type="button" id="recheck">Check again</button></p>
-    </section>
-
     <!-- Sign in ------------------------------------------------------------->
     <section class="card login" id="login" hidden aria-labelledby="login-title">
       <h1 class="h" id="login-title">Sign in</h1>
-      <p class="sub">This panel holds customer names, phone numbers and addresses. Do not sign in on a shared computer.</p>
+      <p class="sub">Pre-orders, and who placed them. This panel holds customer names, phone numbers and addresses, so do not sign in on a shared computer.</p>
       <p class="msg" id="login-msg" role="status" aria-live="polite"></p>
       <form id="login-form" novalidate>
         <div class="field">
@@ -95,6 +51,23 @@
 
     <!-- Dashboard ----------------------------------------------------------->
     <div id="dash" hidden>
+
+      <!-- Shown while the built-in password is still in use. -->
+      <div class="card banner" id="pw-notice" hidden>
+        <h2 class="banner__title">Change your password when you get a minute</h2>
+        <p class="banner__body">You are signed in with the password built into the code. It is in a public repository, so anyone who finds this page can read it and see your customers' addresses.</p>
+        <p class="banner__body">To change it: Vercel dashboard → this project → <b>Settings</b> → <b>Environment Variables</b> → add <code>ADMIN_PASSWORD</code> with the password you want, then <b>Deployments</b> → <b>Redeploy</b>. Add <code>ADMIN_USERNAME</code> too if you want a different name than <code>archit</code>.</p>
+      </div>
+
+      <!-- Shown until a database is connected. Nothing can be stored without one. -->
+      <div class="card banner banner--stop" id="db-notice" hidden>
+        <h2 class="banner__title">Connect a database to start taking pre-orders</h2>
+        <p class="banner__body">Vercel forgets everything between requests, so there is nowhere to keep an order yet. Until this is done the pre-order form will not load and nothing can be saved.</p>
+        <p class="step__path"><b>Vercel dashboard</b> → this project → <b>Storage</b> → <b>Create Database</b> → <b>Neon</b> → <b>Connect</b></p>
+        <p class="banner__body">The free tier is far more than this needs, and there is nothing to copy or paste — Vercel fills in the connection details itself. It takes effect on the next deployment, so if the button below still says no database, open <b>Deployments</b> and choose <b>Redeploy</b>.</p>
+        <p><button class="btn btn--navy btn--tiny" type="button" id="recheck">Check again</button></p>
+      </div>
+
       <div class="tabs" role="tablist" aria-label="Admin sections">
         <button class="tab" type="button" role="tab" id="tab-orders" aria-controls="panel-orders" aria-selected="true">Pre-orders</button>
         <button class="tab" type="button" role="tab" id="tab-products" aria-controls="panel-products" aria-selected="false">Products</button>
@@ -216,6 +189,6 @@
     </div>
   </main>
 
-  <script src="/assets/js/admin.js?v=19" defer></script>
+  <script src="/assets/js/admin.js?v=20" defer></script>
 </body>
 </html>

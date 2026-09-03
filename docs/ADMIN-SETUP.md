@@ -12,10 +12,11 @@ them to take pre-orders and back the admin panel:
 Customers pre-order at **`/preorder`**. You manage everything at **`/admin`**,
 linked from the footer of every page.
 
-**Two things must be set up in Vercel before either page works.** Until then
-`/preorder` says pre-orders are not switched on yet and disables its submit
-button, and `/admin` shows which variables are still missing instead of a
-sign-in form.
+**One thing must be set up in Vercel before pre-orders work: a database.**
+Signing in to `/admin` works immediately, but until a database is connected
+there is nowhere to keep an order — `/preorder` says pre-orders are not
+switched on yet and disables its submit button, and `/admin` shows the step
+with a *Check again* button.
 
 ---
 
@@ -43,41 +44,29 @@ connections constantly and a direct string will run out of them.
 The tables are created on the first request, and the five current snacks are
 inserted at their present prices. Nothing to run by hand.
 
-## 2. Add the admin credentials
+## 2. Change the password (later, but do change it)
 
-**Settings → Environment Variables**, for Production, Preview and Development:
+Sign-in works as soon as the site deploys, with:
 
-| Name | Value |
+| | |
 | --- | --- |
-| `ADMIN_USERNAME` | `archit` |
-| `ADMIN_PASSWORD` | the password you chose |
+| Username | `archit` |
+| Password | `proteinpoora123` |
 
-Then **redeploy**. Environment variables are only picked up by a *new*
-deployment, so adding them to an existing project changes nothing until you
-open **Deployments** and choose **Redeploy** on the most recent one. `/admin`
-shows a live checklist of which of the two steps are still outstanding.
+Those are in `api/_lib/auth.js`, which means they are in a **public**
+repository — anyone who finds `/admin` can read them and look at your
+customers' names, phone numbers and addresses. The panel says so on a banner
+until you change it.
 
-The password is deliberately not written down here. This file is in the public
-repository too, so printing it would leak it just as surely as putting it in the
-code.
+To change it, in Vercel: **Settings → Environment Variables**, add
+`ADMIN_PASSWORD` (and `ADMIN_USERNAME` if you want a different name), then
+**Deployments → Redeploy**. The environment always wins over the built-in
+values, so nothing in the code needs editing and the banner disappears.
+Changing the password also signs out anyone currently signed in, because the
+session signing key is derived from it.
 
-### Why these are not in the code
-
-`github.com/ar970/ProteinPoora` is a public repository. A password committed to
-it is readable by anyone, permanently — rewriting the commit later does not
-help, because it has already been cloned and indexed. The admin panel lists
-customers' names, phone numbers and home addresses, so the password has to stay
-out of the repo. That is the only reason this step exists.
-
-A password built from the brand name is also the first thing anyone would try,
-so prefer something long and unrelated to "protein" or "poora". Changing it
-costs one edit in the Vercel dashboard and no code change: edit `ADMIN_PASSWORD`
-and redeploy. Everyone currently signed in is signed out automatically, because
-the session signing key is derived from the password.
-
-Optional: set `ADMIN_SESSION_SECRET` to any long random string to sign sessions
-with a key independent of the password. Without it one is derived, which works
-fine.
+Optional: `ADMIN_SESSION_SECRET`, any long random string, signs sessions with a
+key independent of the password. Without it one is derived, which works fine.
 
 ---
 

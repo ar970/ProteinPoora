@@ -3,11 +3,9 @@
 /**
  * Admin authentication.
  *
- * The repository is public, so the credentials live in environment variables
- * and never in the source. With ADMIN_USERNAME / ADMIN_PASSWORD unset the
- * admin panel refuses every login rather than falling back to a default — a
- * baked-in default in a public repo is the same as no password at all, and
- * this panel shows customer names, phone numbers and home addresses.
+ * Sign-in works out of the box using the built-in credentials below, and
+ * ADMIN_USERNAME / ADMIN_PASSWORD in the environment override them. See the
+ * note on those constants for why a default exists at all and what it costs.
  *
  * A session is a cookie holding `base64url(payload).base64url(HMAC)`. Nothing
  * is stored server-side: the signature is what makes it trustworthy, and the
@@ -19,10 +17,28 @@ const crypto = require('crypto');
 const COOKIE = 'pp_admin';
 const TTL_MS = 8 * 60 * 60 * 1000; // one working day
 
+/**
+ * Built-in sign-in, so the panel works the moment the site deploys.
+ *
+ * These are in the source, which means they are in a public repository and
+ * anyone who looks can read them. That is a deliberate trade, made because the
+ * alternative was a panel that could not be opened at all. Setting
+ * ADMIN_USERNAME and ADMIN_PASSWORD in Vercel overrides both and takes the
+ * secret back out of the repo; the panel says so on every screen until you do.
+ */
+const DEFAULT_USERNAME = 'archit';
+const DEFAULT_PASSWORD = 'proteinpoora123';
+
 function credentials() {
-  const username = process.env.ADMIN_USERNAME || '';
-  const password = process.env.ADMIN_PASSWORD || '';
-  return { username, password, configured: Boolean(username && password) };
+  const username = process.env.ADMIN_USERNAME || DEFAULT_USERNAME;
+  const password = process.env.ADMIN_PASSWORD || DEFAULT_PASSWORD;
+  return {
+    username,
+    password,
+    configured: true,
+    // True while the password is the one anybody can read in the repository.
+    isDefault: password === DEFAULT_PASSWORD
+  };
 }
 
 /**

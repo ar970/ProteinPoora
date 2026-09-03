@@ -165,8 +165,10 @@ Rules that hold regardless of storage:
   write, from the products table. A client-supplied amount is ignored.
 - Each order stores its own copy of its line items and their prices, so editing
   or deleting a product never rewrites an order already placed.
-- Admin credentials come from environment variables and never from the
-  repository, which is public.
+- Admin sign-in has built-in credentials so the panel works on first deploy,
+  overridden by ADMIN_USERNAME / ADMIN_PASSWORD. The repository is public, so
+  the default is readable by anyone; the panel carries a banner saying so until
+  the environment overrides it.
 
 Full setup and behaviour: `docs/ADMIN-SETUP.md`.
 

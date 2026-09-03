@@ -63,9 +63,14 @@ Both add-to-cart buttons are links to `/preorder`, so they still do something
 sensible with JavaScript off; the cart script intercepts the click when it is
 on.
 
-Nothing works until `DATABASE_URL`, `ADMIN_USERNAME` and `ADMIN_PASSWORD` are
-set in the Vercel project. The credentials are deliberately not in this
-repository — it is public, and the panel shows customer addresses.
+Signing in to `/admin` works as soon as the site deploys, using the built-in
+`archit` / `proteinpoora123`. Those are in the source of a **public**
+repository, so change them once you are up and running: set `ADMIN_PASSWORD`
+in the Vercel project and redeploy — the environment always overrides the
+built-in values. The panel shows a banner until you do.
+
+Storing pre-orders still needs a database connected to the project; until then
+`/preorder` says so rather than taking an order it cannot keep.
 **[docs/ADMIN-SETUP.md](docs/ADMIN-SETUP.md) has the steps.**
 
 There is no payment step. The form takes a list of interested customers before
