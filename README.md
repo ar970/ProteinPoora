@@ -72,6 +72,8 @@ The card is tagged in `index.html`:
 
 Where there is no hover (a phone), each pack tears open once, the first time it is scrolled to, and closes itself after two seconds. Under `prefers-reduced-motion: reduce` nothing is built at all.
 
+**On a phone the burst is deliberately smaller.** The cards stack with very little between them and the pack is the width of the screen, so the throw that reads as generous on a desktop grid lands all over the card above. Below 760px `tear.js` uses 10 thrown pieces instead of 16, at 45% of the height and 60% of the width, and the pieces themselves come down to 85% — the burst then reaches no more than about 12px above its own card. `#line-up` also carries `overflow-x: clip`, because each piece is wrapped in a card-sized span and a span thrown sideways counts towards the page's scrollable width even though the crumb inside it is nowhere near the edge.
+
 To cut pieces from a new photo, add a source and its boxes to `scripts/extract-pieces.py` and run it with `--sheet` to get a contact sheet of what came out. Cut from the **lifestyle photo**, not the pack artwork: a strand lying loose on the table is photographed several times larger there. Give each box a margin of background around the piece, and say which side of the ground the food sits on — without that, the shadow is keyed along with the piece.
 
 ## Pre-orders and the admin panel

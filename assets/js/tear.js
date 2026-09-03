@@ -33,10 +33,21 @@
   if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
   var CUTOUTS = 6;         // distinct pieces a pack has, unless it says otherwise
-  var BURST = 16;          // how many are actually thrown
-  var MOUND = 9;           // and how many make the heap in the mouth
   var OPEN_MS = 2000;      // how long the touch version stays open
   var SETTLE_MS = 1000;    // longest piece transition plus its delay
+
+  /* A phone stacks the cards one above the next with very little between
+     them, and its pack is the width of the screen. The same throw that reads
+     as generous on a desktop grid lands all over the card above and pushes the
+     page sideways, so the burst is smaller, tighter and shorter there. Read
+     when a card is first built rather than at load, so turning the phone
+     before you reach the line-up is respected. */
+  function measure() {
+    var narrow = window.matchMedia && window.matchMedia('(max-width: 760px)').matches;
+    return narrow
+      ? { burst: 10, mound: 7, lift: 0.45, fling: 0.6, size: 0.85 }
+      : { burst: 16, mound: 9, lift: 1, fling: 1, size: 1 };
+  }
 
   /* A tiny deterministic generator, so a given card scatters its pieces the
      same way on every visit rather than reshuffling on each hover. */
@@ -61,6 +72,8 @@
     var cutouts = parseInt(box.getAttribute('data-bits'), 10) || CUTOUTS;
     var pack = box.querySelector('img');
     if (!slug || !pack) return false;
+
+    var room = measure();
 
     var stage = document.createElement('div');
     stage.className = 'tear';
@@ -109,12 +122,13 @@
        a hole cut in it. */
     var heap = document.createElement('span');
     heap.className = 'tear__bits tear__bits--heap';
-    for (var m = 0; m < MOUND; m += 1) {
-      var mt = (m + 0.5) / MOUND;
+    for (var m = 0; m < room.mound; m += 1) {
+      var mt = (m + 0.5) / room.mound;
       var mx = (mt - 0.5) * 2 * (16 + rand() * 8);
       // Highest through the middle of the heap, as a poured pile is.
       var my = -(Math.cos((mt - 0.5) * 3.1) * 4.5 + rand() * 2.5);
-      heap.appendChild(piece(mx, my, rand() * 200 - 100, 0.72 + rand() * 0.28,
+      heap.appendChild(piece(mx, my, rand() * 200 - 100,
+                             (0.72 + rand() * 0.28) * room.size,
                              Math.round(rand() * 90), m % 2));
     }
     stage.appendChild(heap);
@@ -122,25 +136,34 @@
     // ... and the pieces thrown clear of it, in front of the pack.
     var bits = document.createElement('span');
     bits.className = 'tear__bits';
-    for (var i = 0; i < BURST; i += 1) {
+    for (var i = 0; i < room.burst; i += 1) {
       // Fan up and out from the tear, highest through the middle and thrown
       // wide at the edges, with every other one left tumbling near the mouth
       // so the pack reads as spilling rather than as firing.
-      var t = (i + 0.5) / BURST;
+      var t = (i + 0.5) / room.burst;
       var spread = (t - 0.5) * 2;                    // -1 … 1
       var reach = i % 2 ? 0.4 : 1;
-      var x = spread * (20 + rand() * 14) * reach;   // % of the card
-      var y = -(6 + Math.cos(spread * 1.5) * 18 + rand() * 8) * reach;
+      var x = spread * (20 + rand() * 14) * reach * room.fling;   // % of the card
+      var y = -(6 + Math.cos(spread * 1.5) * 18 + rand() * 8) * reach * room.lift;
       bits.appendChild(piece(x, y, spread * 120 + (rand() * 90 - 45),
-                             0.6 + rand() * 0.4, Math.round(rand() * 220), i % 2));
+                             (0.6 + rand() * 0.4) * room.size,
+                             Math.round(rand() * 220), i % 2));
     }
     stage.appendChild(bits);   // the halves are inserted ahead of this
 
-    // The pack, split along one ragged line. Two clones of the same <img>:
+    // The pack, split along one ragged line. Three clones of the same <img>:
     // the browser already holds the bytes, so this costs no download.
     var body = pack.cloneNode(false);
     body.className = 'tear__body';
     body.removeAttribute('loading');
+
+    // The pale fibre along the tear -- the same photograph, brightened, cut to
+    // a ribbon straddling the line.
+    var edge = pack.cloneNode(false);
+    edge.className = 'tear__edge';
+    edge.removeAttribute('loading');
+    edge.alt = '';
+    edge.setAttribute('aria-hidden', 'true');
 
     var lid = pack.cloneNode(false);
     lid.className = 'tear__lid';
@@ -148,9 +171,11 @@
     lid.alt = '';
     lid.setAttribute('aria-hidden', 'true');
 
-    // Back to front: the inside of the pouch, the bottom of the pack, the lid
-    // peeling off it, and the pieces bursting past all of it.
+    // Back to front: the inside of the pouch, the heap in its mouth, the front
+    // of the pack, the torn fibre across it, the lid peeling off, and the
+    // pieces bursting past all of it.
     stage.insertBefore(body, bits);
+    stage.insertBefore(edge, bits);
     stage.insertBefore(lid, bits);
 
     box.__pack = pack;
