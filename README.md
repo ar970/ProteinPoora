@@ -35,7 +35,8 @@ Import the repository in Vercel. Framework preset: **Other**. Build command: non
 | `assets/js/cart.js` | Cart state, header count and drawer. Loaded on every storefront page. |
 | `assets/js/preorder.js`, `assets/js/admin.js` | Page scripts for the checkout and the admin panel. |
 | `assets/js/tear.js` | The line-up packs that tear open on hover. |
-| `assets/img/bits/` | The snack cut-outs that spill out of a torn pack, cut from the product photography by `scripts/extract-pieces.py`. |
+| `assets/img/*-open-*.webp` | The torn-open shot each line-up card swaps to on hover, built from `sources/open/` by `scripts/build-open-shots.py`. |
+| `sources/open/` | The original torn-open photographs, as shot. Not served; only the built `-open-` files are. |
 | `scripts/dev-server.js` | Local server that mounts the real API handlers. |
 | `design-system/` | Design spec: colors, type, spacing, section order, Shopify plan. |
 
@@ -54,27 +55,27 @@ Clicking a thumbnail swaps the main image; clicking the main image opens it full
 
 ## Packs that tear open
 
-Hovering a line-up card rips the top off the pouch, heaps the snack up in the opening and throws the rest of it into the air. Each pack spills its own contents — bhujia strands, mint bhujia, chakli, cheddar, peanuts.
+Hovering a line-up card replaces the pack with the photograph of that same pack torn open — contents heaped in the mouth, the rest thrown into the air.
 
-The pack is not a second photograph. `assets/js/tear.js` clones the card's existing `<img>` twice and clips the copies along the same ragged line, one keeping what is above it and one what is below, so they fit together invisibly and come apart when torn. Cloning costs no download. Nothing is built until a card is first hovered, so a visitor who never hovers never fetches a piece; once the pack closes again the halves come back out of the page and the original `<img>` goes back in, leaving the card exactly as it shipped.
+It used to be assembled in the browser: the pack clipped along a ragged line, a heap built from crumbs cut out of the lifestyle shots, two dozen pieces thrown on CSS transitions. It was a reconstruction of a photograph and it looked like one. There is now a real photograph of each pack being emptied, so the card shows that instead — the pieces, the tear and the light on them all as they came out of the camera.
 
-The snack is in two layers. The heap sits *behind* the front of the pack, so the torn edge cuts across it and the pouch reads as full rather than as having a hole in it; the thrown pieces sit in front. Both are drawn from the same handful of cut-outs, reused turned over and at other angles.
+The photographs are landscape crops of the top of a pack (1402×1122); the media box is portrait at 0.73. Cropping straight to portrait would cut the ends off the burst, so `scripts/build-open-shots.py` continues each backdrop upwards in its own colour to 0.88 and lets the card's `object-fit: cover` take the last 8% off each side — inside the margin the photographer left, so no flying piece is lost. Two widths are written, 720 and 1080.
 
-**A piece is never displayed larger than it was cut.** That single rule is what keeps the burst sharp — the first version enlarged 60px crumbs to 120px and went soft — so `.bit img` takes its width from the file, and the per-piece `--s` never exceeds 1.
+To reshoot a product, drop the new photograph in `sources/open/<slug>.webp` and run:
+
+```
+python3 scripts/build-open-shots.py
+```
 
 The card is tagged in `index.html`:
 
 ```html
-<div class="product-card__media" data-tear="masala-bhujia" data-bits="7">
+<div class="product-card__media" data-tear="masala-bhujia">
 ```
 
-`data-tear` is the slug and `data-bits` is how many cut-outs that pack has: `assets/img/bits/<slug>-1.webp` … `-<data-bits>.webp`. To add a pack, add cut-outs under that naming and tag its media box.
+`data-tear` is the slug; `assets/js/tear.js` builds `/assets/img/<slug>-open-720.webp` from it. Nothing is fetched until a card is first hovered, so a visitor who never hovers never downloads a shot, and once the card closes the image is taken back out of the page — a card at rest is byte-for-byte the card that shipped.
 
-Where there is no hover (a phone), each pack tears open once, the first time it is scrolled to, and closes itself after two seconds. Under `prefers-reduced-motion: reduce` nothing is built at all.
-
-**On a phone the burst is deliberately smaller.** The cards stack with very little between them and the pack is the width of the screen, so the throw that reads as generous on a desktop grid lands all over the card above. Below 760px `tear.js` uses 10 thrown pieces instead of 16, at 45% of the height and 60% of the width, and the pieces themselves come down to 85% — the burst then reaches no more than about 12px above its own card. `#line-up` also carries `overflow-x: clip`, because each piece is wrapped in a card-sized span and a span thrown sideways counts towards the page's scrollable width even though the crumb inside it is nowhere near the edge.
-
-To cut pieces from a new photo, add a source and its boxes to `scripts/extract-pieces.py` and run it with `--sheet` to get a contact sheet of what came out. Cut from the **lifestyle photo**, not the pack artwork: a strand lying loose on the table is photographed several times larger there. Give each box a margin of background around the piece, and say which side of the ground the food sits on — without that, the shadow is keyed along with the piece.
+Where there is no hover (a phone), each pack opens once, the first time it is scrolled to, and closes itself after 2.4 seconds. Under `prefers-reduced-motion: reduce` the swap still happens — it is the point of the card — but as a plain dissolve with no movement in it.
 
 ## Meta Pixel
 

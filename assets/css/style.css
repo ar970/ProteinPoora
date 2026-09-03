@@ -2687,209 +2687,50 @@ button {
 
 /* ==========================================================================
    Packs that tear open
-   Hovering a line-up card rips the top off the pouch and spills the snack.
-   Built on demand by assets/js/tear.js; nothing here applies until it is.
+   Hovering a line-up card swaps the pack for the photograph of it being
+   emptied. Built on demand by assets/js/tear.js; nothing here applies until
+   it is.
    ========================================================================== */
 
-.tear {
-  position: absolute;
-  inset: 0;
-  /* The pieces fly past the pack's edges, so nothing may clip them. */
-  overflow: visible;
-}
-
-/* A torn card lifts above its neighbours, so the pieces that leave it land on
-   the navy rather than under the next card along. */
-.product-card__media.is-torn {
-  z-index: 5;
-}
-
-/* Each piece is wrapped in a span the size of the card (see .bit below), and a
-   span thrown sideways counts towards the page's scrollable width even though
-   the crumb inside it is nowhere near the edge. Clipping the one axis stops a
-   burst ever putting a sideways scrollbar on a phone; `clip` rather than
-   `hidden` so the pieces still show above the cards. */
-#line-up {
-  overflow-x: clip;
-  overflow-y: visible;
-}
-
-.product-card:hover,
-.product-card:focus-within {
-  z-index: 5;
-}
-
-/* The two halves of the pack are the same photograph clipped along the same
-   ragged line — the first keeps what is below it, the second what is above.
-   Because the points are identical the seam is invisible when closed. */
-.tear__body,
-.tear__lid {
+/* The photograph fills the media box -- it is exported at the box's own 0.73,
+   so `cover` crops nothing. These selectors carry the media box so they beat
+   the `object-fit: contain`, the drop shadow and the hover scale that the box
+   gives the pack sitting under it. */
+.product-card__media .tear__open {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: contain;
-  filter: drop-shadow(0 14px 20px rgba(23, 57, 122, 0.28));
-}
-
-/* The line sits where a pouch is actually opened: just under the top seam,
-   not through the middle of the label. */
-.tear__body {
-  clip-path: polygon(
-    0 15.6%, 4% 17.2%, 8% 14.4%, 12% 16.8%, 17% 14%, 21% 16.4%, 26% 17.6%,
-    31% 14.6%, 36% 16.9%, 41% 14.2%, 46% 17.1%, 51% 15.4%, 56% 17.4%, 61% 14.5%,
-    66% 16.6%, 71% 14.3%, 76% 17.3%, 81% 15.1%, 86% 17%, 91% 14.7%, 96% 16.5%,
-    100% 15.3%, 100% 100%, 0 100%
-  );
-}
-
-/* The pale fibre a kraft pouch shows where it has been torn: the same
-   photograph again, brightened and drained of colour, clipped to a ribbon
-   between the tear line and a copy of it a fraction higher. Taking it from the
-   pack rather than drawing a band means it follows the pack's own silhouette
-   and stops at its edges, which a rectangle could not do. */
-.tear__edge {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  filter: brightness(1.85) saturate(0.28);
-  z-index: 1;
-  opacity: 0;
-  transition: opacity 240ms var(--ease) 60ms;
-  clip-path: polygon(
-    0% 14.1%, 4% 15.7%, 8% 12.9%, 12% 15.3%, 17% 12.5%, 21% 14.9%, 26% 16.1%,
-    31% 13.1%, 36% 15.4%, 41% 12.7%, 46% 15.6%, 51% 13.9%, 56% 15.9%, 61% 13%,
-    66% 15.1%, 71% 12.8%, 76% 15.8%, 81% 13.6%, 86% 15.5%, 91% 13.2%, 96% 15%,
-    100% 13.8%, 100% 15.3%, 96% 16.5%, 91% 14.7%, 86% 17%, 81% 15.1%,
-    76% 17.3%, 71% 14.3%, 66% 16.6%, 61% 14.5%, 56% 17.4%, 51% 15.4%,
-    46% 17.1%, 41% 14.2%, 36% 16.9%, 31% 14.6%, 26% 17.6%, 21% 16.4%, 17% 14%,
-    12% 16.8%, 8% 14.4%, 4% 17.2%, 0% 15.6%
-  );
-}
-
-.is-torn .tear__edge {
-  opacity: 1;
-}
-
-.tear__lid {
-  clip-path: polygon(
-    0 0, 100% 0,
-    100% 15.3%, 96% 16.5%, 91% 14.7%, 86% 17%, 81% 15.1%, 76% 17.3%, 71% 14.3%,
-    66% 16.6%, 61% 14.5%, 56% 17.4%, 51% 15.4%, 46% 17.1%, 41% 14.2%, 36% 16.9%,
-    31% 14.6%, 26% 17.6%, 21% 16.4%, 17% 14%, 12% 16.8%, 8% 14.4%, 4% 17.2%,
-    0 15.6%
-  );
-  /* Hinged on the tear itself, so the flap peels rather than flies. It goes
-     with it: what the pack photography shows is an open pouch spilling, not a
-     lid hanging in the air beside one. */
-  transform-origin: 16% 16%;
-  transition: transform 520ms var(--ease-spring), opacity 420ms var(--ease) 120ms;
-  z-index: 2;
-}
-
-.is-torn .tear__lid {
-  transform: translate(-4%, -11%) rotate(-9deg);
-  opacity: 0;
-}
-
-/* The back wall of the pouch, uncovered as the lid comes away. It has to span
-   the whole width of the pack: anything narrower and the page's navy shows
-   through the opening, which reads as a hole cut in the pack rather than as a
-   pack that has been torn open. */
-.tear__inside {
-  position: absolute;
-  left: 21%;
-  right: 21%;
-  top: 10.5%;
-  height: 9.5%;
-  border-radius: 30% 30% 22% 22% / 52% 52% 16% 16%;
-  background: linear-gradient(#2E1D0D 0%, #4A2F17 48%, #7A5730 100%);
-  filter: blur(0.5px);
-  opacity: 0;
-  transition: opacity 260ms var(--ease) 60ms;
-}
-
-.is-torn .tear__inside {
-  opacity: 0.94;
-}
-
-/* --- The snack coming out -------------------------------------------------
-   Each piece is wrapped in a span the size of the card, so its --x/--y can be
-   percentages of the card rather than of the piece, which would otherwise make
-   a small crumb travel a small distance and a large one a large distance. */
-.tear__bits {
-  position: absolute;
-  inset: 0;
-  z-index: 3;
-  pointer-events: none;
-}
-
-/* The heap in the mouth sits behind the front of the pack, so the torn edge
-   cuts across it and the pouch reads as full. It is inside the bag, so it is
-   lit a shade down from the pieces out in the open. */
-.tear__bits--heap {
-  z-index: 0;
-}
-
-.product-card__media .tear__bits--heap .bit img {
-  filter: brightness(0.88) drop-shadow(0 2px 3px rgba(8, 16, 48, 0.5));
-}
-
-.bit {
-  position: absolute;
-  inset: 0;
-  transform: translate(0, 0);
-  transition: transform 680ms var(--ease-spring) var(--d);
-}
-
-.is-torn .bit {
-  transform: translate(var(--x), var(--y));
-}
-
-/* A piece is drawn at the size it was cut from the photograph and never
-   larger -- blowing a 60px crumb up to 120px is what made the first version of
-   this look soft -- so width and height are the file's own, against the
-   `width: 100%` the card gives the pack it is sitting inside. These selectors
-   carry the card so they outrank that rule and the hover scale with it. */
-.product-card__media .bit img {
-  position: absolute;
-  left: 50%;
-  top: 15%;
-  width: auto;
-  height: auto;
   max-width: none;
+  object-fit: cover;
+  border-radius: 12px;
+  filter: none;
+  pointer-events: none;
   opacity: 0;
-  transform: translate(-50%, -50%) rotate(0deg) scale(0.3);
-  transform-origin: 50% 50%;
-  filter: drop-shadow(0 4px 7px rgba(8, 16, 48, 0.45));
+  transform: scale(1.03);
   transition:
-    transform 700ms var(--ease-spring) var(--d),
-    opacity 220ms var(--ease) var(--d);
+    opacity 300ms var(--ease),
+    transform 520ms var(--ease-spring);
 }
 
-.product-card__media.is-torn .bit img {
+.product-card__media.is-torn .tear__open {
   opacity: 1;
-  transform: translate(-50%, -50%) rotate(var(--r)) scale(calc(var(--s) * var(--f)), var(--s));
+  transform: scale(1);
 }
 
-/* The pack normally grows a little on hover. With the tear running, that would
-   fight the lid's own movement. */
-.product-card:hover .product-card__media .tear__body,
-.product-card:hover .product-card__media .tear__lid {
+/* The pack underneath grows a little on hover, which would show at the edges
+   of the photograph while it is fading in. */
+.product-card:hover .product-card__media.is-torn img {
   transform: none;
 }
 
-.product-card:hover .product-card__media.is-torn .tear__lid {
-  transform: translate(-2%, -5%) rotate(-13deg);
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .tear__lid,
-  .tear__inside,
-  .bit,
-  .bit img {
-    transition: none;
+  .product-card__media .tear__open {
+    transform: none;
+    transition: opacity 200ms var(--ease);
+  }
+
+  .product-card__media.is-torn .tear__open {
+    transform: none;
   }
 }
