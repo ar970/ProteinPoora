@@ -487,11 +487,19 @@
 
   api('/api/admin')
     .then(function (data) {
-      if (!data.configured) {
+      var missing = [];
+      if (!data.database) missing.push('a database (DATABASE_URL)');
+      if (!data.configured) missing.push('sign-in details (ADMIN_USERNAME and ADMIN_PASSWORD)');
+
+      if (missing.length) {
         showLogin(
-          'Admin sign-in is not set up yet. Add ADMIN_USERNAME and ADMIN_PASSWORD to the Vercel project, then redeploy.',
+          'Setup is not finished. This project still needs ' + missing.join(' and ') +
+          ' in its Vercel environment variables, then a redeploy. Until then no pre-order can be placed. ' +
+          'The steps are in docs/ADMIN-SETUP.md in the repository.',
           'warn'
         );
+        // Nothing here can work yet; offering the form only invites confusion.
+        if (!data.configured) $('login-form').hidden = true;
         return;
       }
       if (data.authenticated) showDash(data.username);

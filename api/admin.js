@@ -52,6 +52,9 @@ module.exports = async function handler(req, res) {
       const s = auth.session(req);
       return send(res, 200, {
         configured,
+        // The panel is the place the setup is explained, so it needs to know
+        // about the database too — not just about the credentials.
+        database: Boolean(process.env.DATABASE_URL),
         authenticated: Boolean(s),
         username: s ? s.username : null
       });

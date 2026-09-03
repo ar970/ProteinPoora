@@ -21,7 +21,7 @@
         imagesrcset="/assets/img/masala-bhujia-pack-720.webp 720w, /assets/img/masala-bhujia-pack-1054.webp 1054w"
         imagesizes="(min-width: 1024px) 600px, 100vw">
   <link rel="stylesheet" href="/assets/css/fonts.css?v=3">
-  <link rel="stylesheet" href="/assets/css/style.css?v=16">
+  <link rel="stylesheet" href="/assets/css/style.css?v=18">
   <script>document.documentElement.classList.replace('no-js', 'js');</script>
 </head>
 <body>
@@ -69,6 +69,14 @@
         </nav>
 
         <div class="header__actions">
+          <button class="cart-button" type="button" data-cart-button aria-label="Cart, empty">
+            <svg class="cart-button__icon" viewBox="0 0 20 20" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2.5 3h2l1.7 8.4a1.5 1.5 0 0 0 1.5 1.2h6.2a1.5 1.5 0 0 0 1.5-1.2L16.8 6H5.3"/>
+              <circle cx="8.2" cy="16.4" r="1.1"/>
+              <circle cx="14.4" cy="16.4" r="1.1"/>
+            </svg>
+            <span class="cart-button__count" data-cart-count hidden>0</span>
+          </button>
           <a class="btn btn--cream btn--sm" href="#buy">Pre-order</a>
           <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
             <span class="visually-hidden menu-toggle__label">Open menu</span>
@@ -149,7 +157,9 @@
               </div>
             </div>
 
-            <button class="btn btn--navy btn--block" type="button" data-preorder="masala-bhujia">Pre-order · ₹99</button>
+            <a class="btn btn--navy btn--block" href="/preorder?product=masala-bhujia"
+               data-add-to-cart="masala-bhujia" data-thumb="/assets/img/masala-bhujia-pack-720.webp" data-name="Masala Bhujia" data-price-paise="9900"
+               data-qty-from="#qty">Add to cart · ₹99</a>
             <p class="buy__status" role="status" aria-live="polite"></p>
             <p class="buy__note">Pay now, we ship when the first batch is ready.</p>
 
@@ -271,6 +281,7 @@
     </div>
   </dialog>
 
-  <script src="/assets/js/main.js?v=16" defer></script>
+  <script src="/assets/js/cart.js?v=18" defer></script>
+  <script src="/assets/js/main.js?v=18" defer></script>
 </body>
 </html>

@@ -33,6 +33,22 @@
   var products = [];
   var chosen = Object.create(null); // slug -> qty
 
+  var cart = window.PPCart || null;
+
+  /** Mirrors the picker's quantities into the shared cart. */
+  function syncCart() {
+    if (!cart) return;
+    var lines = products
+      .filter(function (p) { return chosen[p.slug]; })
+      .map(function (p) {
+        return {
+          slug: p.slug, name: p.name, price_paise: p.price_paise,
+          thumb: thumbs[p.slug] || '', qty: chosen[p.slug]
+        };
+      });
+    cart.replace(lines);
+  }
+
   var STATES = [
     'Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chhattisgarh', 'Goa',
     'Gujarat', 'Haryana', 'Himachal Pradesh', 'Jharkhand', 'Karnataka', 'Kerala',
@@ -77,16 +93,37 @@
     });
   }
 
+  function nodeP(tag, text) {
+    var node = document.createElement(tag);
+    node.textContent = text;
+    return node;
+  }
+
   /* --- product picker --------------------------------------------------- */
 
-  function renderPicker() {
+  function renderPicker(reason) {
     picker.removeAttribute('data-loading');
     picker.textContent = '';
 
     if (!products.length) {
       var none = document.createElement('li');
-      none.className = 'summary__empty';
-      none.textContent = 'The line-up is not available right now. Please try again shortly.';
+      none.className = 'notice';
+
+      if (reason && reason.code === 'NO_DATABASE') {
+        // Only the site owner will ever see this: it means the store database
+        // has not been connected yet, so there is nothing to load and nothing
+        // an ordinary visitor could do about it.
+        none.appendChild(nodeP('strong', 'Pre-orders are not switched on yet.'));
+        none.appendChild(nodeP('span', 'The store database has not been connected. Until it is, the line-up cannot load and no order can be placed.'));
+        var help = document.createElement('a');
+        help.href = '/admin';
+        help.textContent = 'Open the admin panel for setup steps →';
+        none.appendChild(help);
+      } else {
+        none.appendChild(nodeP('strong', 'The line-up will not load.'));
+        none.appendChild(nodeP('span', 'Please refresh the page. If it keeps happening, email us and we will take your pre-order by hand.'));
+      }
+
       picker.appendChild(none);
       return;
     }
@@ -167,6 +204,7 @@
       var row = wrap.closest('.picker__row');
       if (row) row.classList.toggle('is-chosen', qty > 0);
       renderSummary();
+      syncCart();
     }
 
     down.addEventListener('click', function () { set(Number(input.value) - 1); });
@@ -303,6 +341,10 @@
   });
 
   function showConfirmation(order, email) {
+    // The order is on the server now; leaving it in the cart would invite a
+    // duplicate on the next visit.
+    if (cart) cart.clear();
+
     document.getElementById('confirm-ref').textContent = order.reference;
     document.getElementById('confirm-total').textContent = rupees(Math.round(order.total * 100));
     document.getElementById('confirm-email').textContent = email;
@@ -343,30 +385,47 @@
     if (event.target.name && RULES[event.target.name]) fieldError(event.target.name, '');
   });
 
-  // A product page can hand over both the snack and the quantity chosen there.
+  // Start from whatever is in the cart.
+  if (cart) {
+    cart.items().forEach(function (item) { chosen[item.slug] = item.qty; });
+  }
+
+  // ?product= still works, for a link followed with JavaScript disabled on the
+  // page that produced it, or a URL shared directly.
   var params = new URLSearchParams(window.location.search);
   var preselect = params.get('product');
-  if (preselect) {
+  if (preselect && !chosen[preselect]) {
     var wanted = parseInt(params.get('qty'), 10);
     chosen[preselect] = Math.min(20, Math.max(1, isNaN(wanted) ? 1 : wanted));
   }
 
   fetch('/api/products', { headers: { Accept: 'application/json' } })
-    .then(function (res) { return res.ok ? res.json() : Promise.reject(new Error('unavailable')); })
+    .then(function (res) {
+      if (res.ok) return res.json();
+      return res.json().catch(function () { return {}; }).then(function (data) {
+        var err = new Error(data.error || 'unavailable');
+        err.code = data.code;
+        throw err;
+      });
+    })
     .then(function (data) {
       products = data.products || [];
-      // Drop a pre-selection that is not on sale, so the summary cannot show
-      // a line the server will refuse.
+      // Drop anything no longer on sale, so the summary cannot show a line the
+      // server would refuse.
       Object.keys(chosen).forEach(function (slug) {
         var match = products.filter(function (p) { return p.slug === slug; })[0];
         if (!match || match.status !== 'available') delete chosen[slug];
       });
       renderPicker();
       renderSummary();
+      syncCart();
     })
-    .catch(function () {
+    .catch(function (err) {
       products = [];
-      renderPicker();
-      say('We could not load the line-up. Please refresh the page.', 'error');
+      renderPicker(err);
+      say(err && err.code === 'NO_DATABASE'
+        ? 'Pre-orders are not switched on yet.'
+        : 'We could not load the line-up. Please refresh the page.', 'error');
+      submitBtn.disabled = true;
     });
 })();

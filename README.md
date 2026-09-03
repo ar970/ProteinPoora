@@ -32,7 +32,8 @@ Import the repository in Vercel. Framework preset: **Other**. Build command: non
 | `admin/index.html` | Admin panel, linked from every footer. Served at `/admin`. |
 | `api/` | Serverless functions: `products.js`, `preorders.js`, `admin.js`, plus shared `_lib/`. |
 | `assets/css/admin.css` | Admin panel styles. Loaded only by `/admin`. |
-| `assets/js/preorder.js`, `assets/js/admin.js` | Page scripts for the two new pages. |
+| `assets/js/cart.js` | Cart state, header count and drawer. Loaded on every storefront page. |
+| `assets/js/preorder.js`, `assets/js/admin.js` | Page scripts for the checkout and the admin panel. |
 | `scripts/dev-server.js` | Local server that mounts the real API handlers. |
 | `design-system/` | Design spec: colors, type, spacing, section order, Shopify plan. |
 
@@ -51,10 +52,16 @@ Clicking a thumbnail swaps the main image; clicking the main image opens it full
 
 ## Pre-orders and the admin panel
 
-Customers pre-order at `/preorder`; the buttons on the line-up cards and product
-pages link straight through, carrying the chosen snack and quantity. Orders land
-in Postgres and you manage them at `/admin`, linked from the footer of every
-page.
+**Add to cart** on the line-up cards and product pages fills a cart held in the
+browser's `localStorage`, so it survives moving between pages. The header shows
+a count and opens a drawer for a quick look; `/preorder` is the checkout, and
+its picker is the cart's editor — changing a quantity there changes the cart.
+Placing an order empties it. Orders land in Postgres and you manage them at
+`/admin`, linked from the footer of every page.
+
+Both add-to-cart buttons are links to `/preorder`, so they still do something
+sensible with JavaScript off; the cart script intercepts the click when it is
+on.
 
 Nothing works until `DATABASE_URL`, `ADMIN_USERNAME` and `ADMIN_PASSWORD` are
 set in the Vercel project. The credentials are deliberately not in this

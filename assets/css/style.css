@@ -2389,3 +2389,298 @@ button {
   list-style: none;
   text-align: left;
 }
+
+/* ==========================================================================
+   Cart — header button and drawer
+   Shaped like a Shopify cart drawer so the port swaps the contents, not the
+   layout. Built by assets/js/cart.js; there is no cart without JavaScript.
+   ========================================================================== */
+
+.cart-button {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 2px solid var(--cream-70);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--cream);
+  cursor: pointer;
+  transition:
+    background-color var(--t-fast) var(--ease),
+    border-color var(--t-fast) var(--ease);
+}
+
+.cart-button:hover {
+  background: var(--cream-10);
+  border-color: var(--cream);
+}
+
+.cart-button__icon {
+  width: 20px;
+  height: 20px;
+}
+
+/* display:grid would otherwise beat the user agent's [hidden] rule, leaving a
+   badge reading "0" on an empty cart. */
+.cart-button__count[hidden] {
+  display: none;
+}
+
+.cart-button__count {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  display: grid;
+  place-items: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  border-radius: var(--radius-pill);
+  background: var(--orange);
+  color: var(--navy-ink);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+/* Below this the wordmark, cart, CTA and menu button stop fitting on one row.
+   The cart is the more useful of the two buttons, so the text CTA goes. */
+@media (max-width: 560px) {
+  .header__actions .btn--cream {
+    display: none;
+  }
+}
+
+/* --- Drawer -------------------------------------------------------------- */
+.drawer {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+}
+
+.drawer__scrim {
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 16, 50, 0.45);
+  opacity: 0;
+  transition: opacity var(--t-base) var(--ease);
+}
+
+.drawer.is-open .drawer__scrim {
+  opacity: 1;
+}
+
+.drawer__panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  width: min(400px, 100%);
+  background: var(--paper);
+  box-shadow: -20px 0 50px rgba(8, 14, 46, 0.25);
+  transform: translateX(100%);
+  transition: transform var(--t-base) var(--ease);
+}
+
+.drawer.is-open .drawer__panel {
+  transform: translateX(0);
+}
+
+.drawer__panel:focus-visible {
+  outline: none;
+}
+
+.drawer__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.1rem 1.25rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.drawer__title {
+  margin: 0;
+  color: var(--navy-ink);
+  font-family: var(--font-display);
+  font-size: 1.375rem;
+  font-weight: 700;
+}
+
+.drawer__close {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--navy-ink);
+  cursor: pointer;
+  transition: background-color var(--t-fast) var(--ease);
+}
+
+.drawer__close:hover {
+  background: var(--tile);
+}
+
+.drawer__close svg {
+  width: 18px;
+  height: 18px;
+}
+
+.drawer__body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem 1.25rem;
+}
+
+.drawer__empty {
+  display: grid;
+  gap: 1rem;
+  justify-items: center;
+  padding: 3rem 0;
+  color: var(--text);
+  text-align: center;
+}
+
+.drawer__list {
+  display: grid;
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.drawer__line {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) auto;
+  gap: 0.85rem;
+  align-items: center;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.drawer__line:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.drawer__thumb {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+}
+
+.drawer__name {
+  margin: 0;
+  color: var(--navy-ink);
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.drawer__price {
+  margin: 0;
+  color: var(--text);
+  font-size: 0.8125rem;
+}
+
+.drawer__controls {
+  display: grid;
+  gap: 0.3rem;
+  justify-items: center;
+}
+
+.qty--sm .qty__btn {
+  width: 34px;
+  height: 34px;
+  font-size: 1rem;
+}
+
+.qty--sm .qty__input {
+  width: 36px;
+  height: 34px;
+  font-size: 0.875rem;
+}
+
+.linklike {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--text);
+  font: inherit;
+  font-size: 0.75rem;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.linklike:hover {
+  color: var(--error);
+}
+
+.drawer__foot {
+  padding: 1.1rem 1.25rem;
+  border-top: 1px solid var(--line);
+  background: var(--cream-soft);
+}
+
+.drawer__total {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.9rem;
+  color: var(--navy-ink);
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.drawer__total span:last-child {
+  font-variant-numeric: tabular-nums;
+}
+
+.drawer__note {
+  margin: 0.75rem 0 0;
+  color: var(--text);
+  font-size: 0.8125rem;
+  text-align: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .drawer__scrim,
+  .drawer__panel {
+    transition: none;
+  }
+}
+
+/* Explains why the picker is empty — a failed load, or a store that has not
+   been connected to its database yet. */
+.notice {
+  display: grid;
+  gap: 0.35rem;
+  padding: 1.15rem 1.25rem;
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--orange);
+  border-radius: 12px;
+  background: var(--cream-soft);
+  color: var(--text);
+  font-size: 0.9375rem;
+  list-style: none;
+}
+
+.notice strong {
+  color: var(--navy-ink);
+  font-size: 1rem;
+}
+
+.notice a {
+  justify-self: start;
+  margin-top: 0.35rem;
+  color: var(--pack-blue);
+  font-weight: 600;
+}

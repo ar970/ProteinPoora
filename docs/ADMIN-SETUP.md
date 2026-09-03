@@ -13,7 +13,9 @@ Customers pre-order at **`/preorder`**. You manage everything at **`/admin`**,
 linked from the footer of every page.
 
 **Two things must be set up in Vercel before either page works.** Until then
-`/preorder` says the line-up is unavailable and `/admin` refuses every sign-in.
+`/preorder` says pre-orders are not switched on yet and disables its submit
+button, and `/admin` shows which variables are still missing instead of a
+sign-in form.
 
 ---
 
@@ -88,6 +90,12 @@ you see locally is what deploys.
 ---
 
 ## How it behaves
+
+**The cart.** Adding a snack writes to `localStorage` in that browser — it is
+never sent anywhere until the order is placed, and it is per-device, so nothing
+carries between a customer's phone and laptop. Each line keeps the name and
+price that were on screen when it was added, purely so the drawer can render
+without waiting for the API.
 
 **Placing an order.** The browser sends slugs and quantities — never a price.
 The server looks every price up in the database as it writes the order, so a

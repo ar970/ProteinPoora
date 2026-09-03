@@ -18,7 +18,7 @@
   <link rel="preload" href="/assets/fonts/baloo-2-devanagari-wordmark.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/assets/fonts/dm-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="/assets/css/fonts.css?v=3">
-  <link rel="stylesheet" href="/assets/css/style.css?v=16">
+  <link rel="stylesheet" href="/assets/css/style.css?v=18">
   <script>document.documentElement.classList.replace('no-js', 'js');</script>
 </head>
 <body>
@@ -66,6 +66,14 @@
         </nav>
 
         <div class="header__actions">
+          <button class="cart-button" type="button" data-cart-button aria-label="Cart, empty">
+            <svg class="cart-button__icon" viewBox="0 0 20 20" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2.5 3h2l1.7 8.4a1.5 1.5 0 0 0 1.5 1.2h6.2a1.5 1.5 0 0 0 1.5-1.2L16.8 6H5.3"/>
+              <circle cx="8.2" cy="16.4" r="1.1"/>
+              <circle cx="14.4" cy="16.4" r="1.1"/>
+            </svg>
+            <span class="cart-button__count" data-cart-count hidden>0</span>
+          </button>
           <a class="btn btn--cream btn--sm" href="#choose">Pre-order</a>
           <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
             <span class="visually-hidden menu-toggle__label">Open menu</span>
@@ -244,7 +252,8 @@
     </div>
   </dialog>
 
-  <script src="/assets/js/main.js?v=16" defer></script>
-  <script src="/assets/js/preorder.js?v=16" defer></script>
+  <script src="/assets/js/cart.js?v=18" defer></script>
+  <script src="/assets/js/main.js?v=18" defer></script>
+  <script src="/assets/js/preorder.js?v=18" defer></script>
 </body>
 </html>

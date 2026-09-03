@@ -21,7 +21,7 @@
         imagesrcset="/assets/img/masala-bhujia-pack-720.webp 720w, /assets/img/masala-bhujia-pack-1054.webp 1054w"
         imagesizes="(min-width: 1024px) 520px, (min-width: 600px) 420px, 72vw">
   <link rel="stylesheet" href="/assets/css/fonts.css?v=3">
-  <link rel="stylesheet" href="/assets/css/style.css?v=16">
+  <link rel="stylesheet" href="/assets/css/style.css?v=18">
   <script>document.documentElement.classList.replace('no-js', 'js');</script>
 </head>
 <body>
@@ -83,6 +83,14 @@
         </nav>
 
         <div class="header__actions">
+          <button class="cart-button" type="button" data-cart-button aria-label="Cart, empty">
+            <svg class="cart-button__icon" viewBox="0 0 20 20" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2.5 3h2l1.7 8.4a1.5 1.5 0 0 0 1.5 1.2h6.2a1.5 1.5 0 0 0 1.5-1.2L16.8 6H5.3"/>
+              <circle cx="8.2" cy="16.4" r="1.1"/>
+              <circle cx="14.4" cy="16.4" r="1.1"/>
+            </svg>
+            <span class="cart-button__count" data-cart-count hidden>0</span>
+          </button>
           <a class="btn btn--cream btn--sm" href="/preorder">Pre-order</a>
           <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
             <span class="visually-hidden menu-toggle__label">Open menu</span>
@@ -249,7 +257,8 @@
               </ul>
               <div class="product-card__buy">
                 <p class="product-card__price">₹99</p>
-                <a class="product-card__btn" href="/preorder?product=masala-bhujia">Pre-order</a>
+                <a class="product-card__btn" href="/preorder?product=masala-bhujia"
+                         data-add-to-cart="masala-bhujia" data-thumb="/assets/img/masala-bhujia-pack-720.webp" data-name="Masala Bhujia" data-price-paise="9900">Add to cart</a>
               </div>
             </article>
           </li>
@@ -277,7 +286,8 @@
               </ul>
               <div class="product-card__buy">
                 <p class="product-card__price">₹99</p>
-                <a class="product-card__btn" href="/preorder?product=pudina-bhujia">Pre-order</a>
+                <a class="product-card__btn" href="/preorder?product=pudina-bhujia"
+                         data-add-to-cart="pudina-bhujia" data-thumb="/assets/img/pudina-bhujia-pack-720.webp" data-name="Pudina Bhujia" data-price-paise="9900">Add to cart</a>
               </div>
             </article>
           </li>
@@ -305,7 +315,8 @@
               </ul>
               <div class="product-card__buy">
                 <p class="product-card__price">₹89</p>
-                <a class="product-card__btn" href="/preorder?product=sweet-chilli-chakli">Pre-order</a>
+                <a class="product-card__btn" href="/preorder?product=sweet-chilli-chakli"
+                         data-add-to-cart="sweet-chilli-chakli" data-thumb="/assets/img/chakli-pack-720-v2.webp" data-name="Sweet Chilli Chakli" data-price-paise="8900">Add to cart</a>
               </div>
             </article>
           </li>
@@ -333,7 +344,8 @@
               </ul>
               <div class="product-card__buy">
                 <p class="product-card__price">₹89</p>
-                <a class="product-card__btn" href="/preorder?product=cheddar-cheese-chakli">Pre-order</a>
+                <a class="product-card__btn" href="/preorder?product=cheddar-cheese-chakli"
+                         data-add-to-cart="cheddar-cheese-chakli" data-thumb="/assets/img/cheddar-chakli-pack-720-v2.webp" data-name="Cheddar Cheese Chakli" data-price-paise="8900">Add to cart</a>
               </div>
             </article>
           </li>
@@ -361,7 +373,8 @@
               </ul>
               <div class="product-card__buy">
                 <p class="product-card__price">₹99</p>
-                <a class="product-card__btn" href="/preorder?product=korean-bbq-peanuts">Pre-order</a>
+                <a class="product-card__btn" href="/preorder?product=korean-bbq-peanuts"
+                         data-add-to-cart="korean-bbq-peanuts" data-thumb="/assets/img/korean-bbq-peanuts-pack-720-v2.webp" data-name="Korean BBQ Peanuts" data-price-paise="9900">Add to cart</a>
               </div>
             </article>
           </li>
@@ -398,6 +411,7 @@
     </div>
   </footer>
 
-  <script src="/assets/js/main.js?v=16" defer></script>
+  <script src="/assets/js/cart.js?v=18" defer></script>
+  <script src="/assets/js/main.js?v=18" defer></script>
 </body>
 </html>

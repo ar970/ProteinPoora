@@ -151,6 +151,13 @@ Nothing that a customer reads as *content* goes in the database, because none of
 it would survive the port. Nothing that changes with a business decision stays
 hardcoded in HTML, because the admin has to be able to change it.
 
+The cart lives in `localStorage` under `pp_cart_v1` and is display state only:
+names and prices are cached there so the drawer paints instantly, and the server
+re-prices every line on write. `/preorder` is the checkout, and its picker is the
+cart's editor rather than a second source of truth. On Shopify this file is
+replaced by `/cart.js` and the theme's cart drawer, which is why the drawer
+markup is shaped like one.
+
 Rules that hold regardless of storage:
 
 - Money is stored as an integer number of **paise**. Never a float.
