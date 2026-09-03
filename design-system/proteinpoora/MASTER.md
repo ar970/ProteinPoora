@@ -135,6 +135,26 @@ locales/    en.default.json, en.default.schema.json
 - LCP ≤ 2.0 s on a mid-range phone over 4G. CLS < 0.1: every image has width/height or aspect-ratio.
 - No third-party scripts in the theme. No web font from a CDN.
 
+## Caching on Vercel — the rename rule
+
+`vercel.json` serves `/assets/fonts/` and `/assets/img/` as
+`max-age=31536000, immutable`. That is only safe while **a URL's bytes never
+change**. Re-exporting artwork over an existing filename does not reach anyone
+who has already loaded the page — their browser and the Vercel edge both keep
+the old copy for a year, and no redeploy can evict it.
+
+So when new artwork replaces an existing image:
+
+- **Rename the file**, don't overwrite it — append `-v2`, `-v3`, … before the
+  extension (`korean-bbq-peanuts-pack-720-v2.webp`), then rewrite every
+  reference. A new URL is the only thing a cached browser will refetch.
+- CSS and JS are `must-revalidate` instead, so those stay on `?v=N` query
+  params in the `<link>`/`<script>` tags.
+
+On Shopify this problem disappears: `asset_url` appends its own `?v=` stamp
+whenever the asset changes, so the Liquid port drops the `-vN` suffixes and
+lets the platform version the URLs.
+
 ## Pre-delivery checklist
 
 - [ ] No emoji as icons (inline SVG only)
