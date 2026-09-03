@@ -76,6 +76,16 @@ Where there is no hover (a phone), each pack tears open once, the first time it 
 
 To cut pieces from a new photo, add a source and its boxes to `scripts/extract-pieces.py` and run it with `--sheet` to get a contact sheet of what came out. Cut from the **lifestyle photo**, not the pack artwork: a strand lying loose on the table is photographed several times larger there. Give each box a margin of background around the piece, and say which side of the ground the food sits on — without that, the shadow is keyed along with the piece.
 
+## Meta Pixel
+
+The pixel (`1712138209892288`) fires a `PageView` on all seven storefront pages: the homepage, `/preorder` and the five product pages. The script sits at the end of each page's `<head>`; the `<noscript>` fallback image sits at the top of `<body>`, because inside `<head>` a `<noscript>` may only hold `link`, `style` and `meta` — an `<img>` there is invalid HTML.
+
+**It is deliberately not on `/admin`.** Meta's automatic advanced matching reads form fields on the page and sends them hashed, and the admin panel exists to display other people's names, phone numbers and addresses. There is no advertising value in tracking your own admin sessions either.
+
+There is no build step, so the block is repeated on each page — the same as the header, ticker and footer. In a Liquid theme all of them collapse into `theme.liquid`, with the pixel id coming from a theme setting.
+
+The base code reports page views only. **Nothing reports an add to cart or a completed pre-order**, so the pixel cannot yet optimise or attribute ads — that needs `AddToCart` on the cart buttons and `Purchase`/`Lead` on the pre-order confirmation.
+
 ## Pre-orders and the admin panel
 
 **Add to cart** on the line-up cards and product pages fills a cart held in the
