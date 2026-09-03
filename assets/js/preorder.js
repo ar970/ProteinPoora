@@ -118,7 +118,7 @@
 
   /* --- product picker --------------------------------------------------- */
 
-  function renderPicker(reason) {
+  function renderPicker() {
     picker.removeAttribute('data-loading');
     picker.textContent = '';
 
@@ -126,20 +126,10 @@
       var none = document.createElement('li');
       none.className = 'notice';
 
-      if (reason && reason.code === 'NO_DATABASE') {
-        // Only the site owner will ever see this: it means the store database
-        // has not been connected yet, so there is nothing to load and nothing
-        // an ordinary visitor could do about it.
-        none.appendChild(nodeP('strong', 'Pre-orders are not switched on yet.'));
-        none.appendChild(nodeP('span', 'The store database has not been connected. Until it is, the line-up cannot load and no order can be placed.'));
-        var help = document.createElement('a');
-        help.href = '/admin';
-        help.textContent = 'Open the admin panel for setup steps →';
-        none.appendChild(help);
-      } else {
-        none.appendChild(nodeP('strong', 'The line-up will not load.'));
-        none.appendChild(nodeP('span', 'Please refresh the page. If it keeps happening, email us and we will take your pre-order by hand.'));
-      }
+      // Only reachable if the catalogue in the page is empty or malformed —
+      // the API can no longer empty this list.
+      none.appendChild(nodeP('strong', 'The line-up will not load.'));
+      none.appendChild(nodeP('span', 'Please refresh the page. If it keeps happening, email us and we will take your pre-order by hand.'));
 
       picker.appendChild(none);
       return;

@@ -22,7 +22,7 @@
  * which needs a database connected to the Vercel project instead.
  */
 window.PP_SUPABASE = {
-  url: '',
-  anonKey: '',
+  url: 'https://rahalwezrtrxvpqaegha.supabase.co',
+  anonKey: 'sb_publishable_5gIS4hjbDX-IXPAkx81rTw_LEjv6Kex',
   table: 'preorders'
 };
