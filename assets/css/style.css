@@ -2684,3 +2684,146 @@ button {
   color: var(--pack-blue);
   font-weight: 600;
 }
+
+/* ==========================================================================
+   Packs that tear open
+   Hovering a line-up card rips the top off the pouch and spills the snack.
+   Built on demand by assets/js/tear.js; nothing here applies until it is.
+   ========================================================================== */
+
+.tear {
+  position: absolute;
+  inset: 0;
+  /* The pieces fly past the pack's edges, so nothing may clip them. */
+  overflow: visible;
+}
+
+/* A torn card lifts above its neighbours, so the pieces that leave it land on
+   the navy rather than under the next card along. */
+.product-card__media.is-torn {
+  z-index: 5;
+}
+
+.product-card:hover,
+.product-card:focus-within {
+  z-index: 5;
+}
+
+/* The two halves of the pack are the same photograph clipped along the same
+   ragged line — the first keeps what is below it, the second what is above.
+   Because the points are identical the seam is invisible when closed. */
+.tear__body,
+.tear__lid {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 14px 20px rgba(23, 57, 122, 0.28));
+}
+
+/* The line sits where a pouch is actually opened: just under the top seam,
+   not through the middle of the label. */
+.tear__body {
+  clip-path: polygon(
+    0 16%, 6% 19.4%, 12% 13.8%, 19% 18.6%, 26% 13.2%, 33% 18%, 40% 14%,
+    47% 19.2%, 54% 14.6%, 61% 18.8%, 68% 13.4%, 75% 18.2%, 82% 13.9%, 89% 19%,
+    95% 14.2%, 100% 16.4%, 100% 100%, 0 100%
+  );
+}
+
+.tear__lid {
+  clip-path: polygon(
+    0 0, 100% 0, 100% 16.4%, 95% 14.2%, 89% 19%, 82% 13.9%, 75% 18.2%, 68% 13.4%,
+    61% 18.8%, 54% 14.6%, 47% 19.2%, 40% 14%, 33% 18%, 26% 13.2%, 19% 18.6%,
+    12% 13.8%, 6% 19.4%, 0 16%
+  );
+  /* Hinged on the tear itself, so the flap peels rather than flies. */
+  transform-origin: 16% 16%;
+  transition: transform 460ms var(--ease-spring), opacity 460ms var(--ease);
+  z-index: 2;
+}
+
+.is-torn .tear__lid {
+  transform: translate(-2%, -5%) rotate(-13deg);
+}
+
+/* The dark inside of the pouch, uncovered as the lid comes away. */
+.tear__inside {
+  position: absolute;
+  left: 27%;
+  right: 27%;
+  top: 12.5%;
+  height: 4.4%;
+  border-radius: 46% 46% 34% 34% / 84% 84% 26% 26%;
+  background: linear-gradient(#3A2614 0%, #55381E 60%, #7A5730 100%);
+  filter: blur(0.4px);
+  opacity: 0;
+  transition: opacity 260ms var(--ease) 60ms;
+}
+
+.is-torn .tear__inside {
+  opacity: 0.92;
+}
+
+/* --- The snack coming out -------------------------------------------------
+   Each piece is wrapped in a span the size of the card, so its --x/--y can be
+   percentages of the card rather than of the piece, which would otherwise make
+   a small crumb travel a small distance and a large one a large distance. */
+.tear__bits {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.bit {
+  position: absolute;
+  inset: 0;
+  transform: translate(0, 0);
+  transition: transform 680ms var(--ease-spring) var(--d);
+}
+
+.is-torn .bit {
+  transform: translate(var(--x), var(--y));
+}
+
+.bit img {
+  position: absolute;
+  left: 50%;
+  top: 15%;
+  width: 30%;
+  height: auto;
+  opacity: 0;
+  transform: translate(-50%, -50%) rotate(0deg) scale(0.35);
+  transform-origin: 50% 50%;
+  filter: drop-shadow(0 4px 6px rgba(12, 20, 60, 0.35));
+  transition:
+    transform 680ms var(--ease-spring) var(--d),
+    opacity 240ms var(--ease) var(--d);
+}
+
+.is-torn .bit img {
+  opacity: 1;
+  transform: translate(-50%, -50%) rotate(var(--r)) scale(var(--s));
+}
+
+/* The pack normally grows a little on hover. With the tear running, that would
+   fight the lid's own movement. */
+.product-card:hover .product-card__media .tear__body,
+.product-card:hover .product-card__media .tear__lid {
+  transform: none;
+}
+
+.product-card:hover .product-card__media.is-torn .tear__lid {
+  transform: translate(-2%, -5%) rotate(-13deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tear__lid,
+  .tear__inside,
+  .bit,
+  .bit img {
+    transition: none;
+  }
+}

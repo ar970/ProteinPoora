@@ -34,6 +34,8 @@ Import the repository in Vercel. Framework preset: **Other**. Build command: non
 | `assets/css/admin.css` | Admin panel styles. Loaded only by `/admin`. |
 | `assets/js/cart.js` | Cart state, header count and drawer. Loaded on every storefront page. |
 | `assets/js/preorder.js`, `assets/js/admin.js` | Page scripts for the checkout and the admin panel. |
+| `assets/js/tear.js` | The line-up packs that tear open on hover. |
+| `assets/img/bits/` | The snack cut-outs that spill out of a torn pack, cut from the product photography by `scripts/extract-pieces.py`. |
 | `scripts/dev-server.js` | Local server that mounts the real API handlers. |
 | `design-system/` | Design spec: colors, type, spacing, section order, Shopify plan. |
 
@@ -49,6 +51,24 @@ Snapshots live in the gallery on the product page. To add one:
 2. In `products/masala-bhujia/index.html`, copy one of the `<li>` blocks inside `<ul class="thumbs">` and point its `data-src`, `data-srcset`, `data-large`, `data-alt` and the thumbnail `<img>` at the new files.
 
 Clicking a thumbnail swaps the main image; clicking the main image opens it full-size. Left and right arrow keys move between photos.
+
+## Packs that tear open
+
+Hovering a line-up card rips the top off the pouch and throws the snack out of it. Each pack spills its own contents — bhujia strands, chilli slices, cheese cubes, peanuts.
+
+The pack is not a second photograph. `assets/js/tear.js` clones the card's existing `<img>` twice and clips the copies along the same ragged line, one keeping what is above it and one what is below, so they fit together invisibly and come apart when torn. Cloning costs no download. Nothing is built until a card is first hovered, so a visitor who never hovers never fetches a piece; once the pack closes again the halves come back out of the page and the original `<img>` goes back in, leaving the card exactly as it shipped.
+
+The card is tagged in `index.html`:
+
+```html
+<div class="product-card__media" data-tear="masala-bhujia" data-bits="6">
+```
+
+`data-tear` is the slug, and the pieces are `assets/img/bits/<slug>-1.webp` … `-<data-bits>.webp`. To add a pack, add cut-outs under that naming and tag its media box.
+
+Where there is no hover (a phone), each pack tears open once, the first time it is scrolled to, and closes itself after two seconds. Under `prefers-reduced-motion: reduce` nothing is built at all.
+
+To cut pieces from a new photo, add a source and its boxes to `scripts/extract-pieces.py` and run it — it keys each box against its own local background and keeps the largest blob, so give it a box with a margin of background around the piece.
 
 ## Pre-orders and the admin panel
 
