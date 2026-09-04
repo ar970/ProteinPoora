@@ -57,7 +57,7 @@ Ten questions on the homepage at `#faq`, which the header and every footer alrea
 
 Every answer is taken from something the site already states — the protein figures and claims on the cards, the ingredient and allergen panels on the product pages, the storage line, and what `/preorder` promises ("we will email to confirm, nothing has been charged"). If you change one of those, change the answer with it.
 
-Two answers are deliberately vague because the facts are not settled: there is no shipping date, and there is no contact address anywhere on the site, so "can I cancel" says to quote the `PP-` reference rather than naming an inbox. Both are worth firming up.
+Two answers are deliberately vague because the facts are not settled: there is no shipping date, and there is no contact address anywhere on the site, so "can I cancel" asks people to get in touch with the name and number they ordered with, rather than naming an inbox. Both are worth firming up.
 
 ## Meta Pixel
 
@@ -75,8 +75,9 @@ The base code reports page views only. **Nothing reports an add to cart or a com
 browser's `localStorage`, so it survives moving between pages. The header shows
 a count and opens a drawer for a quick look; `/preorder` is the checkout, and
 its picker is the cart's editor — changing a quantity there changes the cart.
-Placing an order empties it. Orders land in Postgres and you manage them at
-`/admin`, linked from the footer of every page.
+Placing an order empties it and the page becomes a thank you with one button
+back to the homepage — no reference, no total, nothing to read. Orders land in
+Postgres and you manage them at `/admin`, linked from the footer of every page.
 
 Both add-to-cart buttons are links to `/preorder`, so they still do something
 sensible with JavaScript off; the cart script intercepts the click when it is

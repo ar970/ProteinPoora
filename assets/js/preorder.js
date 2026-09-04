@@ -421,7 +421,7 @@
     say('Placing your pre-order…');
 
     (useSupabase ? sendToSupabase(payload) : sendToApi(payload))
-      .then(function (order) { showConfirmation(order, payload.email); })
+      .then(function () { showConfirmation(); })
       .catch(function (err) {
         submitBtn.disabled = false;
         say(err.message || 'We could not place that pre-order. Please try again.', 'error');
@@ -511,30 +511,18 @@
     return 'PP-' + out;
   }
 
-  function showConfirmation(order, email) {
+  function showConfirmation() {
     // The order is on the server now; leaving it in the cart would invite a
     // duplicate on the next visit.
     if (cart) cart.clear();
 
-    document.getElementById('confirm-ref').textContent = order.reference;
-    document.getElementById('confirm-total').textContent = rupees(Math.round(order.total * 100));
-    document.getElementById('confirm-email').textContent = email;
-
-    var list = document.getElementById('confirm-lines');
-    list.textContent = '';
-    (order.items || []).forEach(function (item) {
-      var li = document.createElement('li');
-      li.className = 'summary__line';
-      var left = document.createElement('span');
-      left.textContent = item.qty + ' × ' + item.name;
-      var right = document.createElement('span');
-      right.textContent = rupees(item.price_paise * item.qty);
-      li.appendChild(left);
-      li.appendChild(right);
-      list.appendChild(li);
-    });
-
     form.hidden = true;
+    // The page heading goes too: "Pre-order the first batch. Pay nothing
+    // today." reads oddly above a thank you for an order already placed.
+    ['page-crumbs', 'page-head'].forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) el.hidden = true;
+    });
     confirmEl.hidden = false;
     confirmEl.setAttribute('tabindex', '-1');
     confirmEl.focus();

@@ -75,6 +75,14 @@ img {
   height: auto;
 }
 
+/* Any author rule that sets a display beats the user agent's [hidden], so
+   `el.hidden = true` quietly does nothing on anything styled as flex or grid.
+   That has caught the cart count, the checkout form and the page heading.
+   One rule, once, rather than a guard per component. */
+[hidden] {
+  display: none !important;
+}
+
 a {
   color: inherit;
 }
@@ -2387,33 +2395,10 @@ button {
 .confirm {
   max-width: 560px;
   margin: 0 auto;
-  padding: 2rem 1.5rem;
+  padding: 3.5rem 1.5rem;
   border-radius: 20px;
   background: var(--cream-soft);
   text-align: center;
-}
-
-.confirm__ref {
-  display: inline-block;
-  margin: 0.75rem 0 0.25rem;
-  padding: 0.4rem 1rem;
-  border-radius: var(--radius-pill);
-  background: var(--navy);
-  color: var(--cream);
-  font-family: var(--font-display);
-  font-size: 1.5rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-}
-
-.confirm__lines {
-  display: grid;
-  gap: 0.4rem;
-  margin: 1.25rem 0;
-  padding: 1.25rem 0;
-  border-block: 1px solid rgba(30, 45, 120, 0.15);
-  list-style: none;
-  text-align: left;
 }
 
 /* ==========================================================================
@@ -2447,12 +2432,6 @@ button {
 .cart-button__icon {
   width: 20px;
   height: 20px;
-}
-
-/* display:grid would otherwise beat the user agent's [hidden] rule, leaving a
-   badge reading "0" on an empty cart. */
-.cart-button__count[hidden] {
-  display: none;
 }
 
 .cart-button__count {
