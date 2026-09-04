@@ -77,6 +77,101 @@
     'Ladakh', 'Lakshadweep', 'Puducherry'
   ];
 
+  /* Cities whose state is not in question, so the customer does not have to
+     scroll a list of thirty-six to tell us something we can already work out.
+     Names that belong to more than one state are deliberately absent --
+     Aurangabad is in Maharashtra and in Bihar, Bilaspur in Chhattisgarh and in
+     Himachal -- because a wrong state posted quietly is worse than an empty
+     one. Old names are keys too: people still type Bangalore and Bombay. */
+  var CITY_STATE = {
+    // Delhi NCR
+    'delhi': 'Delhi', 'new delhi': 'Delhi', 'gurgaon': 'Haryana', 'gurugram': 'Haryana',
+    'faridabad': 'Haryana', 'noida': 'Uttar Pradesh', 'greater noida': 'Uttar Pradesh',
+    'ghaziabad': 'Uttar Pradesh', 'sonipat': 'Haryana', 'panipat': 'Haryana',
+    'karnal': 'Haryana', 'ambala': 'Haryana', 'hisar': 'Haryana', 'rohtak': 'Haryana',
+    // Maharashtra
+    'mumbai': 'Maharashtra', 'bombay': 'Maharashtra', 'navi mumbai': 'Maharashtra',
+    'thane': 'Maharashtra', 'pune': 'Maharashtra', 'poona': 'Maharashtra',
+    'nagpur': 'Maharashtra', 'nashik': 'Maharashtra', 'nasik': 'Maharashtra',
+    'kolhapur': 'Maharashtra', 'solapur': 'Maharashtra', 'amravati': 'Maharashtra',
+    'sangli': 'Maharashtra', 'jalgaon': 'Maharashtra', 'akola': 'Maharashtra',
+    'nanded': 'Maharashtra', 'satara': 'Maharashtra', 'ratnagiri': 'Maharashtra',
+    // Karnataka
+    'bengaluru': 'Karnataka', 'bangalore': 'Karnataka', 'mysuru': 'Karnataka',
+    'mysore': 'Karnataka', 'mangaluru': 'Karnataka', 'mangalore': 'Karnataka',
+    'hubballi': 'Karnataka', 'hubli': 'Karnataka', 'dharwad': 'Karnataka',
+    'belagavi': 'Karnataka', 'belgaum': 'Karnataka', 'davangere': 'Karnataka',
+    'shivamogga': 'Karnataka', 'shimoga': 'Karnataka', 'udupi': 'Karnataka',
+    'ballari': 'Karnataka', 'bellary': 'Karnataka', 'tumakuru': 'Karnataka',
+    // Tamil Nadu and Puducherry
+    'chennai': 'Tamil Nadu', 'madras': 'Tamil Nadu', 'coimbatore': 'Tamil Nadu',
+    'madurai': 'Tamil Nadu', 'tiruchirappalli': 'Tamil Nadu', 'trichy': 'Tamil Nadu',
+    'salem': 'Tamil Nadu', 'tirunelveli': 'Tamil Nadu', 'erode': 'Tamil Nadu',
+    'vellore': 'Tamil Nadu', 'thoothukudi': 'Tamil Nadu', 'tirupur': 'Tamil Nadu',
+    'thanjavur': 'Tamil Nadu', 'puducherry': 'Puducherry', 'pondicherry': 'Puducherry',
+    // Telangana and Andhra Pradesh
+    'hyderabad': 'Telangana', 'secunderabad': 'Telangana', 'warangal': 'Telangana',
+    'karimnagar': 'Telangana', 'nizamabad': 'Telangana', 'khammam': 'Telangana',
+    'visakhapatnam': 'Andhra Pradesh', 'vizag': 'Andhra Pradesh',
+    'vijayawada': 'Andhra Pradesh', 'guntur': 'Andhra Pradesh',
+    'tirupati': 'Andhra Pradesh', 'nellore': 'Andhra Pradesh',
+    'rajahmundry': 'Andhra Pradesh', 'kakinada': 'Andhra Pradesh',
+    'kurnool': 'Andhra Pradesh', 'anantapur': 'Andhra Pradesh',
+    // Kerala
+    'kochi': 'Kerala', 'cochin': 'Kerala', 'ernakulam': 'Kerala',
+    'thiruvananthapuram': 'Kerala', 'trivandrum': 'Kerala', 'kozhikode': 'Kerala',
+    'calicut': 'Kerala', 'thrissur': 'Kerala', 'kollam': 'Kerala',
+    'kannur': 'Kerala', 'alappuzha': 'Kerala', 'kottayam': 'Kerala',
+    // Gujarat
+    'ahmedabad': 'Gujarat', 'amdavad': 'Gujarat', 'surat': 'Gujarat',
+    'vadodara': 'Gujarat', 'baroda': 'Gujarat', 'rajkot': 'Gujarat',
+    'bhavnagar': 'Gujarat', 'jamnagar': 'Gujarat', 'gandhinagar': 'Gujarat',
+    'junagadh': 'Gujarat', 'anand': 'Gujarat', 'bharuch': 'Gujarat',
+    // Rajasthan
+    'jaipur': 'Rajasthan', 'jodhpur': 'Rajasthan', 'udaipur': 'Rajasthan',
+    'kota': 'Rajasthan', 'ajmer': 'Rajasthan', 'bikaner': 'Rajasthan',
+    'alwar': 'Rajasthan', 'bhilwara': 'Rajasthan', 'sikar': 'Rajasthan',
+    // Uttar Pradesh and Uttarakhand
+    'lucknow': 'Uttar Pradesh', 'kanpur': 'Uttar Pradesh', 'agra': 'Uttar Pradesh',
+    'varanasi': 'Uttar Pradesh', 'banaras': 'Uttar Pradesh', 'prayagraj': 'Uttar Pradesh',
+    'allahabad': 'Uttar Pradesh', 'meerut': 'Uttar Pradesh', 'bareilly': 'Uttar Pradesh',
+    'aligarh': 'Uttar Pradesh', 'moradabad': 'Uttar Pradesh', 'gorakhpur': 'Uttar Pradesh',
+    'jhansi': 'Uttar Pradesh', 'mathura': 'Uttar Pradesh', 'ayodhya': 'Uttar Pradesh',
+    'dehradun': 'Uttarakhand', 'haridwar': 'Uttarakhand', 'rishikesh': 'Uttarakhand',
+    'haldwani': 'Uttarakhand', 'roorkee': 'Uttarakhand', 'nainital': 'Uttarakhand',
+    // Madhya Pradesh and Chhattisgarh
+    'bhopal': 'Madhya Pradesh', 'indore': 'Madhya Pradesh', 'jabalpur': 'Madhya Pradesh',
+    'gwalior': 'Madhya Pradesh', 'ujjain': 'Madhya Pradesh', 'sagar': 'Madhya Pradesh',
+    'rewa': 'Madhya Pradesh', 'satna': 'Madhya Pradesh',
+    'raipur': 'Chhattisgarh', 'bhilai': 'Chhattisgarh', 'durg': 'Chhattisgarh',
+    'korba': 'Chhattisgarh',
+    // West Bengal, Odisha, the east
+    'kolkata': 'West Bengal', 'calcutta': 'West Bengal', 'howrah': 'West Bengal',
+    'durgapur': 'West Bengal', 'asansol': 'West Bengal', 'siliguri': 'West Bengal',
+    'darjeeling': 'West Bengal', 'kharagpur': 'West Bengal',
+    'bhubaneswar': 'Odisha', 'cuttack': 'Odisha', 'rourkela': 'Odisha',
+    'puri': 'Odisha', 'sambalpur': 'Odisha', 'berhampur': 'Odisha',
+    // Bihar and Jharkhand
+    'patna': 'Bihar', 'gaya': 'Bihar', 'bhagalpur': 'Bihar', 'muzaffarpur': 'Bihar',
+    'darbhanga': 'Bihar', 'purnia': 'Bihar',
+    'ranchi': 'Jharkhand', 'jamshedpur': 'Jharkhand', 'dhanbad': 'Jharkhand',
+    'bokaro': 'Jharkhand', 'deoghar': 'Jharkhand',
+    // Punjab, Haryana, the hills, the north
+    'ludhiana': 'Punjab', 'amritsar': 'Punjab', 'jalandhar': 'Punjab',
+    'patiala': 'Punjab', 'bathinda': 'Punjab', 'mohali': 'Punjab',
+    'chandigarh': 'Chandigarh', 'shimla': 'Himachal Pradesh',
+    'dharamshala': 'Himachal Pradesh', 'manali': 'Himachal Pradesh',
+    'solan': 'Himachal Pradesh', 'srinagar': 'Jammu and Kashmir',
+    'jammu': 'Jammu and Kashmir', 'leh': 'Ladakh',
+    // Goa and the north east
+    'panaji': 'Goa', 'panjim': 'Goa', 'margao': 'Goa', 'vasco da gama': 'Goa',
+    'guwahati': 'Assam', 'dibrugarh': 'Assam', 'silchar': 'Assam', 'jorhat': 'Assam',
+    'shillong': 'Meghalaya', 'imphal': 'Manipur', 'aizawl': 'Mizoram',
+    'kohima': 'Nagaland', 'dimapur': 'Nagaland', 'agartala': 'Tripura',
+    'itanagar': 'Arunachal Pradesh', 'gangtok': 'Sikkim',
+    'port blair': 'Andaman and Nicobar Islands'
+  };
+
   /* --- helpers ---------------------------------------------------------- */
 
   function rupees(paise) {
@@ -455,6 +550,50 @@
     option.textContent = name;
     stateSelect.appendChild(option);
   });
+
+  /* --- PIN code and city ------------------------------------------------- */
+
+  var pincodeInput = form.elements.pincode;
+  var cityInput = form.elements.city;
+
+  /* A PIN code is six digits and nothing else, so nothing else can be typed
+     into the box. Doing it here rather than only on submit means a pasted
+     phone number or a stray letter never survives long enough to be argued
+     with -- and the caret is put back where it was, or the browser drops it
+     to the end on every keystroke. */
+  pincodeInput.addEventListener('input', function () {
+    var at = this.selectionStart;
+    var before = this.value;
+    var clean = before.replace(/\D/g, '').slice(0, 6);
+    if (clean === before) return;
+    this.value = clean;
+    // Every character removed before the caret pulls it one place left.
+    var removed = before.slice(0, at).replace(/\D/g, '').length;
+    try { this.setSelectionRange(removed, removed); } catch (err) { /* older browsers */ }
+  });
+
+  /* Fill the state in from the city, for the cities where there is only one
+     answer. Never over anything the customer chose themselves: this is a
+     shortcut past a thirty-six item list, not a correction of it. */
+  var stateWasAuto = false;
+
+  function fillStateFromCity() {
+    var key = cityInput.value.trim().toLowerCase().replace(/\s+/g, ' ');
+    var found = CITY_STATE[key];
+    if (!found) return;
+    if (stateSelect.value && !stateWasAuto) return;
+    if (stateSelect.value === found) return;
+    stateSelect.value = found;
+    stateWasAuto = true;
+    fieldError('state', '');
+  }
+
+  cityInput.addEventListener('input', fillStateFromCity);
+  cityInput.addEventListener('change', fillStateFromCity);
+  cityInput.addEventListener('blur', fillStateFromCity);
+
+  // The moment they pick one themselves, it is theirs and we stop touching it.
+  stateSelect.addEventListener('change', function () { stateWasAuto = false; });
 
   // Clear a field's error as soon as the customer starts fixing it.
   form.addEventListener('input', function (event) {

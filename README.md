@@ -82,6 +82,10 @@ Both add-to-cart buttons are links to `/preorder`, so they still do something
 sensible with JavaScript off; the cart script intercepts the click when it is
 on.
 
+**The PIN code box only accepts digits**, six of them — anything else is stripped as it is typed, including out of a paste, and the caret is put back where it was rather than jumping to the end. Submitting still checks the whole thing (`[1-9]` then five digits: an Indian PIN never starts with a zero), and `docs/supabase-setup.sql` now carries the same rule as a database constraint, because the form is not the guard — anyone can post to that table with the public key. If your table already exists, the bottom of that file has the one `alter table` to add it.
+
+**Typing a city fills the state in.** `CITY_STATE` in `assets/js/preorder.js` maps about 150 Indian cities to their state, old names included, since people still type Bangalore and Bombay. Names that belong to more than one state — Aurangabad, Bilaspur — are deliberately absent: a wrong state posted quietly is worse than an empty one. It never writes over a state the customer chose themselves, and the moment they touch the dropdown it stops guessing.
+
 Signing in to `/admin` works as soon as the site deploys, using the built-in
 `archit` / `proteinpoora123`. Those are in the source of a **public**
 repository, so change them once you are up and running: set `ADMIN_PASSWORD`
