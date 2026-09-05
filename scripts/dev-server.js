@@ -8,7 +8,7 @@
  * deploy, including `cleanUrls` and the trailing-slash behaviour from
  * vercel.json. It loads the real handler modules — nothing here is a stub.
  *
- *   DATABASE_URL=... ADMIN_USERNAME=... ADMIN_PASSWORD=... node scripts/dev-server.js
+ *   DATABASE_URL=... node scripts/dev-server.js
  */
 
 const http = require('node:http');
@@ -34,7 +34,6 @@ const TYPES = {
 };
 
 const ROUTES = {
-  '/api/admin': path.join(ROOT, 'api', 'admin.js'),
   '/api/products': path.join(ROOT, 'api', 'products.js'),
   '/api/preorders': path.join(ROOT, 'api', 'preorders.js')
 };
@@ -92,5 +91,4 @@ const server = http.createServer(async (req, res) => {
 server.listen(PORT, () => {
   console.log(`Protein पूरा dev server → http://127.0.0.1:${PORT}`);
   if (!process.env.DATABASE_URL) console.log('  ! DATABASE_URL is not set — the API will return 503.');
-  if (!process.env.ADMIN_USERNAME) console.log('  ! ADMIN_USERNAME / ADMIN_PASSWORD are not set — /admin cannot sign in.');
 });

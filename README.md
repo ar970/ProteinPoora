@@ -1,18 +1,18 @@
 # Protein पूरा — website
 
-Storefront for [proteinpoora.shop](https://proteinpoora.shop), hosted on Vercel. The shop pages are plain HTML, CSS and a little JavaScript with no build step; three serverless functions in `api/` take pre-orders and back the admin panel. The structure mirrors Shopify sections so it can be ported to a Liquid theme later.
+Storefront for [proteinpoora.shop](https://proteinpoora.shop), hosted on Vercel. The shop pages are plain HTML, CSS and a little JavaScript with no build step; orders go straight to Supabase, with two serverless functions in `api/` as a fallback. The structure mirrors Shopify sections so it can be ported to a Liquid theme later.
 
 ## Preview locally
 
-The shop pages are static, but `/preorder` and `/admin` need the API, so use the dev server — it routes `/api/*` to the same handlers Vercel runs:
+The shop pages are static. Orders go straight to Supabase, so a plain file server is enough for most work; use the dev server when you want `/api/*` running too:
 
 ```bash
 npm install
-DATABASE_URL='postgres://…' ADMIN_USERNAME='archit' ADMIN_PASSWORD='…' node scripts/dev-server.js
+DATABASE_URL='postgres://…' node scripts/dev-server.js
 # then open http://127.0.0.1:3000
 ```
 
-Paths are absolute (`/assets/...`), so serve from the repo root, not by opening `index.html` directly. See [docs/ADMIN-SETUP.md](docs/ADMIN-SETUP.md) for the database and credentials.
+Paths are absolute (`/assets/...`), so serve from the repo root, not by opening `index.html` directly. See [docs/ADMIN-SETUP.md](docs/ADMIN-SETUP.md) for the Supabase table.
 
 ## Deploy to Vercel
 
@@ -29,11 +29,9 @@ Import the repository in Vercel. Framework preset: **Other**. Build command: non
 | `assets/js/main.js` | Menu toggle, gallery, hero carousel, scroll reveal. The pages work without it. |
 | `assets/img/` | Pack shots and lifestyle photos (WebP, two sizes each, transparent backgrounds), logo and favicons. Re-exported artwork is **renamed**, never overwritten — see the caching note in `design-system/proteinpoora/MASTER.md`. |
 | `preorder/index.html` | Pre-order form: product picker, customer details, address. Served at `/preorder`. |
-| `admin/index.html` | Admin panel, linked from every footer. Served at `/admin`. |
-| `api/` | Serverless functions: `products.js`, `preorders.js`, `admin.js`, plus shared `_lib/`. |
-| `assets/css/admin.css` | Admin panel styles. Loaded only by `/admin`. |
+| `api/` | Serverless functions: `products.js` and `preorders.js`, plus shared `_lib/`. Only used when Supabase is not configured. |
 | `assets/js/cart.js` | Cart state, header count and drawer. Loaded on every storefront page. |
-| `assets/js/preorder.js`, `assets/js/admin.js` | Page scripts for the checkout and the admin panel. |
+| `assets/js/preorder.js` | The checkout: picker, validation, and posting the order. |
 | `sources/open/` | Photographs of each pack torn open with its contents flying, as shot. Nothing on the site uses them; kept out of the deploy by `.vercelignore`. |
 | `scripts/dev-server.js` | Local server that mounts the real API handlers. |
 | `design-system/` | Design spec: colors, type, spacing, section order, Shopify plan. |
@@ -61,23 +59,25 @@ Two answers are deliberately vague because the facts are not settled: there is n
 
 ## Meta Pixel
 
-The pixel (`1712138209892288`) fires a `PageView` on all seven storefront pages: the homepage, `/preorder` and the five product pages. The script sits at the end of each page's `<head>`; the `<noscript>` fallback image sits at the top of `<body>`, because inside `<head>` a `<noscript>` may only hold `link`, `style` and `meta` — an `<img>` there is invalid HTML.
-
-**It is deliberately not on `/admin`.** Meta's automatic advanced matching reads form fields on the page and sends them hashed, and the admin panel exists to display other people's names, phone numbers and addresses. There is no advertising value in tracking your own admin sessions either.
+The pixel (`1712138209892288`) fires a `PageView` on all seven pages: the homepage, `/preorder` and the five product pages. The script sits at the end of each page's `<head>`; the `<noscript>` fallback image sits at the top of `<body>`, because inside `<head>` a `<noscript>` may only hold `link`, `style` and `meta` — an `<img>` there is invalid HTML.
 
 There is no build step, so the block is repeated on each page — the same as the header, ticker and footer. In a Liquid theme all of them collapse into `theme.liquid`, with the pixel id coming from a theme setting.
 
 The base code reports page views only. **Nothing reports an add to cart or a completed pre-order**, so the pixel cannot yet optimise or attribute ads — that needs `AddToCart` on the cart buttons and `Purchase`/`Lead` on the pre-order confirmation.
 
-## Pre-orders and the admin panel
+## Pre-orders
 
 **Add to cart** on the line-up cards and product pages fills a cart held in the
 browser's `localStorage`, so it survives moving between pages. The header shows
 a count and opens a drawer for a quick look; `/preorder` is the checkout, and
 its picker is the cart's editor — changing a quantity there changes the cart.
 Placing an order empties it and the page becomes a thank you with one button
-back to the homepage — no reference, no total, nothing to read. Orders land in
-Postgres and you manage them at `/admin`, linked from the footer of every page.
+back to the homepage — no reference, no total, nothing to read.
+
+**Orders are read in Supabase**, in its own Table Editor, by whoever is signed
+in to that project. There is no admin page on this site: one would have to hold
+a password in a public repository and would put customer names, phone numbers
+and addresses behind it. Supabase already does the job, with real accounts.
 
 Both add-to-cart buttons are links to `/preorder`, so they still do something
 sensible with JavaScript off; the cart script intercepts the click when it is
@@ -87,14 +87,8 @@ on.
 
 **Typing a city fills the state in.** `CITY_STATE` in `assets/js/preorder.js` maps about 150 Indian cities to their state, old names included, since people still type Bangalore and Bombay. Names that belong to more than one state — Aurangabad, Bilaspur — are deliberately absent: a wrong state posted quietly is worse than an empty one. It never writes over a state the customer chose themselves, and the moment they touch the dropdown it stops guessing.
 
-Signing in to `/admin` works as soon as the site deploys, using the built-in
-`archit` / `proteinpoora123`. Those are in the source of a **public**
-repository, so change them once you are up and running: set `ADMIN_PASSWORD`
-in the Vercel project and redeploy — the environment always overrides the
-built-in values. The panel shows a banner until you do.
-
-Storing pre-orders still needs a database connected to the project; until then
-`/preorder` says so rather than taking an order it cannot keep.
+Storing pre-orders needs the Supabase table in place; until then `/preorder`
+says so rather than taking an order it cannot keep.
 **[docs/ADMIN-SETUP.md](docs/ADMIN-SETUP.md) has the steps.**
 
 There is no payment step. The form takes a list of interested customers before

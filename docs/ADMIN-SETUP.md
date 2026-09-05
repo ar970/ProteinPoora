@@ -99,40 +99,14 @@ enough to tell "nothing attached" from "wrong password" from "not redeployed".
 The tables are created on the first request, and the five current snacks are
 inserted at their present prices. Nothing to run by hand.
 
-## Admin sign-in (route B)
-
-Sign-in works as soon as the site deploys, with:
-
-| | |
-| --- | --- |
-| Username | `archit` |
-| Password | `proteinpoora123` |
-
-Those are in `api/_lib/auth.js`, which means they are in a **public**
-repository — anyone who finds `/admin` can read them and look at your
-customers' names, phone numbers and addresses. The panel says so on a banner
-until you change it.
-
-To change it, in Vercel: **Settings → Environment Variables**, add
-`ADMIN_PASSWORD` (and `ADMIN_USERNAME` if you want a different name), then
-**Deployments → Redeploy**. The environment always wins over the built-in
-values, so nothing in the code needs editing and the banner disappears.
-Changing the password also signs out anyone currently signed in, because the
-session signing key is derived from it.
-
-Optional: `ADMIN_SESSION_SECRET`, any long random string, signs sessions with a
-key independent of the password. Without it one is derived, which works fine.
-
----
-
 ## Running it locally
 
 ```bash
 npm install
 
 DATABASE_URL='postgres://…' \
-ADMIN_USERNAME='archit' \
-ADMIN_PASSWORD='choose-something' \
+DATABASE_URL='archit' \
+DATABASE_URL='choose-something' \
 node scripts/dev-server.js
 ```
 

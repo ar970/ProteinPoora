@@ -3,10 +3,10 @@
 /**
  * Pre-orders.
  *
- *   POST  /api/preorders                 → place one (public)
- *   GET   /api/preorders                 → list      (admin)
- *   GET   /api/preorders?format=csv      → export    (admin)
- *   PATCH /api/preorders  {id, status}   → move one  (admin)
+ *   POST  /api/preorders                 → place one
+
+Reading orders back is not something this file does. Orders are read in
+Supabase, by the one person signed in to it.
  *
  * Prices are re-read from the products table when the order is written. The
  * browser sends slugs and quantities only — never an amount — so a tampered
@@ -15,20 +15,12 @@
 
 const crypto = require('crypto');
 const db = require('./_lib/db.js');
-const auth = require('./_lib/auth.js');
 const {
   readJson, send, guard, onError, badRequest,
   text, email, phone, pincode, quantity
 } = require('./_lib/http.js');
 
-const STATUSES = ['pending', 'confirmed', 'shipped', 'cancelled'];
 const MAX_LINES = 10;
-
-function requireAdmin(req) {
-  const s = auth.session(req);
-  if (!s) throw Object.assign(new Error('Please sign in again.'), { statusCode: 401 });
-  return s;
-}
 
 /**
  * Order reference: PP- plus six characters. Digits 0/1 and letters I/O/S/Z are
@@ -60,33 +52,6 @@ function shape(row) {
     total: row.total_paise / 100,
     created_at: row.created_at
   };
-}
-
-function csvCell(value) {
-  const s = value == null ? '' : String(value);
-  // A leading =, +, - or @ makes Excel treat the cell as a formula. Customer
-  // names and addresses are untrusted input, so neutralise it.
-  const safe = /^[=+\-@\t\r]/.test(s) ? `'${s}` : s;
-  return `"${safe.replace(/"/g, '""')}"`;
-}
-
-function toCsv(rows) {
-  const head = [
-    'Reference', 'Placed', 'Status', 'Name', 'Email', 'Phone',
-    'Address 1', 'Address 2', 'City', 'State', 'PIN', 'Items', 'Total (₹)', 'Notes'
-  ];
-  const lines = [head.map(csvCell).join(',')];
-  for (const r of rows) {
-    const items = (r.items || []).map((i) => `${i.qty} × ${i.name}`).join('; ');
-    lines.push([
-      r.reference, new Date(r.created_at).toISOString(), r.status,
-      r.customer_name, r.email, r.phone,
-      r.address1, r.address2, r.city, r.state, r.pincode,
-      items, (r.total_paise / 100).toFixed(2), r.notes
-    ].map(csvCell).join(','));
-  }
-  // The BOM makes Excel open a UTF-8 file with ₹ and Devanagari intact.
-  return '﻿' + lines.join('\r\n');
 }
 
 /** Turns [{slug, qty}] into priced line items using the current price list. */
@@ -124,7 +89,7 @@ async function priceItems(input) {
 }
 
 module.exports = async function handler(req, res) {
-  if (guard(req, res, ['GET', 'POST', 'PATCH'])) return;
+  if (guard(req, res, ['POST'])) return;
 
   try {
     if (req.method === 'POST') {
@@ -164,50 +129,6 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    requireAdmin(req);
-
-    if (req.method === 'GET') {
-      const url = new URL(req.url, 'http://localhost');
-      const status = url.searchParams.get('status');
-      const format = url.searchParams.get('format');
-
-      if (status && !STATUSES.includes(status)) throw badRequest('Unknown status filter.');
-
-      const { rows } = status
-        ? await db.query('SELECT * FROM preorders WHERE status = $1 ORDER BY created_at DESC', [status])
-        : await db.query('SELECT * FROM preorders ORDER BY created_at DESC');
-
-      if (format === 'csv') {
-        const stamp = new Date().toISOString().slice(0, 10);
-        res.statusCode = 200;
-        res.setHeader('Content-Type', 'text/csv; charset=utf-8');
-        res.setHeader('Cache-Control', 'no-store');
-        res.setHeader('Content-Disposition', `attachment; filename="preorders-${stamp}.csv"`);
-        return res.end(toCsv(rows));
-      }
-
-      const counts = STATUSES.reduce((acc, s) => Object.assign(acc, { [s]: 0 }), {});
-      const all = status
-        ? (await db.query('SELECT status FROM preorders')).rows
-        : rows;
-      for (const r of all) if (counts[r.status] !== undefined) counts[r.status] += 1;
-
-      return send(res, 200, { preorders: rows.map(shape), counts });
-    }
-
-    // PATCH — move an order through the queue.
-    const body = await readJson(req);
-    const id = Number(body.id);
-    if (!Number.isInteger(id) || id < 1) throw badRequest('A valid order id is required.');
-    const next = String(body.status || '').toLowerCase();
-    if (!STATUSES.includes(next)) throw badRequest(`Status must be one of: ${STATUSES.join(', ')}.`);
-
-    const { rows } = await db.query(
-      'UPDATE preorders SET status = $1, updated_at = now() WHERE id = $2 RETURNING *',
-      [next, id]
-    );
-    if (!rows.length) throw Object.assign(new Error('No such pre-order.'), { statusCode: 404 });
-    return send(res, 200, { preorder: shape(rows[0]) });
   } catch (err) {
     return onError(res, err);
   }

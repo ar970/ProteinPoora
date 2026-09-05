@@ -2,7 +2,7 @@
   "name": "proteinpoora",
   "version": "1.0.0",
   "private": true,
-  "description": "Protein पूरा — storefront, pre-order API and admin panel.",
+  "description": "Protein पूरा — storefront and pre-order API.",
   "engines": {
     "node": ">=20"
   },

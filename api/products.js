@@ -16,7 +16,6 @@
  */
 
 const db = require('./_lib/db.js');
-const auth = require('./_lib/auth.js');
 const { readJson, send, guard, onError, badRequest, text } = require('./_lib/http.js');
 
 const STATUSES = ['available', 'sold_out', 'hidden'];
@@ -87,19 +86,11 @@ module.exports = async function handler(req, res) {
 
   try {
     if (req.method === 'GET') {
-      // The full list, hidden products included, is opt-in via ?all=1 and only
-      // for an admin. Without it this always returns the public list — so the
-      // storefront looks the same to the admin's browser as to a customer's,
-      // rather than quietly showing them rows nobody else can see.
-      const wantsAll = new URL(req.url, 'http://localhost').searchParams.get('all') === '1';
-      const showAll = wantsAll && Boolean(auth.session(req));
-
-      const { rows } = showAll
-        ? await db.query('SELECT * FROM products ORDER BY sort_order, id')
-        : await db.query(
-            'SELECT * FROM products WHERE status = ANY($1) ORDER BY sort_order, id',
-            [PUBLIC_STATUSES]
-          );
+      // Only ever the public list. There is nobody to show a hidden row to.
+      const { rows } = await db.query(
+        'SELECT * FROM products WHERE status = ANY($1) ORDER BY sort_order, id',
+        [PUBLIC_STATUSES]
+      );
       return send(res, 200, { products: rows.map(shape) });
     }
 

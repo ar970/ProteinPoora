@@ -1983,16 +1983,6 @@ button {
   margin: 0 0.5rem;
 }
 
-.footer__admin {
-  color: inherit;
-  text-decoration: underline;
-  text-underline-offset: 2px;
-  transition: color var(--t-fast) var(--ease);
-}
-
-.footer__admin:hover {
-  color: var(--cream);
-}
 
 @media (min-width: 768px) {
   .footer {
