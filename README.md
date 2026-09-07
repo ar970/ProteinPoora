@@ -29,6 +29,7 @@ Import the repository in Vercel. Framework preset: **Other**. Build command: non
 | `assets/js/main.js` | Menu toggle, gallery, hero carousel, scroll reveal. The pages work without it. |
 | `assets/img/` | Pack shots and lifestyle photos (WebP, two sizes each, transparent backgrounds), logo and favicons. Re-exported artwork is **renamed**, never overwritten — see the caching note in `design-system/proteinpoora/MASTER.md`. |
 | `preorder/index.html` | Pre-order form: product picker, customer details, address. Served at `/preorder`. |
+| `thank-you/index.html` | Where a placed order lands. Served at `/thank-you`; `noindex`, so it stays out of search. |
 | `api/` | Serverless functions: `products.js` and `preorders.js`, plus shared `_lib/`. Only used when Supabase is not configured. |
 | `assets/js/cart.js` | Cart state, header count and drawer. Loaded on every storefront page. |
 | `assets/js/preorder.js` | The checkout: picker, validation, and posting the order. |
@@ -71,8 +72,11 @@ The base code reports page views only. **Nothing reports an add to cart or a com
 browser's `localStorage`, so it survives moving between pages. The header shows
 a count and opens a drawer for a quick look; `/preorder` is the checkout, and
 its picker is the cart's editor — changing a quantity there changes the cart.
-Placing an order empties it and the page becomes a thank you with one button
-back to the homepage — no reference, no total, nothing to read.
+Placing an order empties the cart and sends the customer to **`/thank-you`**,
+its own page: a thank you and one button home, nothing else. It is a real URL
+rather than a panel swapped in on `/preorder`, so a completed pre-order is a
+page view Meta and any analytics can count. The redirect is `location.replace`,
+so Back does not return to a filled-in form whose order has already gone in.
 
 **Orders are read in Supabase**, in its own Table Editor, by whoever is signed
 in to that project. There is no admin page on this site: one would have to hold

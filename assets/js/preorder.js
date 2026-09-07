@@ -25,7 +25,6 @@
   var summaryTotal = document.getElementById('summary-total');
   var statusEl = document.getElementById('form-status');
   var submitBtn = document.getElementById('submit-btn');
-  var confirmEl = document.getElementById('confirm');
 
   var thumbs = {};
   var catalogue = [];
@@ -421,7 +420,7 @@
     say('Placing your pre-order…');
 
     (useSupabase ? sendToSupabase(payload) : sendToApi(payload))
-      .then(function () { showConfirmation(); })
+      .then(goToThankYou)
       .catch(function (err) {
         submitBtn.disabled = false;
         say(err.message || 'We could not place that pre-order. Please try again.', 'error');
@@ -511,22 +510,15 @@
     return 'PP-' + out;
   }
 
-  function showConfirmation() {
-    // The order is on the server now; leaving it in the cart would invite a
-    // duplicate on the next visit.
-    if (cart) cart.clear();
+  var THANK_YOU = '/thank-you';
 
-    form.hidden = true;
-    // The page heading goes too: "Pre-order the first batch. Pay nothing
-    // today." reads oddly above a thank you for an order already placed.
-    ['page-crumbs', 'page-head'].forEach(function (id) {
-      var el = document.getElementById(id);
-      if (el) el.hidden = true;
-    });
-    confirmEl.hidden = false;
-    confirmEl.setAttribute('tabindex', '-1');
-    confirmEl.focus();
-    confirmEl.scrollIntoView({ block: 'center', behavior: 'smooth' });
+  function goToThankYou() {
+    // Empty the cart before leaving: the order is placed, and carrying it to
+    // the next visit would invite a duplicate.
+    if (cart) cart.clear();
+    // replace(), not assign(), so Back does not land on a filled-in form whose
+    // order has already gone in.
+    window.location.replace(THANK_YOU);
   }
 
   /* --- boot ------------------------------------------------------------- */
