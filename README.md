@@ -22,7 +22,7 @@ Import the repository in Vercel. Framework preset: **Other**. Build command: non
 
 | Path | What |
 |---|---|
-| `index.html` | Homepage: ticker, header, hero, the line-up, FAQ, footer. Sections are marked with `<!-- section: … -->` comments. |
+| `index.html` | Homepage: ticker, header, hero, the line-up, combos, FAQ, footer. Sections are marked with `<!-- section: … -->` comments. |
 | `products/masala-bhujia/index.html` | Product page: gallery with lightbox, buy box, nutrition table. Served at `/products/masala-bhujia`. |
 | `assets/css/style.css` | All styles. Tokens at the top match `design-system/proteinpoora/MASTER.md`. |
 | `assets/css/fonts.css` | Self-hosted Baloo 2 and DM Sans. |
@@ -49,6 +49,36 @@ Snapshots live in the gallery on the product page. To add one:
 2. In `products/masala-bhujia/index.html`, copy one of the `<li>` blocks inside `<ul class="thumbs">` and point its `data-src`, `data-srcset`, `data-large`, `data-alt` and the thumbnail `<img>` at the new files.
 
 Clicking a thumbnail swaps the main image; clicking the main image opens it full-size. Left and right arrow keys move between photos.
+
+## Combos
+
+Three bundles at `#combos`, between the line-up and the FAQ:
+
+| Slug | Name | Price | Singles | Saving |
+|---|---|---|---|---|
+| `combo-all-five` | The Whole Line-up | ₹429 | ₹475 | ₹46 |
+| `combo-bhujia-duo` | Bhujia Duo | ₹170 | ₹198 | ₹28 |
+| `combo-chakli-duo` | Chakli Duo | ₹150 | ₹178 | ₹28 |
+
+They are ordinary cart items, not a discount rule: a combo has its own slug and
+its own price, so nothing has to reason about what is in a basket. Each one is
+in two places and both must agree — the card's `data-price-paise` in
+`index.html`, and the `#catalogue` JSON in `preorder/index.html` that the
+checkout picker and the order both read. **Change a price and change it in
+both.** The saving shown on a card is worked out by hand against the single
+prices; if a single price moves, that number moves too.
+
+The cards are wide where the line-up's are tall, because the bundle photography
+is landscape and the packs in it are the point. The five-pack shot is the widest
+of the three, so its card spans the grid.
+
+There are no product pages for combos, and no nutrition panels: each one is
+just its packs, which have their own pages.
+
+**They are not in the Postgres `products` table.** That only matters on the API
+fallback (`api/preorders.js` re-prices from it and would reject an unknown
+slug), which is dormant while orders go to Supabase. If that route is ever
+switched back on, add the three rows first.
 
 ## FAQ
 
