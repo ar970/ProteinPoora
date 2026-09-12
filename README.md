@@ -56,7 +56,7 @@ Three bundles at `#combos`, between the line-up and the FAQ:
 
 | Slug | Name | Price | Singles | Saving |
 |---|---|---|---|---|
-| `combo-all-five` | The Whole Line-up | ₹429 | ₹475 | ₹46 |
+| `combo-all-five` | Poora Family Pack | ₹429 | ₹500 | ₹71 |
 | `combo-bhujia-duo` | Bhujia Duo | ₹170 | ₹198 | ₹28 |
 | `combo-chakli-duo` | Chakli Duo | ₹150 | ₹178 | ₹28 |
 
@@ -65,8 +65,9 @@ its own price, so nothing has to reason about what is in a basket. Each one is
 in two places and both must agree — the card's `data-price-paise` in
 `index.html`, and the `#catalogue` JSON in `preorder/index.html` that the
 checkout picker and the order both read. **Change a price and change it in
-both.** The saving shown on a card is worked out by hand against the single
-prices; if a single price moves, that number moves too.
+both.** The saving on the two duos is the singles total minus the combo price. The
+Family Pack strikes out ₹500 rather than the ₹475 its five singles come to, so
+its saving is set against that; keep the two numbers in step if either moves.
 
 The cards are wide where the line-up's are tall, because the bundle photography
 is landscape and the packs in it are the point. The five-pack shot is the widest
