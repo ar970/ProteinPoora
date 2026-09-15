@@ -40,7 +40,7 @@ Import the repository in Vercel. Framework preset: **Other**. Build command: non
 | `assets/js/payment.js` | Razorpay Standard Checkout: create order, open the modal, verify the payment. |
 | `sources/open/` | Photographs of each pack torn open with its contents flying, as shot. Nothing on the site uses them; kept out of the deploy by `.vercelignore`. |
 | `scripts/dev-server.js` | Local server that mounts the real API handlers and reads `.env`. |
-| `api/payment-status.js` | `GET /api/payment-status` — whether checkout is configured, and test or live. Two booleans, no credentials. |
+| `api/payment-status.js` | `GET /api/payment-status` — whether checkout is configured, test or live, and with `?check=1` whether Razorpay actually accepts the pair. Never echoes a key. |
 | `scripts/check-prices.js` | Fails if the three places prices are written down stop agreeing. |
 | `scripts/test-payments.sh` | The payment endpoints, checked with curl. |
 | `design-system/` | Design spec: colors, type, spacing, section order, Shopify plan. |
@@ -279,9 +279,23 @@ To check without attempting a payment:
 
 ```bash
 curl https://proteinpoora.shop/api/payment-status
-# {"configured":true,"mode":"test"}     ready
-# {"configured":false,"mode":null}      the keys are not reaching the function
+# {"configured":true,"mode":"test","hints":[]}
+
+curl 'https://proteinpoora.shop/api/payment-status?check=1'
+# ...,"credentials":"accepted"     the pair works; checkout will work
+# ...,"credentials":"rejected"     Razorpay refuses them; `detail` says why
+# ...,"credentials":"unreachable"  the network, not the keys
 ```
+
+**`configured` means one thing only: both variables are present and non-empty.**
+It says nothing about whether they are the right ones — a live shop can sit on
+`configured: true` and reject every payment because the secret was pasted with
+a quote around it. `?check=1` is the one that answers that: it makes one cheap
+authenticated call to Razorpay, creates nothing, and caches for 60 seconds.
+
+`hints` catches the paste accidents before you have to ask Razorpay at all —
+stray whitespace, wrapping quotes, a newline in the middle, a key id that does
+not start with `rzp_test_` or `rzp_live_`. It never echoes a key back.
 
 `configured: false` on a deployed site means one of four things, in the order
 they are usually the cause: the project was not redeployed after the variables
