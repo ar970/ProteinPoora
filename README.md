@@ -35,35 +35,7 @@ Import the repository in Vercel. Framework preset: **Other**. Build command: non
 | `assets/js/preorder.js` | The checkout: picker, validation, and posting the order. |
 | `sources/open/` | Photographs of each pack torn open with its contents flying, as shot. Nothing on the site uses them; kept out of the deploy by `.vercelignore`. |
 | `scripts/dev-server.js` | Local server that mounts the real API handlers. |
-| `scripts/cut-bowls.py` | Cuts the hero bowls out of the lifestyle photographs. Not part of the site; see “The bowl in the hero”. |
 | `design-system/` | Design spec: colors, type, spacing, section order, Shopify plan. |
-
-## The bowl in the hero
-
-Each hero slide carries two pictures: the pouch, and a bowl of what is in it.
-The bowl sits at the pouch's lower left, inside `.showcase__float`, so it
-scales, dims and blurs with its own slide and changes when the carousel does —
-peanuts never sit in front of a bhujia pack.
-
-The bowls are cut out of the five lifestyle photographs by
-`scripts/cut-bowls.py`, which is kept because they cannot be cut by hand twice
-the same way. Those photographs are marketing layouts, not product shots, so
-the script has two jobs. Hand-drawn white callout arrows cross the bowls, and
-are painted out by diffusion from the pixels around them inside boxes given per
-photograph — the "pale and thin" test that finds a stroke would also find a
-white bowl, so it is only trusted where a stroke is known to be. And **none of
-these bowls separates from its ground by colour**: brass in shadow on dark
-stone, a black bowl on deep red, orange chakli on orange paper. So each is cut
-by a silhouette fitted to the photograph — a rim ellipse, two sides, a base arc
-— with the fitted numbers in `JOBS` at the bottom of the script. Where a mound
-of snack rises above the rim with a ragged edge that a smooth curve would chop,
-that part is keyed on local variance instead: the grounds are flat, the snack
-is not.
-
-To refit one, change its `rim`, `base` and `bulge` and re-run
-`python3 scripts/cut-bowls.py <name>`; it writes both WebP sizes straight into
-`assets/img/`. **Bump the `?v=` on the stylesheet** if you re-export under the
-same filename, or nobody will see the new one.
 
 ## Swapping the hero image
 
@@ -78,6 +50,36 @@ Snapshots live in the gallery on the product page. To add one:
 
 Clicking a thumbnail swaps the main image; clicking the main image opens it full-size. Left and right arrow keys move between photos.
 
+## The warm hero
+
+The hero, its ticker and its header run on a warm sand ground taken from the
+brand mockup. **Everything below the fold keeps navy, cream and orange** — the
+two sets of inks are not interchangeable, and the tokens say so: `--cream` and
+friends only work on navy, `--cocoa`, `--umber`, `--rust` and `--bronze` only
+work on sand. `design-system/proteinpoora/MASTER.md` has the table and the
+measured contrast.
+
+Two things fall out of the light ground and are worth knowing before changing
+anything here:
+
+**The product accent is no longer used for text.** Four of the five accents
+fall below 4.5:1 on sand, so the eyebrow, the headline's second line and the
+product name are fixed inks, and the protein badge is a fixed rust disc. The
+accent still follows the product everywhere it is not text — the card wash, the
+chip dots, the carousel glow and the dot fill. **The wash is capped at 12%**:
+past about 14% the eyebrow stops clearing 4.5:1 on the lighter accents.
+
+**The seal watermark is painted through a mask.** The artwork
+(`logo-seal-cream.png`) is cream marks on transparent, which was right on navy
+and invisible on sand, so it is used as a `mask` and filled with `--bronze`
+instead. Where masks are unsupported the seals do not render at all, rather
+than showing up as tan squares.
+
+`.wordmark`, `.cart-button` and `.lightbox__btn` are the three places where the
+same component appears on both grounds. The wordmark defaults to cream for the
+navy footer and is overridden inside `.site-bar`; the lightbox button stays
+cream because its overlay is dark. Check those three after any header change.
+
 ## The header
 
 `<div class="site-bar" data-site-bar>` sits **outside `<main>`** on every page
@@ -85,11 +87,17 @@ and is `position: sticky`. It used to live inside the hero's navy card, so past
 the fold there was no cart, no nav and no pre-order button anywhere on the page.
 
 It has two states. At rest it is transparent and the hero reads as one
-unbroken navy field. Once the page has scrolled past the hero's top it takes
-`.is-stuck` — solid navy, a shadow, and slightly tighter padding — so the links
-stay legible over cream and white sections. The state is driven by an
-IntersectionObserver watching a 90px sentinel at the top of `<body>`, not a
-scroll listener; with no IntersectionObserver the bar is simply always solid.
+unbroken field. Once the page has scrolled past the hero's top it takes
+`.is-stuck` — the hero's own sand, a shadow, and slightly tighter padding — so
+the links stay legible over the cream, white and navy sections below. The state
+is driven by an IntersectionObserver watching a 90px sentinel at the top of
+`<body>`, not a scroll listener; with no IntersectionObserver the bar is simply
+always solid.
+
+**The stuck ground is sand, not navy, so the header's ink never flips.** A bar
+that changed from dark text to light halfway down the page is one more thing to
+get wrong on every element in it — the wordmark, three nav links, the cart
+button and its count, the menu toggle and the CTA. One set of inks, both states.
 
 The hero card is pulled up under the bar (`.site-bar + main > .hero-frame`), so
 its rounded corner starts at the top of the viewport rather than below the
@@ -101,9 +109,14 @@ included from `theme.liquid` above `{{ content_for_layout }}`.
 
 ## Homepage structure
 
-The grounds alternate — navy hero, cream proof strip, white line-up, navy
+The grounds alternate — sand hero, cream proof strip, white line-up, navy
 ledger, cream combos, white FAQ, navy footer. Two navy sections used to sit
 next to each other and read as one slab; the proof strip is what breaks them.
+
+The hero was navy until the warm ground replaced it, which leaves three pale
+grounds in a row at the top of the page. They are separated by the hero card's
+rounded edge and the white gutter around it rather than by contrast. It holds,
+but it is the weakest seam on the page.
 
 **The line-up is five across on wide screens and a swipe rail below that.**
 Five products never divided into three columns: the old grid stranded two

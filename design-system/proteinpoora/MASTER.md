@@ -28,7 +28,42 @@ Derived from the packaging. Database anchor: "Food Delivery" palette (orange + b
 | `--line` | `#E4E6EF` | Card and table borders |
 | `--error` | `#C4321F` | Form errors |
 
-Contrast (AA, verified by formula): cream on navy 11.8:1, orange on navy 5.4:1, navy-ink on cream-soft 12.9:1, pack-blue on paper 5.9:1, text on paper 7.3:1. Orange is never used for body text on light grounds.
+### The warm ground
+
+The hero, its ticker and its header run on a warm ground taken from the brand
+mockup; everything below the fold keeps navy, cream and orange. These two sets
+are **not interchangeable** — the cream inks only work on navy, and these only
+work on sand.
+
+| Token | Hex | Role |
+|---|---|---|
+| `--sand` | `#F7F1E3` | Hero ground, and the sticky header once it is stuck |
+| `--sand-warm` | `#F0E6CE` | The hero gradient's warm corner |
+| `--tan` | `#C9A96A` | Ticker band |
+| `--bronze` | `#8F7343` | Outlines: chips, cart, menu, secondary button; watermark tint |
+| `--bark` | `#33210F` | Ink on tan |
+| `--cocoa` | `#2F2417` | Headline, nav, product name on sand |
+| `--umber` | `#5A4B3A` | Body copy on sand |
+| `--rust` | `#A6391A` | Accent ink, primary CTA fill, protein badge |
+| `--rust-deep` | `#8A2D12` | CTA hover |
+
+Contrast (AA, verified by formula): cream on navy 11.8:1, orange on navy 5.4:1,
+navy-ink on cream-soft 12.9:1, pack-blue on paper 5.9:1, text on paper 7.3:1.
+Orange is never used for body text on light grounds.
+
+On the warm ground, every pair was checked three times over — on plain sand, on
+the gradient's warm corner, and under each of the five product accent washes,
+which is the real ground the hero's text sits on. Worst case of each: bark on
+tan 6.9:1, cocoa on sand 10.5:1, umber 5.8:1, rust 4.5:1, bronze outlines
+3.1:1, cream on rust 5.4:1. **The accent wash is capped at 12%** — past about
+14% the eyebrow stops clearing 4.5:1 on the lighter accents.
+
+**The product accent is no longer used for text in the hero.** Four of the five
+(`#E8862E`, `#D94F2B`, `#2E8B6F`, `#E0A82E`) fall below 4.5:1 on sand, so the
+eyebrow, the headline's second line and the product name are fixed inks and the
+protein badge is a fixed rust disc. The accent still follows the product
+everywhere it is not text: the card wash, the chip dots, the carousel glow and
+the dot fill.
 
 Semantic aliases in CSS: `--color-bg`, `--color-fg`, `--color-brand`, `--color-accent`, `--color-cta`, `--color-cta-fg`, `--color-muted`, `--color-border`.
 
@@ -95,9 +130,9 @@ The molecule line-art stays as texture on navy fields only (hero, footer, ledger
 
 | # | Section | Ground |
 |---|---|---|
-| 1 | Announcement ticker | navy-deep |
-| 2 | Header (wordmark, Shop, Combos, FAQ, cart, Pre-order CTA) | navy |
-| 3 | Hero (eyebrow, two-line H1, sub, two CTAs, three chips, showcase) | navy |
+| 1 | Announcement ticker | tan |
+| 2 | Header (wordmark, Shop, Combos, FAQ, cart, Pre-order CTA) | sand, sticky |
+| 3 | Hero (eyebrow, two-line H1, sub, two CTAs, three chips, showcase) | sand |
 | 4 | Proof strip — three facts | cream-soft |
 | 5 | The line-up — five products | paper |
 | 6 | Protein ledger | navy |
@@ -105,9 +140,16 @@ The molecule line-art stays as texture on navy fields only (hero, footer, ledger
 | 8 | Pre-order FAQ | paper |
 | 9 | Footer | navy |
 
-The grounds alternate on purpose. Hero and ledger are the two navy moments;
-everything between them breathes. Two navy sections were once adjacent and
-read as one slab, which is what the proof strip now breaks.
+The grounds alternate on purpose. The ledger and the footer are the navy
+moments; everything between them breathes. Two navy sections were once adjacent
+and read as one slab, which is what the proof strip now breaks.
+
+The hero was navy until the warm ground replaced it. That leaves sand, then
+cream-soft, then paper at the top of the page — three pale grounds in a row,
+separated by the hero card's rounded edge and the page's white gutter rather
+than by contrast. It holds, but it is the weakest seam on the page: if the
+proof strip ever needs to earn its keep again, making it the dark one is the
+move.
 
 The ledger ships with our own figures only — protein per pack, with a bar
 scaled to the largest of the five. The fried-snack comparison column in the

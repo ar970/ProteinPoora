@@ -16,6 +16,23 @@
   --cream-45: rgba(247, 233, 195, 0.45);
   --cream-10: rgba(247, 233, 195, 0.1);
   --orange: #F08A2A;
+
+  /* The hero's warm ground, and the inks that read on it. The hero, its
+     ticker and its header run on this; everything below the fold keeps navy,
+     cream and orange. Every pair here was checked against WCAG AA on the
+     plain ground, on its warm corner, and under each of the five product
+     accent washes -- the ink colours are not interchangeable with the cream
+     ones above, which only work on navy. */
+  --sand: #F7F1E3;
+  --sand-warm: #F0E6CE;
+  --tan: #C9A96A;
+  --bronze: #8F7343;
+  --bark: #33210F;
+  --cocoa: #2F2417;
+  --umber: #5A4B3A;
+  --rust: #A6391A;
+  --rust-deep: #8A2D12;
+
   --paper: #FFFFFF;
   --tile: #F3F4F8;
   --text: #4A5068;
@@ -154,26 +171,29 @@ button {
   transform: translateY(1px);
 }
 
+/* Both of these sit only on the hero's sand ground -- the primary in the hero
+   itself, the small one in the header -- so they are the warm pair outright
+   rather than a scoped override. A cream fill would be invisible there. */
 .btn--cream {
-  background: var(--cream);
-  border-color: var(--cream);
-  color: var(--navy-ink);
+  background: var(--rust);
+  border-color: var(--rust);
+  color: var(--cream);
 }
 
 .btn--cream:hover {
-  background: #fff;
-  border-color: #fff;
+  background: var(--rust-deep);
+  border-color: var(--rust-deep);
 }
 
 .btn--outline {
   background: transparent;
-  border-color: var(--cream-70);
-  color: var(--cream);
+  border-color: var(--bronze);
+  color: var(--cocoa);
 }
 
 .btn--outline:hover {
-  background: var(--cream-10);
-  border-color: var(--cream);
+  background: rgba(143, 115, 67, 0.12);
+  border-color: var(--cocoa);
 }
 
 .btn--sm {
@@ -197,8 +217,8 @@ button {
 /* --- Section: announcement ticker -------------------------------------- */
 .ticker {
   overflow: hidden;
-  background: var(--navy-deep);
-  color: var(--cream);
+  background: var(--tan);
+  color: var(--bark);
   font-size: 0.75rem;
   font-weight: 600;
   letter-spacing: 0.14em;
@@ -238,7 +258,7 @@ button {
   flex: none;
   width: 6px;
   height: 6px;
-  background: var(--orange);
+  background: var(--rust);
   transform: rotate(45deg);
 }
 
@@ -248,7 +268,7 @@ button {
   }
 }
 
-/* --- Hero frame: navy card that holds header + hero -------------------- */
+/* --- Hero frame: warm card that holds the hero ------------------------- */
 
 /* Registered so the accent can be transitioned. Every accent-reactive
    element reads var(--accent), so animating this one property cross-fades
@@ -263,22 +283,25 @@ button {
   position: relative;
   margin: var(--frame);
   border-radius: var(--radius-hero);
-  background: var(--navy);
-  color: var(--cream);
+  background: linear-gradient(150deg, var(--sand-warm) 0%, var(--sand) 46%, var(--sand) 100%);
+  color: var(--cocoa);
   overflow: hidden;
   isolation: isolate;
   transition: --accent 700ms ease;
 }
 
-/* Accent tint washed across the card, following the active product. */
+/* Accent tint washed across the card, following the active product. Held at
+   12%: on the old navy it could be strong, but here it lands under the hero's
+   own text, and past about 14% the eyebrow stops clearing 4.5:1 on the
+   lighter accents. */
 .hero-frame::before {
   content: "";
   position: absolute;
   inset: 0;
   z-index: -1;
   background:
-    linear-gradient(155deg, color-mix(in srgb, var(--accent) 20%, transparent) 0%, transparent 55%),
-    radial-gradient(120% 90% at 88% 12%, color-mix(in srgb, var(--accent) 14%, transparent) 0%, transparent 60%);
+    linear-gradient(155deg, color-mix(in srgb, var(--accent) 12%, transparent) 0%, transparent 55%),
+    radial-gradient(120% 90% at 88% 12%, color-mix(in srgb, var(--accent) 9%, transparent) 0%, transparent 60%);
   pointer-events: none;
 }
 
@@ -296,28 +319,39 @@ button {
   left: -0.14em;
   top: 50%;
   transform: translateY(-50%);
-  color: var(--cream);
+  color: var(--bronze);
   font-family: var(--font-display);
   font-weight: 800;
   font-size: clamp(14rem, 40vw, 30rem);
   line-height: 0.78;
-  opacity: 0.05;
+  opacity: 0.07;
   white-space: nowrap;
   user-select: none;
 }
 
-/* The real brand seal, reduced to cream marks on transparent so the navy
-   disc drops out and it reads as texture rather than a stack of logos. */
+/* The real brand seal, reduced to marks on transparent so the disc drops out
+   and it reads as texture rather than a stack of logos. The artwork is cream,
+   which was right on navy and invisible on sand, so it is used as a mask and
+   painted instead -- and where masks are not supported the seals simply do
+   not render, rather than showing up as tan squares. */
 .hero-deco__seal {
   position: absolute;
   top: var(--top);
   left: var(--left);
   width: var(--size);
   height: var(--size);
-  background: url("../img/logo-seal-cream.png") center / contain no-repeat;
-  opacity: 0.08;
   animation: seal-spin var(--dur, 60s) linear infinite;
   animation-direction: var(--dir, normal);
+}
+
+@supports (mask-image: url("../img/logo-seal-cream.png")) or
+          (-webkit-mask-image: url("../img/logo-seal-cream.png")) {
+  .hero-deco__seal {
+    background: var(--bronze);
+    opacity: 0.16;
+    -webkit-mask: url("../img/logo-seal-cream.png") center / contain no-repeat;
+    mask: url("../img/logo-seal-cream.png") center / contain no-repeat;
+  }
 }
 
 @keyframes seal-spin {
@@ -326,16 +360,19 @@ button {
 
 /* --- Site bar: the header, which now stays ----------------------------- */
 
-/* It used to live inside the hero's navy card and scroll away with it, so
-   past the fold there was no cart, no nav and no pre-order button anywhere
-   on the page. It sits above the hero at rest -- the hero still reads as one
-   navy field -- and takes a ground of its own the moment it is over content
-   that is not the hero. */
+/* It used to live inside the hero's card and scroll away with it, so past the
+   fold there was no cart, no nav and no pre-order button anywhere on the page.
+   It sits above the hero at rest -- the hero still reads as one field -- and
+   takes a ground of its own the moment it is over content that is not the
+   hero. That ground is the hero's own sand rather than navy, so the header's
+   ink is the same colour whether it is stuck or not: a bar that flipped from
+   dark text to light halfway down the page is one more thing to get wrong. */
 .site-bar {
   position: sticky;
   top: 0;
   z-index: 40;
   background: transparent;
+  color: var(--cocoa);
   transition:
     background-color 220ms var(--ease),
     box-shadow 220ms var(--ease);
@@ -351,8 +388,8 @@ button {
 }
 
 .site-bar.is-stuck {
-  background: var(--navy);
-  box-shadow: 0 6px 24px rgba(8, 14, 46, 0.28);
+  background: var(--sand);
+  box-shadow: 0 6px 24px rgba(51, 33, 15, 0.16);
 }
 
 .site-bar.is-stuck .site-header {
@@ -389,6 +426,9 @@ button {
   gap: 1rem;
 }
 
+/* The wordmark is in two places on different grounds: the header's sand bar
+   and the navy footer. Cream is the default because the footer cannot be
+   scoped from inside the header. */
 .wordmark {
   display: inline-flex;
   align-items: center;
@@ -398,6 +438,10 @@ button {
   font-size: 1.625rem;
   line-height: 1;
   text-decoration: none;
+}
+
+.site-bar .wordmark {
+  color: var(--cocoa);
 }
 
 .wordmark__seal {
@@ -442,7 +486,8 @@ button {
   width: 44px;
   height: 44px;
   padding: 0;
-  border: 2px solid var(--cream-70);
+  color: var(--cocoa);
+  border: 2px solid var(--bronze);
   border-radius: 50%;
   background: transparent;
   cursor: pointer;
@@ -452,8 +497,8 @@ button {
 }
 
 .menu-toggle:hover {
-  background: var(--cream-10);
-  border-color: var(--cream);
+  background: rgba(143, 115, 67, 0.12);
+  border-color: var(--cocoa);
 }
 
 .menu-toggle__icon {
@@ -487,8 +532,9 @@ button {
   display: none;
   padding: 0.5rem;
   border-radius: 20px;
-  background: var(--navy-deep);
-  box-shadow: 0 16px 40px rgba(10, 16, 50, 0.35);
+  background: var(--sand);
+  border: 1px solid var(--bronze);
+  box-shadow: 0 16px 40px rgba(51, 33, 15, 0.22);
 }
 
 .site-nav.is-open,
@@ -510,20 +556,21 @@ button {
   min-height: 48px;
   padding: 0 1rem;
   border-radius: 12px;
-  color: var(--cream);
+  color: var(--cocoa);
   font-weight: 500;
   text-decoration: none;
   transition: background-color var(--t-fast) var(--ease);
 }
 
 .site-nav__link:hover {
-  background: var(--cream-10);
+  background: rgba(143, 115, 67, 0.14);
 }
 
 .no-js .site-nav {
   position: static;
   padding: 0;
   background: none;
+  border: 0;
   box-shadow: none;
 }
 
@@ -553,6 +600,7 @@ button {
     display: block;
     padding: 0;
     background: none;
+    border: 0;
     box-shadow: none;
   }
 
@@ -591,11 +639,13 @@ button {
   justify-items: center;
 }
 
-/* Accent-reactive in the hero, where --accent is animated. Elsewhere
-   --accent falls back to its registered initial value, the brand orange. */
+/* Fixed rust, not var(--accent): four of the five product accents fall below
+   4.5:1 on the sand ground, and this is 12px uppercase. The accent still
+   follows the product everywhere it is not text -- the card wash, the chip
+   dots, the carousel glow and the dot fill. */
 .eyebrow {
   margin: 0;
-  color: var(--accent);
+  color: var(--rust);
   font-size: 0.75rem;
   font-weight: 600;
   letter-spacing: 0.14em;
@@ -608,7 +658,7 @@ button {
 
 .hero__title {
   margin: 0;
-  color: var(--cream);
+  color: var(--cocoa);
   font-family: var(--font-display);
   font-weight: 800;
   font-size: clamp(2.3rem, 1.39rem + 3.89vw, 4.5rem);
@@ -622,7 +672,7 @@ button {
 }
 
 .hero__title-line--accent {
-  color: var(--accent);
+  color: var(--rust);
 }
 
 .hero__lede {
@@ -630,7 +680,7 @@ button {
   max-width: 34rem;
   font-size: 1.0625rem;
   line-height: 1.55;
-  color: rgba(247, 233, 195, 0.84);
+  color: var(--umber);
   text-wrap: pretty;
 }
 
@@ -695,9 +745,9 @@ button {
   gap: 0.5rem;
   min-height: 36px;
   padding: 0 0.9rem;
-  border: 1.5px solid var(--cream-45);
+  border: 1.5px solid var(--bronze);
   border-radius: var(--radius-pill);
-  color: var(--cream);
+  color: var(--cocoa);
   font-size: 0.875rem;
   font-weight: 500;
   white-space: nowrap;
@@ -730,7 +780,7 @@ button {
 
 .showcase__name {
   margin: 0;
-  color: var(--accent);
+  color: var(--cocoa);
   font-family: var(--font-display);
   font-weight: 700;
   font-size: clamp(1.25rem, 1rem + 1.2vw, 1.75rem);
@@ -867,21 +917,6 @@ button {
   filter: drop-shadow(0 18px 28px rgba(8, 12, 40, 0.4));
 }
 
-/* The pouch says what it is; the bowl says what is inside it. One per slide,
-   inside the float, so it scales, dims and blurs with its own pouch and
-   changes with it -- peanuts never sit in front of a bhujia pack.
-
-   Kept inside the float's own box: the viewport clips to the stage on a
-   phone, and a bowl hung off the left edge would lose a slice of itself. */
-.showcase__bowl {
-  position: absolute;
-  left: 0;
-  bottom: 6%;
-  width: 54%;
-  height: auto;
-  filter: drop-shadow(0 10px 16px rgba(8, 12, 40, 0.5));
-}
-
 /* Sits inside the stage so it covers the active pouch's upper left corner
    and never strays onto the pouch behind it. */
 .showcase__badge {
@@ -896,7 +931,7 @@ button {
   width: 76px;
   height: 76px;
   border-radius: 50%;
-  background: var(--badge-accent, var(--accent));
+  background: var(--rust);
   transform: rotateY(0deg);
   transform-style: preserve-3d;
   transition: transform 250ms var(--ease);
@@ -951,7 +986,7 @@ button {
   padding: 0;
   border: 0;
   border-radius: 999px;
-  background: rgba(247, 233, 195, 0.35);
+  background: rgba(90, 75, 58, 0.4);
   cursor: pointer;
   transition:
     width 400ms var(--ease),
@@ -967,12 +1002,12 @@ button {
 }
 
 .dot:hover {
-  background: rgba(247, 233, 195, 0.55);
+  background: rgba(90, 75, 58, 0.6);
 }
 
 .dot[aria-current="true"] {
   width: 44px;
-  background: rgba(247, 233, 195, 0.25);
+  background: rgba(90, 75, 58, 0.22);
 }
 
 .dot__fill {
@@ -1909,6 +1944,7 @@ button {
   padding: 0.75rem 0 0;
 }
 
+/* On the lightbox's dark overlay, so it keeps the cream pair. */
 .lightbox__btn {
   display: grid;
   place-items: center;
@@ -2760,6 +2796,7 @@ button {
    layout. Built by assets/js/cart.js; there is no cart without JavaScript.
    ========================================================================== */
 
+/* In the header, so it sits on the sand bar, not on navy. */
 .cart-button {
   position: relative;
   display: grid;
@@ -2767,10 +2804,10 @@ button {
   width: 44px;
   height: 44px;
   padding: 0;
-  border: 2px solid var(--cream-70);
+  border: 2px solid var(--bronze);
   border-radius: 50%;
   background: transparent;
-  color: var(--cream);
+  color: var(--cocoa);
   cursor: pointer;
   transition:
     background-color var(--t-fast) var(--ease),
@@ -2778,8 +2815,8 @@ button {
 }
 
 .cart-button:hover {
-  background: var(--cream-10);
-  border-color: var(--cream);
+  background: rgba(143, 115, 67, 0.12);
+  border-color: var(--cocoa);
 }
 
 .cart-button__icon {
@@ -2797,8 +2834,8 @@ button {
   height: 20px;
   padding: 0 5px;
   border-radius: var(--radius-pill);
-  background: var(--orange);
-  color: var(--navy-ink);
+  background: var(--rust);
+  color: var(--cream);
   font-size: 0.6875rem;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
