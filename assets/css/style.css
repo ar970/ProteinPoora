@@ -324,6 +324,61 @@ button {
   to { transform: rotate(360deg); }
 }
 
+/* --- Site bar: the header, which now stays ----------------------------- */
+
+/* It used to live inside the hero's navy card and scroll away with it, so
+   past the fold there was no cart, no nav and no pre-order button anywhere
+   on the page. It sits above the hero at rest -- the hero still reads as one
+   navy field -- and takes a ground of its own the moment it is over content
+   that is not the hero. */
+.site-bar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: transparent;
+  transition:
+    background-color 220ms var(--ease),
+    box-shadow 220ms var(--ease);
+}
+
+/* The hero is a rounded navy card inset by --frame; at rest the bar sits on
+   top of it, so it is pulled down over the card rather than floating above. */
+.site-bar .site-header {
+  max-width: calc(var(--container) + var(--gutter) * 2);
+  margin-inline: auto;
+  padding: 0.9rem var(--gutter);
+  transition: padding 220ms var(--ease);
+}
+
+.site-bar.is-stuck {
+  background: var(--navy);
+  box-shadow: 0 6px 24px rgba(8, 14, 46, 0.28);
+}
+
+.site-bar.is-stuck .site-header {
+  padding-block: 0.6rem;
+}
+
+/* The hero card starts under the bar rather than after it. */
+.site-bar + main > .hero-frame {
+  margin-top: calc(var(--frame) - 74px);
+  padding-top: 74px;
+}
+
+@media (min-width: 768px) {
+  .site-bar + main > .hero-frame {
+    margin-top: calc(var(--frame) - 82px);
+    padding-top: 82px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-bar,
+  .site-bar .site-header {
+    transition: none;
+  }
+}
+
 /* --- Section: header ---------------------------------------------------- */
 .site-header {
   position: relative;
@@ -332,7 +387,6 @@ button {
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  padding: 1.1rem var(--gutter) 0;
 }
 
 .wordmark {

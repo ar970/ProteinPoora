@@ -350,4 +350,27 @@
    * the document so it covers the line-up cards and the product buy button
    * alike. Both are links to /preorder, so they still do something sensible
    * with JavaScript off. */
+
+  /* --- The site bar takes a ground once it is off the hero --------------- */
+  (function () {
+    var bar = document.querySelector('[data-site-bar]');
+    if (!bar) return;
+
+    /* A sentinel one bar-height down: while it is in view the bar is over the
+       hero and stays transparent. Cheaper and steadier than measuring scroll
+       on every frame. */
+    var mark = document.createElement('div');
+    mark.setAttribute('aria-hidden', 'true');
+    mark.style.cssText = 'position:absolute;top:0;left:0;width:1px;height:90px;pointer-events:none';
+    document.body.prepend(mark);
+
+    if (!('IntersectionObserver' in window)) {
+      bar.classList.add('is-stuck');
+      return;
+    }
+    new IntersectionObserver(function (entries) {
+      bar.classList.toggle('is-stuck', !entries[0].isIntersecting);
+    }, { threshold: 0 }).observe(mark);
+  })();
+
 })();

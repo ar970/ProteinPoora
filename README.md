@@ -50,6 +50,27 @@ Snapshots live in the gallery on the product page. To add one:
 
 Clicking a thumbnail swaps the main image; clicking the main image opens it full-size. Left and right arrow keys move between photos.
 
+## The header
+
+`<div class="site-bar" data-site-bar>` sits **outside `<main>`** on every page
+and is `position: sticky`. It used to live inside the hero's navy card, so past
+the fold there was no cart, no nav and no pre-order button anywhere on the page.
+
+It has two states. At rest it is transparent and the hero reads as one
+unbroken navy field. Once the page has scrolled past the hero's top it takes
+`.is-stuck` — solid navy, a shadow, and slightly tighter padding — so the links
+stay legible over cream and white sections. The state is driven by an
+IntersectionObserver watching a 90px sentinel at the top of `<body>`, not a
+scroll listener; with no IntersectionObserver the bar is simply always solid.
+
+The hero card is pulled up under the bar (`.site-bar + main > .hero-frame`), so
+its rounded corner starts at the top of the viewport rather than below the
+header. If the header's height changes, the two `74px`/`82px` figures there
+change with it.
+
+In a Liquid theme this is one `header.liquid` section with a "sticky" setting,
+included from `theme.liquid` above `{{ content_for_layout }}`.
+
 ## Homepage structure
 
 The grounds alternate — navy hero, cream proof strip, white line-up, navy
