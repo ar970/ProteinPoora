@@ -40,6 +40,7 @@ Import the repository in Vercel. Framework preset: **Other**. Build command: non
 | `assets/js/payment.js` | Razorpay Standard Checkout: create order, open the modal, verify the payment. |
 | `sources/open/` | Photographs of each pack torn open with its contents flying, as shot. Nothing on the site uses them; kept out of the deploy by `.vercelignore`. |
 | `scripts/dev-server.js` | Local server that mounts the real API handlers and reads `.env`. |
+| `api/payment-status.js` | `GET /api/payment-status` — whether checkout is configured, and test or live. Two booleans, no credentials. |
 | `scripts/check-prices.js` | Fails if the three places prices are written down stop agreeing. |
 | `scripts/test-payments.sh` | The payment endpoints, checked with curl. |
 | `design-system/` | Design spec: colors, type, spacing, section order, Shopify plan. |
@@ -267,8 +268,32 @@ variables. `.env.example` is the template.
 is a live compromise, not a tidy-up job — rotate it in the Razorpay dashboard
 rather than just deleting the file.
 
-With the variables unset every checkout returns `503 NO_RAZORPAY` and says so.
-That is deliberate: no order is placed that nobody paid for.
+With the variables unset every checkout returns `503 NO_RAZORPAY` and the form
+says "Payments are not switched on yet". That is deliberate — no order is placed
+that nobody paid for — but it is the single most likely thing to be wrong after
+a deploy, because **Vercel does not apply an environment variable change to a
+deployment that already exists.** Setting the variables is only half of it; the
+project has to be redeployed afterwards.
+
+To check without attempting a payment:
+
+```bash
+curl https://proteinpoora.shop/api/payment-status
+# {"configured":true,"mode":"test"}     ready
+# {"configured":false,"mode":null}      the keys are not reaching the function
+```
+
+`configured: false` on a deployed site means one of four things, in the order
+they are usually the cause: the project was not redeployed after the variables
+were added; the variables were added to Production only while you are looking
+at a Preview deployment; a name is misspelt (it is `RAZORPAY_KEY_ID` and
+`RAZORPAY_KEY_SECRET`, exactly); or a value was pasted with a stray space or
+quote. The endpoint returns those two booleans and nothing else — no key, no
+prefix of a secret.
+
+If that endpoint 404s instead of answering, the functions themselves are not
+deployed, which is a different problem: check that `api/` is in the deploy and
+that the project's build settings were not changed.
 
 ### Prices are written down three times
 

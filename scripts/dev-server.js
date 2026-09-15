@@ -63,7 +63,8 @@ const ROUTES = {
   '/api/products': path.join(ROOT, 'api', 'products.js'),
   '/api/preorders': path.join(ROOT, 'api', 'preorders.js'),
   '/api/create-order': path.join(ROOT, 'api', 'create-order.js'),
-  '/api/verify-payment': path.join(ROOT, 'api', 'verify-payment.js')
+  '/api/verify-payment': path.join(ROOT, 'api', 'verify-payment.js'),
+  '/api/payment-status': path.join(ROOT, 'api', 'payment-status.js')
 };
 
 /** Mirrors Vercel's static resolution: exact file, then .html, then index.html. */
