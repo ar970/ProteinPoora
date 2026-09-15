@@ -30,6 +30,46 @@
     return err;
   }
 
+  /**
+   * What a customer is told and what an operator needs to know are different
+   * things. "Payments are not switched on yet" is right on the page and
+   * useless for fixing it, so the fix goes to the console — the one place
+   * someone debugging is already looking, and where a customer never is.
+   */
+  var DIAGNOSIS = {
+    NO_RAZORPAY: [
+      'Razorpay is not configured on the server that answered this request.',
+      'RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET are both required.',
+      '',
+      'Deployed on Vercel: set both under Settings → Environment Variables for',
+      'Production, Preview AND Development, then REDEPLOY — Vercel does not',
+      'apply an environment change to a deployment that already exists.',
+      '',
+      'Running locally: .env is gitignored, so a fresh clone does not have one.',
+      'cp .env.example .env, paste the keys in, and use `npm run dev` — a plain',
+      'static file server does not run /api/* at all.',
+      '',
+      'Check either without paying: GET /api/payment-status'
+    ],
+    RAZORPAY_AUTH: [
+      'Razorpay rejected our key pair. The keys are present but wrong, revoked,',
+      'or a live key is being used against test mode (or the reverse).',
+      'Regenerate the pair in the Razorpay dashboard and set both again.'
+    ],
+    RAZORPAY_UNREACHABLE: [
+      'api.razorpay.com did not answer. Nothing is wrong with the keys.',
+      'Check outbound network from the server: proxy, firewall or egress rules.'
+    ]
+  };
+
+  function diagnose(data) {
+    var lines = data && data.code && DIAGNOSIS[data.code];
+    if (!lines) return;
+    console.error(
+      '[payment] ' + data.code + '\n\n  ' + lines.join('\n  ') + '\n'
+    );
+  }
+
   /** POST JSON, and turn a non-2xx into the server's own message. */
   function postJson(url, body) {
     return fetch(url, {
@@ -39,6 +79,14 @@
     }).then(function (res) {
       return res.json().catch(function () { return {}; }).then(function (data) {
         if (!res.ok) {
+          diagnose(data);
+          if (res.status === 404) {
+            console.error(
+              '[payment] ' + url + ' returned 404.\n\n' +
+              '  The serverless functions are not deployed at all. Check that api/\n' +
+              '  is in the deploy, and that this is the deployment you just pushed to.\n'
+            );
+          }
           throw new Error(data.error || 'That did not work. Please try again.');
         }
         return data;
