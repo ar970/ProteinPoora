@@ -36,12 +36,28 @@ const { send, guard } = require('./_lib/http.js');
 const TTL_MS = 60 * 1000;
 let cached = null;
 
-/** Characters that are almost always a paste accident rather than a key. */
-function looksMangled(raw) {
+/**
+ * Characters that are almost always a paste accident rather than a key.
+ *
+ * Note what surrounding whitespace does and does not mean: `credentials()`
+ * trims before it builds the client or signs anything, so stray spaces are
+ * untidy and harmless. If the pair is still rejected with whitespace flagged
+ * here, the whitespace is not the cause and the secret itself is wrong.
+ *
+ * What trim() cannot save you from is a character that is not whitespace at
+ * all — a zero-width space, a smart quote pasted out of a document — which
+ * survives trimming and silently breaks the key. Those are worth naming
+ * separately, because they are invisible in the Vercel field.
+ */
+function looksMangled(raw, { alnum = false } = {}) {
   const notes = [];
-  if (raw !== raw.trim()) notes.push('has leading or trailing whitespace');
-  if (/^["'].*["']$/.test(raw.trim())) notes.push('is wrapped in quotes');
-  if (/\s/.test(raw.trim())) notes.push('contains a space or newline');
+  const trimmed = raw.trim();
+  if (raw !== trimmed) notes.push('has leading or trailing whitespace (harmless — the server trims)');
+  if (/^["'].*["']$/.test(trimmed)) notes.push('is wrapped in quotes');
+  if (/\s/.test(trimmed)) notes.push('contains a space or newline in the middle');
+  if (alnum && trimmed && !/^[A-Za-z0-9]+$/.test(trimmed)) {
+    notes.push('contains a character that is not a letter or digit — likely an invisible one trim cannot remove');
+  }
   return notes;
 }
 
@@ -85,11 +101,19 @@ module.exports = async function handler(req, res) {
   const configured = Boolean(keyId && keySecret);
 
   const hints = [];
-  for (const [name, raw] of [['RAZORPAY_KEY_ID', rawId], ['RAZORPAY_KEY_SECRET', rawSecret]]) {
-    for (const note of looksMangled(raw)) hints.push(`${name} ${note}`);
+  for (const note of looksMangled(rawId)) hints.push(`RAZORPAY_KEY_ID ${note}`);
+  // The secret is plain alphanumeric; the key id is not (it has underscores).
+  for (const note of looksMangled(rawSecret, { alnum: true })) {
+    hints.push(`RAZORPAY_KEY_SECRET ${note}`);
   }
   if (keyId && !/^rzp_(test|live)_/.test(keyId)) {
     hints.push('RAZORPAY_KEY_ID does not start with rzp_test_ or rzp_live_');
+  }
+  // A Razorpay key secret is 24 characters. The length alone gives nothing
+  // away — it is the same for every account — but a wrong one is usually a
+  // truncated paste, and that is worth saying out loud.
+  if (keySecret && keySecret.length !== 24) {
+    hints.push('RAZORPAY_KEY_SECRET is not the 24 characters a Razorpay secret has — it looks truncated or run together with something else');
   }
 
   const body = {
