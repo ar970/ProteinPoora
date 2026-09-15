@@ -7,6 +7,13 @@ node_modules/
 .vercel/
 __pycache__/
 
+# Secrets. This repository is public: RAZORPAY_KEY_SECRET signs payment
+# verifications, so a commit of it is a live compromise, not a tidy-up job.
+# .env.example is the committed template and holds no values.
+.env
+.env.*
+!.env.example
+
 # Local Claude settings
 .claude/settings.local.json
 .claude/session-state/

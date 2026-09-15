@@ -78,12 +78,29 @@ function guard(req, res, methods) {
   return false;
 }
 
+/**
+ * Server-side failures whose message is ours, written for a customer, and
+ * safe to send. Everything else with a 5xx is flattened to one generic line,
+ * because an unplanned 500 tends to carry a stack trace or a query in it.
+ */
+const SAFE_5XX = {
+  NO_DATABASE: [503, 'The store database is not configured yet.'],
+  NO_RAZORPAY: [503, 'Payments are not switched on yet. Please try again shortly.'],
+  RAZORPAY_UNREACHABLE: [502, 'We could not reach our payment provider. Please try again in a moment.'],
+  RAZORPAY_UPSTREAM: [502, 'We could not start that payment. Please try again.'],
+  RAZORPAY_AUTH: [500, 'Payments are misconfigured at our end. Please try again shortly.']
+};
+
 /** Turns an API error into a response, keeping internals out of the body. */
 function onError(res, err) {
   const status = err && err.statusCode ? err.statusCode : 500;
-  if (err && err.code === 'NO_DATABASE') {
-    return fail(res, 503, 'The store database is not configured yet.', { code: 'NO_DATABASE' });
+
+  const safe = err && err.code && SAFE_5XX[err.code];
+  if (safe) {
+    // Already logged with its cause where it was raised.
+    return fail(res, safe[0], safe[1], { code: err.code });
   }
+
   if (status >= 500) {
     console.error('[api]', err);
     return fail(res, 500, 'Something went wrong at our end. Please try again.');

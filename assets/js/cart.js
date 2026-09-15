@@ -278,7 +278,7 @@
     var go = el('a', 'btn btn--navy btn--block', 'Pre-order these');
     go.href = '/preorder';
     d.__foot.appendChild(go);
-    d.__foot.appendChild(el('p', 'drawer__note', 'Pay nothing now. We email you before the batch ships.'));
+    d.__foot.appendChild(el('p', 'drawer__note', 'You pay at checkout, securely through Razorpay. We email you when the batch ships.'));
   }
 
   function stepper(item) {

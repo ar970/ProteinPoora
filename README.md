@@ -1,22 +1,26 @@
 # Protein पूरा — website
 
-Storefront for [proteinpoora.shop](https://proteinpoora.shop), hosted on Vercel. The shop pages are plain HTML, CSS and a little JavaScript with no build step; orders go straight to Supabase, with two serverless functions in `api/` as a fallback. The structure mirrors Shopify sections so it can be ported to a Liquid theme later.
+Storefront for [proteinpoora.shop](https://proteinpoora.shop), hosted on Vercel. The shop pages are plain HTML, CSS and a little JavaScript with no build step. Pre-orders are **paid, through Razorpay**: two serverless functions in `api/` create and verify the payment, and the order row then goes to Supabase. Two more functions are a dormant database fallback. The structure mirrors Shopify sections so it can be ported to a Liquid theme later.
 
 ## Preview locally
 
-The shop pages are static. Orders go straight to Supabase, so a plain file server is enough for most work; use the dev server when you want `/api/*` running too:
+The shop pages are static, but **checkout needs `/api/*` running**, so use the dev server:
 
 ```bash
 npm install
-DATABASE_URL='postgres://…' node scripts/dev-server.js
-# then open http://127.0.0.1:3000
+cp .env.example .env     # then paste your Razorpay keys in
+npm run dev              # → http://127.0.0.1:3000
 ```
 
-Paths are absolute (`/assets/...`), so serve from the repo root, not by opening `index.html` directly. See [docs/ADMIN-SETUP.md](docs/ADMIN-SETUP.md) for the Supabase table.
+The dev server reads `.env` the way Vercel reads its environment variables, and mounts the real handlers — nothing in it is a stub. With no keys set, checkout returns `503` and says so rather than placing an unpaid order.
+
+Paths are absolute (`/assets/...`), so serve from the repo root, not by opening `index.html` directly. See [docs/ADMIN-SETUP.md](docs/ADMIN-SETUP.md) for the Supabase table, and **Payments** below for the checkout.
 
 ## Deploy to Vercel
 
 Import the repository in Vercel. Framework preset: **Other**. Build command: none. Output directory: `.` (repo root). `vercel.json` sets long-lived caching for `/assets/` and `.vercelignore` keeps the design docs and skills out of the deploy.
+
+**Set `RAZORPAY_KEY_ID` and `RAZORPAY_KEY_SECRET` in the Vercel project's environment variables before deploying.** They are not in the repository and cannot be — without them the deployed checkout returns `503` and takes no orders.
 
 ## Where things live
 
@@ -30,11 +34,14 @@ Import the repository in Vercel. Framework preset: **Other**. Build command: non
 | `assets/img/` | Pack shots and lifestyle photos (WebP, two sizes each, transparent backgrounds), logo and favicons. Re-exported artwork is **renamed**, never overwritten — see the caching note in `design-system/proteinpoora/MASTER.md`. |
 | `preorder/index.html` | Pre-order form: product picker, customer details, address. Served at `/preorder`. |
 | `thank-you/index.html` | Where a placed order lands. Served at `/thank-you`; `noindex`, so it stays out of search. |
-| `api/` | Serverless functions: `products.js` and `preorders.js`, plus shared `_lib/`. Only used when Supabase is not configured. |
+| `api/` | Serverless functions. `create-order.js` and `verify-payment.js` are the payment path and are always used; `products.js` and `preorders.js` are the dormant database fallback. Shared helpers in `_lib/`. |
 | `assets/js/cart.js` | Cart state, header count and drawer. Loaded on every storefront page. |
-| `assets/js/preorder.js` | The checkout: picker, validation, and posting the order. |
+| `assets/js/preorder.js` | The checkout: picker, validation, payment, and posting the order. |
+| `assets/js/payment.js` | Razorpay Standard Checkout: create order, open the modal, verify the payment. |
 | `sources/open/` | Photographs of each pack torn open with its contents flying, as shot. Nothing on the site uses them; kept out of the deploy by `.vercelignore`. |
-| `scripts/dev-server.js` | Local server that mounts the real API handlers. |
+| `scripts/dev-server.js` | Local server that mounts the real API handlers and reads `.env`. |
+| `scripts/check-prices.js` | Fails if the three places prices are written down stop agreeing. |
+| `scripts/test-payments.sh` | The payment endpoints, checked with curl. |
 | `design-system/` | Design spec: colors, type, spacing, section order, Shopify plan. |
 
 ## Swapping the hero image
@@ -209,8 +216,85 @@ Storing pre-orders needs the Supabase table in place; until then `/preorder`
 says so rather than taking an order it cannot keep.
 **[docs/ADMIN-SETUP.md](docs/ADMIN-SETUP.md) has the steps.**
 
-There is no payment step. The form takes a list of interested customers before
-the first batch is ready; taking money is a job for the Shopify store.
+## Payments
+
+**The pre-order is paid.** Razorpay Standard Checkout takes the money at
+checkout; there is no path through the form that places an order without one.
+
+The flow, and why it is in that order:
+
+1. The browser posts **slugs and quantities only** to `POST /api/create-order`.
+2. That handler prices the basket from `api/_lib/catalogue.js` — never from the
+   request — and opens a Razorpay order for the amount it computed. It returns
+   the order id and `RAZORPAY_KEY_ID`, so no key is written into a static file.
+3. `assets/js/payment.js` loads Razorpay's `checkout.js` **on demand** and opens
+   the modal. A customer who never reaches step three never downloads it, and a
+   third-party script that fails cannot take the form down with it.
+4. On success the modal hands back three ids, which go to
+   `POST /api/verify-payment`. That does two checks: the HMAC-SHA256 signature
+   over `order_id|payment_id` under the key secret, and then a read of the order
+   back from Razorpay to confirm it is actually `paid`. The signature says the
+   ids are genuine; only the second check says the money arrived.
+5. **Only then** is the order row written, carrying the payment ids and the
+   amount Razorpay reported. A dismissed modal or a declined card leaves nothing
+   behind to reconcile.
+
+### Where the money is true
+
+Orders are written to Supabase **by the browser**, with the public anon key, and
+the insert policy allows any row. So the `status: 'paid'` on a row is a claim,
+not proof. It is not a way to get free snacks — nothing ships without a matching
+payment in the Razorpay dashboard — but it does mean **Razorpay is the record of
+the money and this table is a convenience copy.** Reconcile on
+`razorpay_payment_id` before shipping.
+
+Closing that properly means the server writing the row: a `SUPABASE_SERVICE_ROLE_KEY`
+on the Vercel project, the insert moved into `/api/verify-payment`, and the
+public insert policy dropped. `docs/supabase-setup.sql` says the same at the
+bottom. That key is a password and must never go in `assets/` or in git.
+
+### Configuration
+
+Both values go in `.env` locally **and** in the Vercel project's environment
+variables. `.env.example` is the template.
+
+| Variable | Where it may appear |
+|---|---|
+| `RAZORPAY_KEY_ID` | Server and browser. Publishable, but still served from `/api/create-order` so switching test keys for live ones is an environment change, not a redeploy. |
+| `RAZORPAY_KEY_SECRET` | **Server only.** Signs verification. Never in `assets/`, never in git. |
+
+`.env` is gitignored. **This repository is public**, so a commit of the secret
+is a live compromise, not a tidy-up job — rotate it in the Razorpay dashboard
+rather than just deleting the file.
+
+With the variables unset every checkout returns `503 NO_RAZORPAY` and says so.
+That is deliberate: no order is placed that nobody paid for.
+
+### Prices are written down three times
+
+`api/_lib/catalogue.js` (what the server charges), the `#catalogue` JSON in
+`preorder/index.html` (what the picker shows), and `data-price-paise` on each
+card in `index.html`. There is no build step to generate one from the others,
+and the server cannot price an order from a file the customer can edit. What is
+not acceptable is the three drifting apart, so **`npm run check:prices` fails if
+they disagree** — run it after any price change.
+
+### Testing
+
+```bash
+npm run dev                  # reads .env, mounts /api/*
+npm run check:prices
+npm run test:payments        # 12 checks, no Razorpay account needed
+```
+
+`scripts/test-payments.sh` covers everything that runs before Razorpay is
+called: basket validation, and the missing-field and signature checks. It does
+**not** prove the key pair works or that a real payment verifies — that needs a
+live call. For that, open `/preorder`, fill the form, pay with Razorpay's test
+card `4111 1111 1111 1111`, any future expiry, any CVV, and any OTP, then check
+the payment in the Razorpay dashboard and the row in Supabase.
+
+Taking money elsewhere on the site is still a job for the Shopify store.
 
 ## Fonts
 

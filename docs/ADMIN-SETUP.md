@@ -151,10 +151,15 @@ you open in Excel.
 
 ## What this is not
 
-There is **no payment**. The form says "pay nothing now", and the flow is
-built for taking a list of interested customers before the first batch is
-ready. Taking money needs a payment gateway, which needs a registered business
-entity and KYC — worth doing on Shopify rather than here.
+Payments **are** live: Razorpay Standard Checkout takes the money at checkout,
+and no order is placed without one. See "Payments" in the README for the flow
+and the environment variables.
+
+What this table is not is the record of that money. Orders are written here by
+the browser with the public anon key, and the insert policy allows any row — so
+`status: 'paid'` is a claim. **Razorpay's dashboard is the truth; reconcile on
+`razorpay_payment_id` before shipping anything.** The bottom of
+`supabase-setup.sql` says how to close that properly.
 
 Products carry only their commercial fields: name, slug, price, pack size,
 protein and availability. Photography, ingredients and the nutrition tables

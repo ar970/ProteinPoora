@@ -8,7 +8,10 @@
  * deploy, including `cleanUrls` and the trailing-slash behaviour from
  * vercel.json. It loads the real handler modules — nothing here is a stub.
  *
- *   DATABASE_URL=... node scripts/dev-server.js
+ *   node scripts/dev-server.js
+ *
+ * Reads .env for RAZORPAY_KEY_ID / RAZORPAY_KEY_SECRET, the way Vercel reads
+ * the project's environment variables in production. .env is gitignored.
  */
 
 const http = require('node:http');
@@ -19,6 +22,29 @@ const ROOT = path.join(__dirname, '..');
 const PORT = Number(process.env.PORT || 3000);
 
 process.env.NODE_ENV = process.env.NODE_ENV || 'development';
+
+/**
+ * A very small .env reader: KEY=VALUE a line, # comments, optional quotes.
+ * Not dotenv -- this is the only place that needs it, and a dependency whose
+ * whole job is splitting on "=" is not worth shipping to production.
+ * Anything already in the real environment wins.
+ */
+(function loadEnv() {
+  let raw;
+  try {
+    raw = fs.readFileSync(path.join(ROOT, '.env'), 'utf8');
+  } catch {
+    return;
+  }
+  for (const line of raw.split(/\r?\n/)) {
+    const m = /^\s*([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*)$/.exec(line);
+    if (!m) continue;
+    const key = m[1];
+    let value = m[2].trim().replace(/\s+#.*$/, '');
+    if (/^(".*"|'.*')$/.test(value)) value = value.slice(1, -1);
+    if (process.env[key] === undefined) process.env[key] = value;
+  }
+})();
 
 const TYPES = {
   '.html': 'text/html; charset=utf-8',
@@ -35,7 +61,9 @@ const TYPES = {
 
 const ROUTES = {
   '/api/products': path.join(ROOT, 'api', 'products.js'),
-  '/api/preorders': path.join(ROOT, 'api', 'preorders.js')
+  '/api/preorders': path.join(ROOT, 'api', 'preorders.js'),
+  '/api/create-order': path.join(ROOT, 'api', 'create-order.js'),
+  '/api/verify-payment': path.join(ROOT, 'api', 'verify-payment.js')
 };
 
 /** Mirrors Vercel's static resolution: exact file, then .html, then index.html. */
@@ -90,5 +118,13 @@ const server = http.createServer(async (req, res) => {
 
 server.listen(PORT, () => {
   console.log(`Protein पूरा dev server → http://127.0.0.1:${PORT}`);
-  if (!process.env.DATABASE_URL) console.log('  ! DATABASE_URL is not set — the API will return 503.');
+  if (!process.env.DATABASE_URL) {
+    console.log('  ! DATABASE_URL is not set — /api/products and /api/preorders return 503.');
+  }
+  if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
+    console.log('  ! RAZORPAY_KEY_ID/SECRET are not set — checkout returns 503 and no order can be placed.');
+  } else {
+    const mode = /^rzp_live_/.test(process.env.RAZORPAY_KEY_ID) ? 'LIVE — real money' : 'test mode';
+    console.log(`  · Razorpay ${process.env.RAZORPAY_KEY_ID.slice(0, 12)}… (${mode})`);
+  }
 });

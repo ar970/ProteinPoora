@@ -417,15 +417,42 @@
     };
 
     submitBtn.disabled = true;
-    say('Placing your pre-order…');
+    say('Opening the payment window…');
 
-    (useSupabase ? sendToSupabase(payload) : sendToApi(payload))
+    // Payment first, order second. The row is only written once
+    // /api/verify-payment has confirmed the money, so a dismissed modal or a
+    // failed card leaves nothing behind to reconcile.
+    takePayment(payload)
+      .then(function (paid) {
+        say('Payment received. Placing your pre-order…');
+        payload.payment = paid;
+        return useSupabase ? sendToSupabase(payload) : sendToApi(payload);
+      })
       .then(goToThankYou)
       .catch(function (err) {
         submitBtn.disabled = false;
-        say(err.message || 'We could not place that pre-order. Please try again.', 'error');
+        say(
+          err.message || 'We could not place that pre-order. Please try again.',
+          err.cancelled ? null : 'error'
+        );
       });
   });
+
+  /**
+   * Resolves with the verified payment. There is deliberately no path that
+   * skips this and places a free order: if payments are misconfigured the
+   * customer is told so, rather than being promised snacks nobody charged for.
+   */
+  function takePayment(payload) {
+    if (!window.PPPay) {
+      return Promise.reject(new Error('The payment window is unavailable. Please reload the page and try again.'));
+    }
+    return window.PPPay.pay(payload.items, {
+      name: payload.customer_name,
+      email: payload.email,
+      phone: payload.phone
+    });
+  }
 
   function sendToApi(payload) {
     return fetch('/api/preorders', {
@@ -461,9 +488,16 @@
     var total = priced.reduce(function (sum, i) { return sum + i.price_paise * i.qty; }, 0);
     var reference = makeReference();
 
+    var paid = payload.payment || {};
     var row = {
       reference: reference,
-      status: 'pending',
+      status: 'paid',
+      // What the payment actually was, as /api/verify-payment reported it —
+      // not as the browser or the modal claimed. The figures to reconcile
+      // against the Razorpay dashboard.
+      razorpay_order_id: paid.order_id || null,
+      razorpay_payment_id: paid.payment_id || null,
+      paid_paise: typeof paid.amount_paise === 'number' ? paid.amount_paise : null,
       customer_name: payload.customer_name,
       email: payload.email,
       phone: payload.phone,
