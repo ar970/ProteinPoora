@@ -22,7 +22,7 @@ Import the repository in Vercel. Framework preset: **Other**. Build command: non
 
 | Path | What |
 |---|---|
-| `index.html` | Homepage: ticker, header, hero, proof strip, the line-up, protein ledger, combos, FAQ, footer. Sections are marked with `<!-- section: … -->` comments. |
+| `index.html` | Homepage: ticker, header, hero, proof strip, the line-up, combos, FAQ, footer. Sections are marked with `<!-- section: … -->` comments. |
 | `products/masala-bhujia/index.html` | Product page: gallery with lightbox, buy box, nutrition table. Served at `/products/masala-bhujia`. |
 | `assets/css/style.css` | All styles. Tokens at the top match `design-system/proteinpoora/MASTER.md`. |
 | `assets/css/fonts.css` | Self-hosted Baloo 2 and DM Sans. |
@@ -109,26 +109,21 @@ included from `theme.liquid` above `{{ content_for_layout }}`.
 
 ## Homepage structure
 
-The grounds alternate — sand hero, cream proof strip, white line-up, navy
-ledger, cream combos, white FAQ, navy footer. Two navy sections used to sit
-next to each other and read as one slab; the proof strip is what breaks them.
+Sand hero, cream proof strip, white line-up, cream combos, white FAQ, navy
+footer.
 
-The hero was navy until the warm ground replaced it, which leaves three pale
-grounds in a row at the top of the page. They are separated by the hero card's
-rounded edge and the white gutter around it rather than by contrast. It holds,
-but it is the weakest seam on the page.
+**The grounds no longer alternate, and that is worth knowing before adding
+anything.** They used to: a navy hero and a navy protein ledger were the two
+dark moments with pale sections breathing between them. The hero went warm and
+the ledger was removed, so everything above the footer is now pale, separated
+by card edges and white gutters rather than by contrast. It reads, but the page
+has no dark anchor until its last section. If a section ever needs to carry
+weight, making the proof strip the dark one is the move.
 
 **The line-up is five across on wide screens and a swipe rail below that.**
 Five products never divided into three columns: the old grid stranded two
 cards beside a hole, and stacked to 3,400px on a phone. The rail puts the
 whole line-up in one gesture — that section is 674px on a phone now.
-
-**The protein ledger** (`#protein`) is the signature named in the design
-system and never built until now: one row per snack, protein per pack as a
-large figure, and a bar scaled to the largest of the five so they are
-comparable without reading a number. It uses our own figures only. Adding the
-"regular fried snack" comparison column needs sourced numbers — do not invent
-them.
 
 **Cards carry six things**, not nine: pack, name, one line, protein + weight,
 price, button. A three-column stats table and a row of claim chips were cut;

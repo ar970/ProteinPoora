@@ -87,7 +87,6 @@ Scale (mobile / ≥1024px), line-height, tracking:
 | Small | 14 px | 1.5 | DM 400 | 0 |
 | Eyebrow / ticker | 12 / 13 px | 1 | DM 600 | 0.14em, uppercase |
 | Price | 20 px | 1 | DM 700 | tabular |
-| Protein figure (ledger) | 40 / 56 px | 1 | Baloo 800 | tabular |
 
 Wordmark is live text, not an image: `Protein` (Baloo 700) + `पूरा` (Baloo 800) with an inline SVG swoosh under पूरा.
 
@@ -109,9 +108,18 @@ Wordmark is live text, not an image: `Protein` (Baloo 700) + `पूरा` (Bal
 
 ## Signature
 
-**The protein ledger.** The hero's second button, "See the protein numbers", scrolls to a nutrition-panel-style table on navy: one row per snack, protein per 30 g as a large Baloo figure with a cream bar, and the regular fried version beside it for comparison when sourced figures exist. It is the brand's argument drawn the way it appears on the back of the pack. Every number is a section setting; nothing is hardcoded.
+**The protein ledger was the signature, and it has been removed** at the owner's
+request. It was a table on navy — one row per snack, protein per pack as a large
+Baloo figure with a bar scaled to the largest of the five. Nothing replaces it,
+so the protein argument now lives only on the product pages and in the line-up
+cards' `9–18 g` line. If a signature moment is wanted again, this is the slot.
 
-The molecule line-art stays as texture on navy fields only (hero, footer, ledger), at 8–12% opacity, as on the pack. It never sits behind body text on light grounds.
+The hero's second button, "See the protein numbers", points at the nutrition
+panel on the Masala Bhujia product page, not at the homepage — it did so before
+the ledger existed and still does, so removing the section left no dead anchor.
+
+The molecule line-art stays as texture on navy fields only (footer), at 8–12%
+opacity, as on the pack. It never sits behind body text on light grounds.
 
 ## Components
 
@@ -135,27 +143,21 @@ The molecule line-art stays as texture on navy fields only (hero, footer, ledger
 | 3 | Hero (eyebrow, two-line H1, sub, two CTAs, three chips, showcase) | sand |
 | 4 | Proof strip — three facts | cream-soft |
 | 5 | The line-up — five products | paper |
-| 6 | Protein ledger | navy |
-| 7 | Combos — three bundles | cream-soft |
-| 8 | Pre-order FAQ | paper |
-| 9 | Footer | navy |
+| 6 | Combos — three bundles | cream-soft |
+| 7 | Pre-order FAQ | paper |
+| 8 | Footer | navy |
 
-The grounds alternate on purpose. The ledger and the footer are the navy
-moments; everything between them breathes. Two navy sections were once adjacent
-and read as one slab, which is what the proof strip now breaks.
+**The grounds no longer alternate.** They used to: a navy hero and a navy
+protein ledger were the two dark moments, with pale sections breathing between
+them, and the proof strip existed to stop the two navy ones reading as a single
+slab. The hero went warm and the ledger was removed, so everything above the
+footer is now pale — sand, cream-soft, paper, cream-soft, paper — separated by
+card edges and white gutters rather than by contrast. It reads, but the page has
+no dark anchor until its last section. If a section ever needs to carry weight
+again, making the proof strip the dark one is the move.
 
-The hero was navy until the warm ground replaced it. That leaves sand, then
-cream-soft, then paper at the top of the page — three pale grounds in a row,
-separated by the hero card's rounded edge and the page's white gutter rather
-than by contrast. It holds, but it is the weakest seam on the page: if the
-proof strip ever needs to earn its keep again, making it the dark one is the
-move.
-
-The ledger ships with our own figures only — protein per pack, with a bar
-scaled to the largest of the five. The fried-snack comparison column in the
-Signature note above stays unbuilt until there are sourced numbers for it.
-
-The story section was built and then removed at the owner's request.
+The story section and the protein ledger were both built and then removed at the
+owner's request.
 
 **Product page (`product.json`)**: gallery → title + protein figure → price, weight, pre-order note → Add to cart → In this pack (ingredients) → Nutrition (per 100 g / per 30 g) → How it's made → You might also like.
 
@@ -170,8 +172,8 @@ The story section was built and then removed at the owner's request.
 ```
 layout/theme.liquid
 templates/*.json, gift_card.liquid, customers/*
-sections/   announcement-ticker, header, hero, proof-strip, protein-ledger,
-            featured-collection, story, faq, footer,
+sections/   announcement-ticker, header, hero, proof-strip,
+            featured-collection, faq, footer,
             main-product, main-collection, main-cart, main-page, main-404,
             main-search, main-password, main-list-collections
 snippets/   product-card, price, icon, wordmark, molecule-pattern, responsive-image
