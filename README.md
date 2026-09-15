@@ -22,7 +22,7 @@ Import the repository in Vercel. Framework preset: **Other**. Build command: non
 
 | Path | What |
 |---|---|
-| `index.html` | Homepage: ticker, header, hero, the line-up, combos, FAQ, footer. Sections are marked with `<!-- section: … -->` comments. |
+| `index.html` | Homepage: ticker, header, hero, proof strip, the line-up, protein ledger, combos, FAQ, footer. Sections are marked with `<!-- section: … -->` comments. |
 | `products/masala-bhujia/index.html` | Product page: gallery with lightbox, buy box, nutrition table. Served at `/products/masala-bhujia`. |
 | `assets/css/style.css` | All styles. Tokens at the top match `design-system/proteinpoora/MASTER.md`. |
 | `assets/css/fonts.css` | Self-hosted Baloo 2 and DM Sans. |
@@ -49,6 +49,32 @@ Snapshots live in the gallery on the product page. To add one:
 2. In `products/masala-bhujia/index.html`, copy one of the `<li>` blocks inside `<ul class="thumbs">` and point its `data-src`, `data-srcset`, `data-large`, `data-alt` and the thumbnail `<img>` at the new files.
 
 Clicking a thumbnail swaps the main image; clicking the main image opens it full-size. Left and right arrow keys move between photos.
+
+## Homepage structure
+
+The grounds alternate — navy hero, cream proof strip, white line-up, navy
+ledger, cream combos, white FAQ, navy footer. Two navy sections used to sit
+next to each other and read as one slab; the proof strip is what breaks them.
+
+**The line-up is five across on wide screens and a swipe rail below that.**
+Five products never divided into three columns: the old grid stranded two
+cards beside a hole, and stacked to 3,400px on a phone. The rail puts the
+whole line-up in one gesture — that section is 674px on a phone now.
+
+**The protein ledger** (`#protein`) is the signature named in the design
+system and never built until now: one row per snack, protein per pack as a
+large figure, and a bar scaled to the largest of the five so they are
+comparable without reading a number. It uses our own figures only. Adding the
+"regular fried snack" comparison column needs sourced numbers — do not invent
+them.
+
+**Cards carry six things**, not nine: pack, name, one line, protein + weight,
+price, button. A three-column stats table and a row of claim chips were cut;
+their labels had shrunk to 9px, and a 7px "Per pack" sat under the badge.
+Calories and the claims are on the product pages, where someone reads them.
+
+Nothing on the page draws a box shadow, and there are five corner radii. Both
+are what the design system always said; the built site had drifted.
 
 ## Combos
 

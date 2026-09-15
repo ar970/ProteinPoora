@@ -432,7 +432,7 @@ button {
   right: var(--gutter);
   display: none;
   padding: 0.5rem;
-  border-radius: 18px;
+  border-radius: 20px;
   background: var(--navy-deep);
   box-shadow: 0 16px 40px rgba(10, 16, 50, 0.35);
 }
@@ -848,7 +848,7 @@ button {
 
 .showcase__badge-label {
   color: var(--cream);
-  font-size: 0.5625rem;
+  font-size: 0.6875rem;
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -868,9 +868,13 @@ button {
   position: relative;
   display: flex;
   align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
 }
 
 .dot {
+  position: relative;
   display: block;
   width: 10px;
   height: 10px;
@@ -878,18 +882,18 @@ button {
   border: 0;
   border-radius: 999px;
   background: rgba(247, 233, 195, 0.35);
-  overflow: hidden;
   cursor: pointer;
   transition:
     width 400ms var(--ease),
     background-color 400ms var(--ease);
 }
 
-/* Keeps a 44px tap target without enlarging the visible dot. */
+/* The tap target: 44px tall, and as wide as the gap between dots allows
+   without two of them fighting over the same pixels. */
 .dot::before {
   content: "";
   position: absolute;
-  inset: -17px -6px;
+  inset: -17px -8px;
 }
 
 .dot:hover {
@@ -1177,24 +1181,37 @@ button {
 }
 
 /* --- Product grid (line-up) --------------------------------------------- */
+/* Five products do not divide into three columns: the old grid left two cards
+   stranded beside a hole, and stacked to 3400px on a phone. Below the width
+   where all five fit, it becomes a swipe rail instead -- the whole line-up in
+   one gesture rather than six screens of scrolling. */
 .product-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 1.25rem;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(230px, 1fr);
+  gap: 1rem;
   margin: 0;
-  padding: 0;
+  padding: 0 var(--gutter) 0.5rem;
+  margin-inline: calc(var(--gutter) * -1);
   list-style: none;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: thin;
+  overscroll-behavior-x: contain;
 }
 
-@media (min-width: 640px) {
-  .product-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+.product-grid > li {
+  scroll-snap-align: start;
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 1100px) {
   .product-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-auto-flow: row;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 1.15rem;
+    padding-inline: 0;
+    margin-inline: 0;
+    overflow-x: visible;
   }
 }
 
@@ -1203,18 +1220,20 @@ button {
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding: 1rem 1.15rem 1.15rem;
+  padding: 0.85rem 0.95rem 1.1rem;
+  border: 1px solid var(--line);
   border-radius: 20px;
-  background: #F5EDDC;
-  box-shadow: 0 10px 26px rgba(8, 14, 46, 0.22);
+  background: var(--paper);
   transition:
-    transform 260ms var(--ease),
-    box-shadow 260ms var(--ease);
+    border-color 200ms var(--ease),
+    transform 200ms var(--ease);
 }
 
+/* On the page ground a card lifts by its border, not a drop shadow -- five
+   shadowed cards in a row is what made this read as heavy. */
 .product-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 20px 44px rgba(8, 14, 46, 0.34);
+  transform: translateY(-3px);
+  border-color: var(--navy);
 }
 
 /* Reveal on scroll, staggered by --i. */
@@ -1237,9 +1256,11 @@ button {
    badge lands on its corner rather than floating beside it. */
 .product-card__media {
   position: relative;
-  width: 86%;
-  margin: 0 auto 0.9rem;
-  aspect-ratio: 0.73;
+  margin: 0 0 0.85rem;
+  padding: 0.5rem;
+  border-radius: 16px;
+  background: var(--tile);
+  aspect-ratio: 1;
 }
 
 .product-card__media img {
@@ -1257,42 +1278,28 @@ button {
 .product-card__badge {
   position: absolute;
   top: -10px;
-  right: -18px;
+  right: -10px;
   z-index: 2;
   display: grid;
   place-content: center;
-  justify-items: center;
-  gap: 0.05rem;
-  width: 62px;
-  height: 62px;
+  width: 52px;
+  height: 52px;
   border-radius: 50%;
   background: var(--accent);
-}
-
-.product-card__badge b {
   color: var(--cream);
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: 1.125rem;
+  font-size: 1.0625rem;
   line-height: 1;
   font-variant-numeric: tabular-nums;
 }
 
-.product-card__badge small {
-  color: var(--cream);
-  font-size: 0.4375rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  line-height: 1;
-}
-
 .product-card__name {
-  margin: 0 0 0.3rem;
+  margin: 0 0 0.25rem;
   color: var(--navy-ink);
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 1.375rem;
+  font-size: 1.1875rem;
   line-height: 1.15;
 }
 
@@ -1309,72 +1316,20 @@ button {
 }
 
 .product-card__desc {
-  margin: 0 0 0.9rem;
-  color: rgba(26, 36, 86, 0.7);
-  font-size: 0.9375rem;
+  margin: 0 0 0.5rem;
+  color: var(--text);
+  font-size: 0.875rem;
   line-height: 1.45;
 }
 
-.product-card__stats {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  margin: 0 0 0.9rem;
-}
-
-.product-card__stats > div {
-  display: flex;
-  flex-direction: column-reverse;
-  gap: 0.15rem;
-  padding-inline: 0.5rem;
-  text-align: center;
-}
-
-.product-card__stats > div:first-child {
-  padding-left: 0;
-}
-
-.product-card__stats > div:last-child {
-  padding-right: 0;
-}
-
-.product-card__stats > div + div {
-  border-left: 1px solid rgba(26, 36, 86, 0.25);
-}
-
-.product-card__stats dd {
-  margin: 0;
-  color: var(--navy-ink);
-  font-weight: 700;
-  font-size: 1rem;
-  line-height: 1.1;
-  font-variant-numeric: tabular-nums;
-}
-
-.product-card__stats dt {
-  color: rgba(26, 36, 86, 0.6);
-  font-size: 0.5625rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  line-height: 1.2;
-}
-
-.product-card__tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
+/* Protein and weight as one readable line, in place of a three-column table
+   whose labels had shrunk to 9px to fit. */
+.product-card__facts {
   margin: 0 0 1rem;
-  padding: 0;
-  list-style: none;
-}
-
-.product-card__tags li {
-  padding: 0.2rem 0.6rem;
-  border: 1.5px solid rgba(26, 36, 86, 0.4);
-  border-radius: var(--radius-pill);
-  color: var(--navy-ink);
-  font-size: 0.75rem;
-  line-height: 1.4;
+  color: var(--pack-blue);
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
 }
 
 .product-card__buy {
@@ -1389,7 +1344,7 @@ button {
   margin: 0;
   color: var(--navy-ink);
   font-weight: 700;
-  font-size: 1.375rem;
+  font-size: 1.25rem;
   line-height: 1;
   font-variant-numeric: tabular-nums;
 }
@@ -1908,13 +1863,201 @@ button {
   height: 20px;
 }
 
+/* --- Section: proof strip ----------------------------------------------- */
+
+/* The one value-prop beat between the hero and the shop. It also breaks the
+   hero's navy from the sections below it, which used to run together as a
+   single blue slab. */
+.proof {
+  padding: 1.5rem var(--gutter);
+  background: var(--cream-soft);
+}
+
+.proof__list {
+  display: grid;
+  gap: 0.9rem;
+  max-width: var(--container);
+  margin-inline: auto;
+  padding: 0;
+  list-style: none;
+  text-align: center;
+}
+
+@media (min-width: 720px) {
+  .proof__list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 2rem;
+  }
+}
+
+.proof__item {
+  display: grid;
+  justify-items: center;
+  gap: 0.2rem;
+}
+
+.proof__icon {
+  width: 24px;
+  height: 24px;
+  color: var(--orange);
+}
+
+/* Three facts stand in a row from the first breakpoint up; stacked on the
+   narrowest screens they are still only three short lines. */
+.proof__item {
+  align-content: start;
+}
+
+.proof__fact {
+  margin: 0;
+  color: var(--navy-ink);
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.125rem;
+  line-height: 1.2;
+}
+
+.proof__note {
+  margin: 0;
+  color: var(--text);
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+/* --- Section: protein ledger -------------------------------------------- */
+
+/* The argument, drawn the way it appears on the back of a pack: one row per
+   snack, the figure large, and a bar so the five are comparable at a glance
+   without anyone reading a number. */
+.ledger-section {
+  border-radius: var(--radius-hero);
+  margin-inline: var(--frame);
+}
+
+.ledger {
+  display: grid;
+  gap: 0.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ledger__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.15rem 1rem;
+  padding: 0.9rem 0;
+  border-bottom: 1px solid rgba(247, 233, 195, 0.18);
+}
+
+.ledger__row:last-child {
+  border-bottom: 0;
+}
+
+@media (min-width: 720px) {
+  .ledger__row {
+    grid-template-columns: minmax(0, 15rem) minmax(0, 1fr) auto auto;
+    gap: 1.5rem;
+    padding: 1.05rem 0;
+  }
+}
+
+.ledger__label {
+  display: grid;
+  gap: 0.1rem;
+}
+
+.ledger__name {
+  display: inline-block;
+  padding-block: 0.35rem;
+  color: var(--cream);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.0625rem;
+  line-height: 1.2;
+  text-decoration: none;
+}
+
+.ledger__name:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.ledger__claim {
+  color: var(--cream-70);
+  font-size: 0.8125rem;
+}
+
+/* Full row on a phone, where there is no width to share. */
+.ledger__bar {
+  grid-column: 1 / -1;
+  height: 8px;
+  border-radius: var(--radius-pill);
+  background: rgba(247, 233, 195, 0.14);
+  overflow: hidden;
+}
+
+@media (min-width: 720px) {
+  .ledger__bar {
+    grid-column: auto;
+  }
+}
+
+.ledger__bar span {
+  display: block;
+  width: var(--fill);
+  height: 100%;
+  border-radius: var(--radius-pill);
+  background: var(--accent);
+}
+
+.ledger__figure {
+  display: flex;
+  align-items: baseline;
+  gap: 0.3rem;
+  margin: 0;
+  color: var(--cream);
+  font-variant-numeric: tabular-nums;
+}
+
+.ledger__figure b {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.ledger__figure span {
+  font-size: 0.8125rem;
+  color: var(--cream-70);
+}
+
+.ledger__pack {
+  margin: 0;
+  color: var(--cream-70);
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.ledger__foot {
+  margin: 1.25rem 0 0;
+  color: var(--cream-70);
+  font-size: 0.8125rem;
+}
+
 /* --- Section: combos ---------------------------------------------------- */
 
 /* Bundle photography is landscape, and the packs in it are the point, so these
    cards are wide where the line-up's are tall. */
+.combos-section {
+  background: var(--cream-soft);
+}
+
 .combo-grid {
   display: grid;
-  gap: 1.5rem;
+  gap: 1.25rem;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -1936,13 +2079,23 @@ button {
   flex-direction: column;
   height: 100%;
   overflow: hidden;
+  border: 1px solid var(--line);
   border-radius: 20px;
-  background: #F5EDDC;
-  box-shadow: 0 10px 26px rgba(8, 14, 46, 0.22);
+  background: var(--paper);
+}
+
+/* Photo beside the words rather than above them: as a stacked card, a
+   2:1 group shot of five packs was setting a 630px row height on its own. */
+@media (min-width: 900px) {
+  .combo--wide .combo__card {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    align-items: center;
+  }
 }
 
 .combo__media {
-  background: var(--cream-soft);
+  background: var(--tile);
 }
 
 .combo__media img {
@@ -1950,11 +2103,25 @@ button {
   height: auto;
 }
 
+/* The duo shots are cropped to a band so two cards side by side stay the
+   same height whatever the source photograph's ratio is. */
+.combo:not(.combo--wide) .combo__media img {
+  aspect-ratio: 1.55;
+  object-fit: cover;
+  object-position: center 55%;
+}
+
 .combo__body {
   display: flex;
   flex: 1;
   flex-direction: column;
-  padding: 1.15rem 1.25rem 1.25rem;
+  padding: 1.1rem 1.25rem 1.2rem;
+}
+
+@media (min-width: 900px) {
+  .combo--wide .combo__body {
+    padding: 1.5rem 1.75rem;
+  }
 }
 
 .combo__name {
@@ -1967,9 +2134,11 @@ button {
 }
 
 .combo__desc {
-  margin: 0 0 0.9rem;
-  max-width: 52ch;
+  margin: 0 0 0.85rem;
+  max-width: 48ch;
   color: var(--text);
+  font-size: 0.9375rem;
+  line-height: 1.5;
 }
 
 /* What is in the box, as a row of chips rather than a list to read. */
@@ -2432,7 +2601,7 @@ button {
   position: sticky;
   top: 1.25rem;
   padding: 1.25rem;
-  border-radius: 18px;
+  border-radius: 20px;
   background: var(--cream-soft);
   box-shadow: 0 10px 26px rgba(8, 14, 46, 0.1);
 }

@@ -61,8 +61,8 @@ Wordmark is live text, not an image: `Protein` (Baloo 700) + `पूरा` (Bal
 - Base 4. Scale: 4, 8, 12, 16, 24, 32, 48, 64, 96.
 - Section padding: 64 px mobile, 96 px desktop. Proof strip: 32 / 40.
 - Container: max 1200 px; gutters 20 px mobile, 32 px desktop.
-- Radius: pill (999) for buttons, chips, badges; 20 px cards; 16 px image tiles; 12 px inputs.
-- Shadows: none, except a 1 px `--line` border and a 2 px navy focus ring. Cards lift on hover by border color only.
+- Radius: pill (999) for buttons, chips, badges; 20 px cards and panels; 16 px image tiles; 12 px inputs; `--radius-hero` (24/32) for the full-bleed navy frames. Five values, and no sixth: an 18 px that differed from the card radius by 2 px nobody could see has been folded into 20.
+- Shadows: none, except a 1 px `--line` border and a 2 px navy focus ring. Cards lift on hover by border color only. **Nothing on the page draws a box shadow** — verified, not aspirational.
 - Touch targets ≥ 44 × 44. Buttons: 48 px tall mobile, 52 px desktop.
 - Breakpoints: 375, 768, 1024, 1440. Mobile first. No horizontal scroll at any width.
 
@@ -82,7 +82,8 @@ The molecule line-art stays as texture on navy fields only (hero, footer, ledger
 
 - **Button**: primary = cream fill / navy text (on navy fields), navy fill / cream text (on light). Secondary = 2 px outline. Loading state: disabled + `aria-busy` + label "Adding…". Success label "Added" for 2 s, then "Add to cart".
 - **Chip**: cream-soft pill, orange dot, navy-ink text. Informational only, not interactive.
-- **Product card**: tile with pack image (aspect 1:1, `--tile` ground), name (H3), tagline (small, muted), protein line (pack-blue, DM 500), price + weight, Add to cart. Whole image + title area is the product link; button is a separate form.
+- **Product card**: tile with pack image (aspect 1:1, `--tile` ground), name (H3), tagline (small, muted), one facts line — protein + pack weight, pack-blue, tabular — then price and Add to cart. Six elements, no more: a three-column stats table and a row of claim chips were tried and cut, and their labels had shrunk to 9px to fit. Calories and the claims live on the product page. Whole image + title area is the product link; the button sits above it.
+- **Protein badge**: the figure alone in an accent circle. "Per pack" underneath needed 7px type to fit, and the facts line already says it.
 - **Protein badge**: orange circle, cream text, "10 g protein" on two lines. Overlaps pack image top-right.
 - **Icons**: inline SVG, Phosphor outline style, 20 px, `aria-hidden` when next to visible text. No emoji as icons.
 - **FAQ**: native `<details>/<summary>`. No JS.
@@ -90,16 +91,29 @@ The molecule line-art stays as texture on navy fields only (hero, footer, ledger
 
 ## Section order
 
-**Homepage (`index.json`)**
-1. Announcement ticker
-2. Header (wordmark, Shop, About, cart with count, Pre-order CTA, menu on mobile)
-3. Hero (eyebrow, two-line H1, sub, two CTAs, three chips, pack image with protein badge)
-4. Proof strip (three facts on cream-soft)
-5. Protein ledger
-6. The line-up (featured collection, 4 products, "See all")
-7. Roasted, never fried (story with image)
-8. Pre-order FAQ
-9. Footer
+**Homepage (`index.json`)** — as built
+
+| # | Section | Ground |
+|---|---|---|
+| 1 | Announcement ticker | navy-deep |
+| 2 | Header (wordmark, Shop, Combos, FAQ, cart, Pre-order CTA) | navy |
+| 3 | Hero (eyebrow, two-line H1, sub, two CTAs, three chips, showcase) | navy |
+| 4 | Proof strip — three facts | cream-soft |
+| 5 | The line-up — five products | paper |
+| 6 | Protein ledger | navy |
+| 7 | Combos — three bundles | cream-soft |
+| 8 | Pre-order FAQ | paper |
+| 9 | Footer | navy |
+
+The grounds alternate on purpose. Hero and ledger are the two navy moments;
+everything between them breathes. Two navy sections were once adjacent and
+read as one slab, which is what the proof strip now breaks.
+
+The ledger ships with our own figures only — protein per pack, with a bar
+scaled to the largest of the five. The fried-snack comparison column in the
+Signature note above stays unbuilt until there are sourced numbers for it.
+
+The story section was built and then removed at the owner's request.
 
 **Product page (`product.json`)**: gallery → title + protein figure → price, weight, pre-order note → Add to cart → In this pack (ingredients) → Nutrition (per 100 g / per 30 g) → How it's made → You might also like.
 
