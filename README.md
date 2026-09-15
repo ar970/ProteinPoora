@@ -35,7 +35,35 @@ Import the repository in Vercel. Framework preset: **Other**. Build command: non
 | `assets/js/preorder.js` | The checkout: picker, validation, and posting the order. |
 | `sources/open/` | Photographs of each pack torn open with its contents flying, as shot. Nothing on the site uses them; kept out of the deploy by `.vercelignore`. |
 | `scripts/dev-server.js` | Local server that mounts the real API handlers. |
+| `scripts/cut-bowls.py` | Cuts the hero bowls out of the lifestyle photographs. Not part of the site; see “The bowl in the hero”. |
 | `design-system/` | Design spec: colors, type, spacing, section order, Shopify plan. |
+
+## The bowl in the hero
+
+Each hero slide carries two pictures: the pouch, and a bowl of what is in it.
+The bowl sits at the pouch's lower left, inside `.showcase__float`, so it
+scales, dims and blurs with its own slide and changes when the carousel does —
+peanuts never sit in front of a bhujia pack.
+
+The bowls are cut out of the five lifestyle photographs by
+`scripts/cut-bowls.py`, which is kept because they cannot be cut by hand twice
+the same way. Those photographs are marketing layouts, not product shots, so
+the script has two jobs. Hand-drawn white callout arrows cross the bowls, and
+are painted out by diffusion from the pixels around them inside boxes given per
+photograph — the "pale and thin" test that finds a stroke would also find a
+white bowl, so it is only trusted where a stroke is known to be. And **none of
+these bowls separates from its ground by colour**: brass in shadow on dark
+stone, a black bowl on deep red, orange chakli on orange paper. So each is cut
+by a silhouette fitted to the photograph — a rim ellipse, two sides, a base arc
+— with the fitted numbers in `JOBS` at the bottom of the script. Where a mound
+of snack rises above the rim with a ragged edge that a smooth curve would chop,
+that part is keyed on local variance instead: the grounds are flat, the snack
+is not.
+
+To refit one, change its `rim`, `base` and `bulge` and re-run
+`python3 scripts/cut-bowls.py <name>`; it writes both WebP sizes straight into
+`assets/img/`. **Bump the `?v=` on the stylesheet** if you re-export under the
+same filename, or nobody will see the new one.
 
 ## Swapping the hero image
 
