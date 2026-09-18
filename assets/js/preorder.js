@@ -353,7 +353,7 @@
       name: payload.customer_name,
       email: payload.email,
       phone: payload.phone
-    });
+    }, payload);
   }
 
   function sendToApi(payload) {
@@ -414,25 +414,64 @@
     };
 
     var base = String(supa.url).replace(/\/+$/, '');
-    return fetch(base + '/rest/v1/' + (supa.table || 'preorders'), {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        apikey: supa.anonKey,
-        Authorization: 'Bearer ' + supa.anonKey,
-        Prefer: 'return=minimal'
-      },
-      body: JSON.stringify(row)
-    }).then(function (res) {
-      if (res.ok) {
-        return { reference: reference, items: priced, total: total / 100, status: 'pending' };
-      }
-      return res.text().then(function (body) {
-        console.error('[preorder] supabase rejected the row:', res.status, body);
-        throw new Error('We could not save your order. Your payment went through — call 93113 49922 and we will sort it out.');
+    var endpoint = base + '/rest/v1/' + (supa.table || 'preorders');
+
+    function post(body) {
+      return fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          apikey: supa.anonKey,
+          Authorization: 'Bearer ' + supa.anonKey,
+          Prefer: 'return=minimal'
+        },
+        body: JSON.stringify(body)
       });
-    }, function () {
-      throw new Error('We could not reach the server. Please check your connection and try again.');
+    }
+
+    var done = { reference: reference, items: priced, total: total / 100, status: 'paid' };
+
+    /* The payment has already happened by the time we get here, so a rejected
+       row is not a failed order -- it is a paid order with nowhere to live.
+       Postgres rejects the whole insert over one unknown column, which is
+       exactly what a table that predates the Razorpay migration does, so the
+       second attempt drops the columns that are merely useful and keeps the
+       ones we cannot deliver without. The address is on the payment in
+       Razorpay either way; this is about not losing it here as well. */
+    var OPTIONAL = ['razorpay_order_id', 'razorpay_payment_id', 'paid_paise'];
+
+    return post(row).then(function (res) {
+      if (res.ok) return done;
+
+      return res.text().then(function (body) {
+        var unknownColumn = res.status === 400 && /column|schema cache|PGRST204/i.test(body);
+        if (!unknownColumn) throw new Error(body);
+
+        console.error(
+          '[preorder] the orders table is missing a column, so the row was refused:\n  ' +
+          body + '\n\n  Run the alter table at the bottom of docs/supabase-setup.sql.\n' +
+          '  Retrying without ' + OPTIONAL.join(', ') + ' so the address is not lost too.'
+        );
+
+        var trimmed = {};
+        Object.keys(row).forEach(function (k) {
+          if (OPTIONAL.indexOf(k) === -1) trimmed[k] = row[k];
+        });
+        // Keep the payment reference where it will still be read.
+        trimmed.notes = [row.notes, 'payment ' + (paid.payment_id || 'unknown')]
+          .filter(Boolean).join(' | ');
+
+        return post(trimmed).then(function (again) {
+          if (again.ok) return done;
+          return again.text().then(function (b2) { throw new Error(b2); });
+        });
+      });
+    }).catch(function (err) {
+      console.error('[preorder] supabase rejected the order:', err && err.message);
+      throw new Error(
+        'Your payment went through, but we could not save the order. ' +
+        'Please call 93113 49922 with your name — we have your payment and will deliver it.'
+      );
     });
   }
 

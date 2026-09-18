@@ -336,6 +336,29 @@ The flow, and why it is in that order:
    amount Razorpay reported. A dismissed modal or a declined card leaves nothing
    behind to reconcile.
 
+### If Supabase refuses the row
+
+**The delivery address is written into the Razorpay order's notes**, by
+`/api/create-order`, before the payment window even opens. That is not
+bookkeeping — it is the whole recovery plan.
+
+The order row is written by the browser, to Supabase, *after* the payment
+succeeds. If that write fails the money is already taken. It has happened: the
+checkout sent `razorpay_order_id`, `razorpay_payment_id` and `paid_paise` to a
+table where the migration had not been run, Postgres refused the whole insert
+over the unknown columns, and a real customer's address went with it. Razorpay
+had their name, email and phone from the modal's prefill, and nothing else.
+
+Two things stop that now. The address is on the payment, so the Razorpay
+dashboard alone is enough to pack and deliver an order. And the Supabase write
+retries without the three optional columns when it is refused for a column the
+table does not have — a paid order with no `paid_paise` is a nuisance, a paid
+order with no address is a phone call to a stranger. The payment id is folded
+into `notes` on that retry so the row can still be reconciled.
+
+**Neither is a reason to skip the migration.** Run the `alter table` at the
+bottom of `docs/supabase-setup.sql`, and `npm run check:supabase` to confirm.
+
 ### Where the money is true
 
 Orders are written to Supabase **by the browser**, with the public anon key, and

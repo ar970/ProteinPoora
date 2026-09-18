@@ -174,11 +174,14 @@
 
   window.PPPay = {
     /**
-     * items    [{ slug, qty }]
-     * customer { name, email, phone }
+     * items     [{ slug, qty }]
+     * customer  { name, email, phone }   — prefills the modal
+     * delivery  the whole address        — written onto the payment itself,
+     *           so the Razorpay dashboard can fulfil the order even if the
+     *           order row never reaches Supabase.
      */
-    pay: function (items, customer) {
-      return postJson('/api/create-order', { items: items })
+    pay: function (items, customer, delivery) {
+      return postJson('/api/create-order', { items: items, delivery: delivery })
         .then(function (order) {
           return loadCheckout().then(function () {
             return openModal(order, customer || {});
