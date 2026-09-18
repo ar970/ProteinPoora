@@ -356,8 +356,15 @@ table does not have — a paid order with no `paid_paise` is a nuisance, a paid
 order with no address is a phone call to a stranger. The payment id is folded
 into `notes` on that retry so the row can still be reconciled.
 
-**Neither is a reason to skip the migration.** Run the `alter table` at the
-bottom of `docs/supabase-setup.sql`, and `npm run check:supabase` to confirm.
+**Neither is a reason to skip the migration.** Run
+`docs/migrate-add-payments.sql` — the whole file, as is, in Supabase's SQL
+editor — then `npm run check:supabase` to confirm.
+
+It is a separate file from `supabase-setup.sql` because that one only creates a
+table that does not exist yet; `create table if not exists` is a no-op against
+a live table and changes nothing about it. The migration also adds the PIN rule
+**NOT VALID**, because a table holding orders from when the site shipped
+India-wide will fail a plain CHECK against its own history.
 
 ### Where the money is true
 

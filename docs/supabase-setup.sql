@@ -65,33 +65,21 @@ create policy "website can place a pre-order"
 
 
 -- ---------------------------------------------------------------------------
--- Already have the table? `create table if not exists` will not add the PIN
--- code rule to it. Run this once instead. It fails if a row already breaks the
--- rule -- fix or delete that row, then run it again.
-
---   alter table public.preorders
---     drop constraint if exists preorders_pincode_check;
---   alter table public.preorders
---     add constraint preorders_pincode_check
---     check (pincode ~ '^560[0-9]{3}$');
-
--- To see whether anything would fail first:
-
---   select id, reference, pincode from public.preorders
---   where pincode !~ '^560[0-9]{3}$';
-
-
--- ---------------------------------------------------------------------------
--- Same again for the Razorpay columns, if the table predates payments:
-
---   alter table public.preorders
---     add column if not exists razorpay_order_id   text,
---     add column if not exists razorpay_payment_id text,
---     add column if not exists paid_paise          integer check (paid_paise >= 0);
+-- ALREADY HAVE THE TABLE? `create table if not exists` changes nothing about
+-- it, so none of the above reaches a table that already exists.
 --
---   create unique index if not exists preorders_payment_idx
---     on public.preorders (razorpay_payment_id)
---     where razorpay_payment_id is not null;
+--     Run docs/migrate-add-payments.sql instead. Whole file, as is.
+--
+-- It adds the three Razorpay columns, the one-payment-one-order index, and the
+-- Bengaluru PIN rule, and it is safe to run twice.
+--
+-- The PIN rule is added there NOT VALID, on purpose. A table with orders from
+-- when the site shipped India-wide holds PIN codes this rule rejects; a plain
+-- CHECK is validated against every existing row and fails, leaving an error
+-- message and no migration. NOT VALID enforces it on everything written from
+-- now on and leaves the history alone -- those orders really were placed, and
+-- editing them to satisfy a rule invented afterwards would be lying about
+-- what happened.
 
 
 -- ---------------------------------------------------------------------------
