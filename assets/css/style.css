@@ -2229,6 +2229,39 @@ button {
   text-decoration: underline;
 }
 
+/* The only place on the site a customer can reach a human. An <address>,
+   because that is what the element is for, and not italic, because that is
+   the browser's idea rather than ours. Both are real links: a phone number
+   you cannot tap on a phone is a phone number nobody calls. */
+.footer__contact {
+  margin: 0;
+  color: var(--cream);
+  font-size: 0.9375rem;
+  font-style: normal;
+  line-height: 1.7;
+}
+
+.footer__contact-label {
+  display: block;
+  color: rgba(247, 233, 195, 0.7);
+  font-size: 0.8125rem;
+}
+
+.footer__contact a {
+  color: var(--cream);
+  text-decoration-color: rgba(247, 233, 195, 0.45);
+  text-underline-offset: 3px;
+  /* 44px of tap target without moving anything: the padding overlaps the
+     line-height rather than adding to it. */
+  display: inline-block;
+  padding-block: 0.55rem;
+  margin-block: -0.55rem;
+}
+
+.footer__contact a:hover {
+  text-decoration-color: var(--cream);
+}
+
 .footer__legal {
   margin: 0;
   color: rgba(247, 233, 195, 0.65);
@@ -2388,6 +2421,22 @@ button {
   margin: 0;
   color: var(--text);
   font-size: 0.8125rem;
+}
+
+/* .field is a grid, and its rows stretch to match the taller field beside it,
+   which floated the value away from its own label. */
+.field--fixed {
+  align-content: start;
+}
+
+/* An answer rather than a question: we deliver in one city, so the city and
+   state are shown, not asked. Styled to read as a stated fact — a readonly
+   input here would look like a field the customer is failing to type into. */
+.field__fixed {
+  margin: 0;
+  padding: 0.6rem 0;
+  color: var(--navy-ink);
+  font-weight: 600;
 }
 
 .field__error {

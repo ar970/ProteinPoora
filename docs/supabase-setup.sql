@@ -22,10 +22,11 @@ create table if not exists public.preorders (
   address2      text        not null default '',
   city          text        not null,
   state         text        not null,
-  -- Six digits, and an Indian PIN never starts with a zero. The form filters
-  -- what can be typed, but the form is not the guard: anyone can post to this
-  -- table with the public key, so the rule has to live here too.
-  pincode       text        not null check (pincode ~ '^[1-9][0-9]{5}$'),
+  -- Bengaluru PIN codes, and only those: 560xxx. We deliver in one city, and
+  -- the form filters what can be typed, but the form is not the guard --
+  -- anyone can post to this table with the public key, so the rule lives here
+  -- too. Widen this the day a second city opens, not before.
+  pincode       text        not null check (pincode ~ '^560[0-9]{3}$'),
   notes         text        not null default '',
   items         jsonb       not null,
   -- Money as whole paise. ₹99 is 9900. Never a decimal.
@@ -69,13 +70,15 @@ create policy "website can place a pre-order"
 -- rule -- fix or delete that row, then run it again.
 
 --   alter table public.preorders
+--     drop constraint if exists preorders_pincode_check;
+--   alter table public.preorders
 --     add constraint preorders_pincode_check
---     check (pincode ~ '^[1-9][0-9]{5}$');
+--     check (pincode ~ '^560[0-9]{3}$');
 
 -- To see whether anything would fail first:
 
 --   select id, reference, pincode from public.preorders
---   where pincode !~ '^[1-9][0-9]{5}$';
+--   where pincode !~ '^560[0-9]{3}$';
 
 
 -- ---------------------------------------------------------------------------

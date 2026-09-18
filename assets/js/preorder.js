@@ -65,111 +65,7 @@
     cart.replace(lines);
   }
 
-  var STATES = [
-    'Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chhattisgarh', 'Goa',
-    'Gujarat', 'Haryana', 'Himachal Pradesh', 'Jharkhand', 'Karnataka', 'Kerala',
-    'Madhya Pradesh', 'Maharashtra', 'Manipur', 'Meghalaya', 'Mizoram', 'Nagaland',
-    'Odisha', 'Punjab', 'Rajasthan', 'Sikkim', 'Tamil Nadu', 'Telangana', 'Tripura',
-    'Uttar Pradesh', 'Uttarakhand', 'West Bengal',
-    'Andaman and Nicobar Islands', 'Chandigarh',
-    'Dadra and Nagar Haveli and Daman and Diu', 'Delhi', 'Jammu and Kashmir',
-    'Ladakh', 'Lakshadweep', 'Puducherry'
-  ];
 
-  /* Cities whose state is not in question, so the customer does not have to
-     scroll a list of thirty-six to tell us something we can already work out.
-     Names that belong to more than one state are deliberately absent --
-     Aurangabad is in Maharashtra and in Bihar, Bilaspur in Chhattisgarh and in
-     Himachal -- because a wrong state posted quietly is worse than an empty
-     one. Old names are keys too: people still type Bangalore and Bombay. */
-  var CITY_STATE = {
-    // Delhi NCR
-    'delhi': 'Delhi', 'new delhi': 'Delhi', 'gurgaon': 'Haryana', 'gurugram': 'Haryana',
-    'faridabad': 'Haryana', 'noida': 'Uttar Pradesh', 'greater noida': 'Uttar Pradesh',
-    'ghaziabad': 'Uttar Pradesh', 'sonipat': 'Haryana', 'panipat': 'Haryana',
-    'karnal': 'Haryana', 'ambala': 'Haryana', 'hisar': 'Haryana', 'rohtak': 'Haryana',
-    // Maharashtra
-    'mumbai': 'Maharashtra', 'bombay': 'Maharashtra', 'navi mumbai': 'Maharashtra',
-    'thane': 'Maharashtra', 'pune': 'Maharashtra', 'poona': 'Maharashtra',
-    'nagpur': 'Maharashtra', 'nashik': 'Maharashtra', 'nasik': 'Maharashtra',
-    'kolhapur': 'Maharashtra', 'solapur': 'Maharashtra', 'amravati': 'Maharashtra',
-    'sangli': 'Maharashtra', 'jalgaon': 'Maharashtra', 'akola': 'Maharashtra',
-    'nanded': 'Maharashtra', 'satara': 'Maharashtra', 'ratnagiri': 'Maharashtra',
-    // Karnataka
-    'bengaluru': 'Karnataka', 'bangalore': 'Karnataka', 'mysuru': 'Karnataka',
-    'mysore': 'Karnataka', 'mangaluru': 'Karnataka', 'mangalore': 'Karnataka',
-    'hubballi': 'Karnataka', 'hubli': 'Karnataka', 'dharwad': 'Karnataka',
-    'belagavi': 'Karnataka', 'belgaum': 'Karnataka', 'davangere': 'Karnataka',
-    'shivamogga': 'Karnataka', 'shimoga': 'Karnataka', 'udupi': 'Karnataka',
-    'ballari': 'Karnataka', 'bellary': 'Karnataka', 'tumakuru': 'Karnataka',
-    // Tamil Nadu and Puducherry
-    'chennai': 'Tamil Nadu', 'madras': 'Tamil Nadu', 'coimbatore': 'Tamil Nadu',
-    'madurai': 'Tamil Nadu', 'tiruchirappalli': 'Tamil Nadu', 'trichy': 'Tamil Nadu',
-    'salem': 'Tamil Nadu', 'tirunelveli': 'Tamil Nadu', 'erode': 'Tamil Nadu',
-    'vellore': 'Tamil Nadu', 'thoothukudi': 'Tamil Nadu', 'tirupur': 'Tamil Nadu',
-    'thanjavur': 'Tamil Nadu', 'puducherry': 'Puducherry', 'pondicherry': 'Puducherry',
-    // Telangana and Andhra Pradesh
-    'hyderabad': 'Telangana', 'secunderabad': 'Telangana', 'warangal': 'Telangana',
-    'karimnagar': 'Telangana', 'nizamabad': 'Telangana', 'khammam': 'Telangana',
-    'visakhapatnam': 'Andhra Pradesh', 'vizag': 'Andhra Pradesh',
-    'vijayawada': 'Andhra Pradesh', 'guntur': 'Andhra Pradesh',
-    'tirupati': 'Andhra Pradesh', 'nellore': 'Andhra Pradesh',
-    'rajahmundry': 'Andhra Pradesh', 'kakinada': 'Andhra Pradesh',
-    'kurnool': 'Andhra Pradesh', 'anantapur': 'Andhra Pradesh',
-    // Kerala
-    'kochi': 'Kerala', 'cochin': 'Kerala', 'ernakulam': 'Kerala',
-    'thiruvananthapuram': 'Kerala', 'trivandrum': 'Kerala', 'kozhikode': 'Kerala',
-    'calicut': 'Kerala', 'thrissur': 'Kerala', 'kollam': 'Kerala',
-    'kannur': 'Kerala', 'alappuzha': 'Kerala', 'kottayam': 'Kerala',
-    // Gujarat
-    'ahmedabad': 'Gujarat', 'amdavad': 'Gujarat', 'surat': 'Gujarat',
-    'vadodara': 'Gujarat', 'baroda': 'Gujarat', 'rajkot': 'Gujarat',
-    'bhavnagar': 'Gujarat', 'jamnagar': 'Gujarat', 'gandhinagar': 'Gujarat',
-    'junagadh': 'Gujarat', 'anand': 'Gujarat', 'bharuch': 'Gujarat',
-    // Rajasthan
-    'jaipur': 'Rajasthan', 'jodhpur': 'Rajasthan', 'udaipur': 'Rajasthan',
-    'kota': 'Rajasthan', 'ajmer': 'Rajasthan', 'bikaner': 'Rajasthan',
-    'alwar': 'Rajasthan', 'bhilwara': 'Rajasthan', 'sikar': 'Rajasthan',
-    // Uttar Pradesh and Uttarakhand
-    'lucknow': 'Uttar Pradesh', 'kanpur': 'Uttar Pradesh', 'agra': 'Uttar Pradesh',
-    'varanasi': 'Uttar Pradesh', 'banaras': 'Uttar Pradesh', 'prayagraj': 'Uttar Pradesh',
-    'allahabad': 'Uttar Pradesh', 'meerut': 'Uttar Pradesh', 'bareilly': 'Uttar Pradesh',
-    'aligarh': 'Uttar Pradesh', 'moradabad': 'Uttar Pradesh', 'gorakhpur': 'Uttar Pradesh',
-    'jhansi': 'Uttar Pradesh', 'mathura': 'Uttar Pradesh', 'ayodhya': 'Uttar Pradesh',
-    'dehradun': 'Uttarakhand', 'haridwar': 'Uttarakhand', 'rishikesh': 'Uttarakhand',
-    'haldwani': 'Uttarakhand', 'roorkee': 'Uttarakhand', 'nainital': 'Uttarakhand',
-    // Madhya Pradesh and Chhattisgarh
-    'bhopal': 'Madhya Pradesh', 'indore': 'Madhya Pradesh', 'jabalpur': 'Madhya Pradesh',
-    'gwalior': 'Madhya Pradesh', 'ujjain': 'Madhya Pradesh', 'sagar': 'Madhya Pradesh',
-    'rewa': 'Madhya Pradesh', 'satna': 'Madhya Pradesh',
-    'raipur': 'Chhattisgarh', 'bhilai': 'Chhattisgarh', 'durg': 'Chhattisgarh',
-    'korba': 'Chhattisgarh',
-    // West Bengal, Odisha, the east
-    'kolkata': 'West Bengal', 'calcutta': 'West Bengal', 'howrah': 'West Bengal',
-    'durgapur': 'West Bengal', 'asansol': 'West Bengal', 'siliguri': 'West Bengal',
-    'darjeeling': 'West Bengal', 'kharagpur': 'West Bengal',
-    'bhubaneswar': 'Odisha', 'cuttack': 'Odisha', 'rourkela': 'Odisha',
-    'puri': 'Odisha', 'sambalpur': 'Odisha', 'berhampur': 'Odisha',
-    // Bihar and Jharkhand
-    'patna': 'Bihar', 'gaya': 'Bihar', 'bhagalpur': 'Bihar', 'muzaffarpur': 'Bihar',
-    'darbhanga': 'Bihar', 'purnia': 'Bihar',
-    'ranchi': 'Jharkhand', 'jamshedpur': 'Jharkhand', 'dhanbad': 'Jharkhand',
-    'bokaro': 'Jharkhand', 'deoghar': 'Jharkhand',
-    // Punjab, Haryana, the hills, the north
-    'ludhiana': 'Punjab', 'amritsar': 'Punjab', 'jalandhar': 'Punjab',
-    'patiala': 'Punjab', 'bathinda': 'Punjab', 'mohali': 'Punjab',
-    'chandigarh': 'Chandigarh', 'shimla': 'Himachal Pradesh',
-    'dharamshala': 'Himachal Pradesh', 'manali': 'Himachal Pradesh',
-    'solan': 'Himachal Pradesh', 'srinagar': 'Jammu and Kashmir',
-    'jammu': 'Jammu and Kashmir', 'leh': 'Ladakh',
-    // Goa and the north east
-    'panaji': 'Goa', 'panjim': 'Goa', 'margao': 'Goa', 'vasco da gama': 'Goa',
-    'guwahati': 'Assam', 'dibrugarh': 'Assam', 'silchar': 'Assam', 'jorhat': 'Assam',
-    'shillong': 'Meghalaya', 'imphal': 'Manipur', 'aizawl': 'Mizoram',
-    'kohima': 'Nagaland', 'dimapur': 'Nagaland', 'agartala': 'Tripura',
-    'itanagar': 'Arunachal Pradesh', 'gangtok': 'Sikkim',
-    'port blair': 'Andaman and Nicobar Islands'
-  };
 
   /* --- helpers ---------------------------------------------------------- */
 
@@ -223,7 +119,7 @@
       // Only reachable if the catalogue in the page is empty or malformed —
       // the API can no longer empty this list.
       none.appendChild(nodeP('strong', 'The line-up will not load.'));
-      none.appendChild(nodeP('span', 'Please refresh the page. If it keeps happening, email us and we will take your pre-order by hand.'));
+      none.appendChild(nodeP('span', 'Please refresh the page. If it keeps happening, call 93113 49922 and we will take your order by hand.'));
 
       picker.appendChild(none);
       return;
@@ -360,9 +256,15 @@
       return /^(?:\+?91)?[6-9]\d{9}$/.test(v.replace(/[\s()-]/g, '')) ? '' : 'Enter a 10-digit Indian mobile number.';
     },
     address1: function (v) { return v.length >= 4 ? '' : 'Please enter your street address.'; },
-    city: function (v) { return v ? '' : 'Please enter your city.'; },
-    state: function (v) { return v ? '' : 'Please choose your state.'; },
-    pincode: function (v) { return /^[1-9]\d{5}$/.test(v) ? '' : 'Enter a 6-digit PIN code.'; }
+    /* We deliver in Bengaluru and nowhere else yet, so the PIN is the whole
+       serviceability check: 560xxx is the city. Telling someone here beats
+       taking their money and finding out afterwards. The same rule is a check
+       constraint on the table -- this is the convenience, not the guard. */
+    pincode: function (v) {
+      if (!/^\d{6}$/.test(v)) return 'Enter a 6-digit PIN code.';
+      if (!/^560\d{3}$/.test(v)) return 'We only deliver in Bengaluru for now, and that is not a Bengaluru PIN code.';
+      return '';
+    }
   };
 
   function validate() {
@@ -380,7 +282,7 @@
     });
 
     if (!Object.keys(chosen).length) {
-      say('Choose at least one snack before placing your pre-order.', 'error');
+      say('Choose at least one snack before placing your order.', 'error');
       if (!firstBad) {
         picker.scrollIntoView({ block: 'center', behavior: 'smooth' });
         return false;
@@ -424,7 +326,7 @@
     // failed card leaves nothing behind to reconcile.
     takePayment(payload)
       .then(function (paid) {
-        say('Payment received. Placing your pre-order…');
+        say('Payment received. Placing your order…');
         payload.payment = paid;
         return useSupabase ? sendToSupabase(payload) : sendToApi(payload);
       })
@@ -432,7 +334,7 @@
       .catch(function (err) {
         submitBtn.disabled = false;
         say(
-          err.message || 'We could not place that pre-order. Please try again.',
+          err.message || 'We could not place that order. Please try again.',
           err.cancelled ? null : 'error'
         );
       });
@@ -461,7 +363,7 @@
       body: JSON.stringify(payload)
     }).then(function (res) {
       return res.json().catch(function () { return {}; }).then(function (data) {
-        if (!res.ok) throw new Error(data.error || 'We could not place that pre-order.');
+        if (!res.ok) throw new Error(data.error || 'We could not place that order.');
         return data;
       });
     }, function () {
@@ -527,7 +429,7 @@
       }
       return res.text().then(function (body) {
         console.error('[preorder] supabase rejected the row:', res.status, body);
-        throw new Error('We could not save your pre-order. Please try again, or email us.');
+        throw new Error('We could not save your order. Your payment went through — call 93113 49922 and we will sort it out.');
       });
     }, function () {
       throw new Error('We could not reach the server. Please check your connection and try again.');
@@ -557,18 +459,9 @@
 
   /* --- boot ------------------------------------------------------------- */
 
-  var stateSelect = form.elements.state;
-  STATES.forEach(function (name) {
-    var option = document.createElement('option');
-    option.value = name;
-    option.textContent = name;
-    stateSelect.appendChild(option);
-  });
-
   /* --- PIN code and city ------------------------------------------------- */
 
   var pincodeInput = form.elements.pincode;
-  var cityInput = form.elements.city;
 
   /* A PIN code is six digits and nothing else, so nothing else can be typed
      into the box. Doing it here rather than only on submit means a pasted
@@ -585,29 +478,6 @@
     var removed = before.slice(0, at).replace(/\D/g, '').length;
     try { this.setSelectionRange(removed, removed); } catch (err) { /* older browsers */ }
   });
-
-  /* Fill the state in from the city, for the cities where there is only one
-     answer. Never over anything the customer chose themselves: this is a
-     shortcut past a thirty-six item list, not a correction of it. */
-  var stateWasAuto = false;
-
-  function fillStateFromCity() {
-    var key = cityInput.value.trim().toLowerCase().replace(/\s+/g, ' ');
-    var found = CITY_STATE[key];
-    if (!found) return;
-    if (stateSelect.value && !stateWasAuto) return;
-    if (stateSelect.value === found) return;
-    stateSelect.value = found;
-    stateWasAuto = true;
-    fieldError('state', '');
-  }
-
-  cityInput.addEventListener('input', fillStateFromCity);
-  cityInput.addEventListener('change', fillStateFromCity);
-  cityInput.addEventListener('blur', fillStateFromCity);
-
-  // The moment they pick one themselves, it is theirs and we stop touching it.
-  stateSelect.addEventListener('change', function () { stateWasAuto = false; });
 
   // Clear a field's error as soon as the customer starts fixing it.
   form.addEventListener('input', function (event) {

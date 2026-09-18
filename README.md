@@ -1,6 +1,6 @@
 # Protein पूरा — website
 
-Storefront for [proteinpoora.shop](https://proteinpoora.shop), hosted on Vercel. The shop pages are plain HTML, CSS and a little JavaScript with no build step. Pre-orders are **paid, through Razorpay**: two serverless functions in `api/` create and verify the payment, and the order row then goes to Supabase. Two more functions are a dormant database fallback. The structure mirrors Shopify sections so it can be ported to a Liquid theme later.
+Storefront for [proteinpoora.shop](https://proteinpoora.shop), hosted on Vercel. The shop pages are plain HTML, CSS and a little JavaScript with no build step. Orders are **paid, through Razorpay**: two serverless functions in `api/` create and verify the payment, and the order row then goes to Supabase. Two more functions are a dormant database fallback. The structure mirrors Shopify sections so it can be ported to a Liquid theme later.
 
 ## Preview locally
 
@@ -32,7 +32,7 @@ Import the repository in Vercel. Framework preset: **Other**. Build command: non
 | `assets/css/fonts.css` | Self-hosted Baloo 2 and DM Sans. |
 | `assets/js/main.js` | Menu toggle, gallery, hero carousel, scroll reveal. The pages work without it. |
 | `assets/img/` | Pack shots and lifestyle photos (WebP, two sizes each, transparent backgrounds), logo and favicons. Re-exported artwork is **renamed**, never overwritten — see the caching note in `design-system/proteinpoora/MASTER.md`. |
-| `preorder/index.html` | Pre-order form: product picker, customer details, address. Served at `/preorder`. |
+| `preorder/index.html` | Order form: product picker, customer details, address. Served at `/preorder`. |
 | `thank-you/index.html` | Where a placed order lands. Served at `/thank-you`; `noindex`, so it stays out of search. |
 | `api/` | Serverless functions. `create-order.js` and `verify-payment.js` are the payment path and are always used; `products.js` and `preorders.js` are the dormant database fallback. Shared helpers in `_lib/`. |
 | `assets/js/cart.js` | Cart state, header count and drawer. Loaded on every storefront page. |
@@ -211,9 +211,31 @@ on.
 
 **The PIN code box only accepts digits**, six of them — anything else is stripped as it is typed, including out of a paste, and the caret is put back where it was rather than jumping to the end. Submitting still checks the whole thing (`[1-9]` then five digits: an Indian PIN never starts with a zero), and `docs/supabase-setup.sql` now carries the same rule as a database constraint, because the form is not the guard — anyone can post to that table with the public key. If your table already exists, the bottom of that file has the one `alter table` to add it.
 
-**Typing a city fills the state in.** `CITY_STATE` in `assets/js/preorder.js` maps about 150 Indian cities to their state, old names included, since people still type Bangalore and Bombay. Names that belong to more than one state — Aurangabad, Bilaspur — are deliberately absent: a wrong state posted quietly is worse than an empty one. It never writes over a state the customer chose themselves, and the moment they touch the dropdown it stops guessing.
+**We deliver in Bengaluru and nowhere else**, so the checkout enforces it
+rather than only saying it. The city and state are not questions any more —
+they are shown as "Bengaluru, Karnataka" and submitted from hidden inputs, so
+the order row keeps its shape — and the PIN code is the serviceability check:
+`560xxx` passes, everything else is refused with a reason before any money
+moves. Someone in Delhi finds out on the form, not after paying.
 
-Storing pre-orders needs the Supabase table in place; until then `/preorder`
+The rule is written in three places on purpose. `assets/js/preorder.js` is the
+convenience, `pincode()` in `api/_lib/http.js` covers the dormant API path, and
+the `check (pincode ~ '^560[0-9]{3}$')` constraint in `docs/supabase-setup.sql`
+is the one that actually holds — the browser writes that row itself, so the
+table is the only guard it cannot talk past. **Widen all three together**, and
+run the `alter table` at the bottom of that file on an existing table.
+
+The state dropdown and the ~150-city `CITY_STATE` autofill map that used to
+fill it in are gone, along with the 36-item `STATES` list. They existed to make
+a nationwide address easy to type; with one city there is nothing to choose.
+Both are in git history if a second city arrives.
+
+**Customers can reach a human.** The phone number and email are in the footer
+of all eight pages, and the FAQ answer about cancelling points at both. That
+was an open gap for a long time — a shop taking money with no way to contact it
+is not a shop.
+
+Storing orders needs the Supabase table in place; until then `/preorder`
 says so rather than taking an order it cannot keep.
 **[docs/ADMIN-SETUP.md](docs/ADMIN-SETUP.md) has the steps.**
 

@@ -275,10 +275,10 @@
     total.appendChild(el('span', null, rupees(Cart.subtotal())));
     d.__foot.appendChild(total);
 
-    var go = el('a', 'btn btn--navy btn--block', 'Pre-order these');
+    var go = el('a', 'btn btn--navy btn--block', 'Order these');
     go.href = '/preorder';
     d.__foot.appendChild(go);
-    d.__foot.appendChild(el('p', 'drawer__note', 'You pay at checkout, securely through Razorpay. We email you when the batch ships.'));
+    d.__foot.appendChild(el('p', 'drawer__note', 'You pay at checkout, securely through Razorpay. Delivering across Bengaluru.'));
   }
 
   function stepper(item) {

@@ -137,7 +137,7 @@
         amount: order.amount,
         currency: order.currency,
         name: 'Protein पूरा',
-        description: 'Pre-order, first batch',
+        description: 'Snack order',
         image: '/assets/img/logo-192.png',
         prefill: {
           name: customer.name || '',

@@ -3,13 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Pre-order — Protein पूरा</title>
-  <meta name="description" content="Pre-order the first batch of Protein पूरा snacks. Tell us where to send them and we ship as soon as the batch is ready.">
+  <title>Order — Protein पूरा</title>
+  <meta name="description" content="Order Protein पूरा snacks online. Delivering across Bengaluru.">
   <meta name="theme-color" content="#1E2D78">
   <meta name="robots" content="noindex">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Pre-order — Protein पूरा">
-  <meta property="og:description" content="Pre-order the first batch of Protein पूरा snacks.">
+  <meta property="og:title" content="Order — Protein पूरा">
+  <meta property="og:description" content="Order Protein पूरा snacks online. Delivering across Bengaluru.">
 
   <link rel="icon" href="/assets/img/favicon-32.png" sizes="32x32">
   <link rel="icon" href="/assets/img/logo-192.png" sizes="192x192">
@@ -18,7 +18,7 @@
   <link rel="preload" href="/assets/fonts/baloo-2-devanagari-wordmark.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/assets/fonts/dm-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="/assets/css/fonts.css?v=3">
-  <link rel="stylesheet" href="/assets/css/style.css?v=71">
+  <link rel="stylesheet" href="/assets/css/style.css?v=73">
   <script>document.documentElement.classList.replace('no-js', 'js');</script>
 
   <!-- Meta Pixel. In a Liquid theme this block moves into theme.liquid once,
@@ -47,14 +47,14 @@
   <div class="ticker" role="region" aria-label="Announcements">
     <div class="ticker__track">
       <ul class="ticker__list">
-        <li class="ticker__item">First batch · Pre-order open</li>
+        <li class="ticker__item">Bengaluru delivery only</li>
         <li class="ticker__item">9–18 g protein per pack</li>
         <li class="ticker__item">Never deep fried</li>
         <li class="ticker__item">No palm oil</li>
         <li class="ticker__item">Made in India</li>
       </ul>
       <ul class="ticker__list" aria-hidden="true">
-        <li class="ticker__item">First batch · Pre-order open</li>
+        <li class="ticker__item">Bengaluru delivery only</li>
         <li class="ticker__item">9–18 g protein per pack</li>
         <li class="ticker__item">Never deep fried</li>
         <li class="ticker__item">No palm oil</li>
@@ -91,7 +91,7 @@
           </svg>
           <span class="cart-button__count" data-cart-count hidden>0</span>
         </button>
-        <a class="btn btn--cream btn--sm" href="#choose">Pre-order</a>
+        <a class="btn btn--cream btn--sm" href="#choose">Order</a>
         <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
           <span class="visually-hidden menu-toggle__label">Open menu</span>
           <svg class="menu-toggle__icon" viewBox="0 0 20 20" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
@@ -117,8 +117,8 @@
 
         <div class="section__head">
           <div>
-            <h1 class="section__title" id="page-title">Pre-order the first batch</h1>
-            <p class="section__sub">Tell us what you want and where to send it, and pay securely through Razorpay. We email you when the first batch ships.</p>
+            <h1 class="section__title" id="page-title">Place your order</h1>
+            <p class="section__sub">Tell us what you want and where in Bengaluru to send it, and pay securely through Razorpay.</p>
           </div>
         </div>
 
@@ -188,21 +188,19 @@
                   <input class="input" id="address2" name="address2" type="text" autocomplete="address-line2" maxlength="160">
                   <p class="field__error" data-error-for="address2"></p>
                 </div>
-                <div class="field">
-                  <label class="field__label" for="city">City <span class="req" aria-hidden="true">*</span></label>
-                  <input class="input" id="city" name="city" type="text" autocomplete="address-level2" required maxlength="60">
-                  <p class="field__error" data-error-for="city"></p>
-                </div>
-                <div class="field">
-                  <label class="field__label" for="state">State <span class="req" aria-hidden="true">*</span></label>
-                  <select class="select" id="state" name="state" required autocomplete="address-level1">
-                    <option value="">Choose a state</option>
-                  </select>
-                  <p class="field__error" data-error-for="state"></p>
+                <div class="field field--fixed">
+                  <!-- We deliver in one city, so the city and the state are
+                       not questions. They are still submitted, so the order row
+                       keeps the same shape as every other. -->
+                  <span class="field__label">City</span>
+                  <p class="field__fixed">Bengaluru, Karnataka</p>
+                  <input type="hidden" id="city" name="city" value="Bengaluru">
+                  <input type="hidden" id="state" name="state" value="Karnataka">
                 </div>
                 <div class="field">
                   <label class="field__label" for="pincode">PIN code <span class="req" aria-hidden="true">*</span></label>
-                  <input class="input" id="pincode" name="pincode" type="text" autocomplete="postal-code" inputmode="numeric" pattern="[1-9][0-9]{5}" required maxlength="6" placeholder="6 digits">
+                  <input class="input" id="pincode" name="pincode" type="text" autocomplete="postal-code" inputmode="numeric" pattern="560[0-9]{3}" required maxlength="6" placeholder="560001">
+                  <p class="field__hint">Bengaluru PIN codes start 560. We cannot deliver outside the city yet.</p>
                   <p class="field__error" data-error-for="pincode"></p>
                 </div>
                 <div class="field span-2">
@@ -215,15 +213,15 @@
           </div>
 
           <aside class="summary" aria-labelledby="summary-title">
-            <h2 class="summary__title" id="summary-title">Your pre-order</h2>
+            <h2 class="summary__title" id="summary-title">Your order</h2>
             <p class="summary__empty" id="summary-empty">Nothing chosen yet.</p>
             <ul class="summary__lines" id="summary-lines"></ul>
             <p class="summary__total"><span>Total</span> <span id="summary-total">₹0</span></p>
             <p style="margin-top:1.15rem">
-              <button class="btn btn--navy btn--block" type="submit" id="submit-btn">Pay and pre-order</button>
+              <button class="btn btn--navy btn--block" type="submit" id="submit-btn">Pay and place order</button>
             </p>
             <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
-            <p class="summary__note">You pay for your pre-order now, securely through Razorpay. We ship as soon as the first batch is ready and email you when it goes out.</p>
+            <p class="summary__note">You pay now, securely through Razorpay. We deliver across Bengaluru and email you when your order is on its way.</p>
           </aside>
         </form>
       </div>
@@ -241,7 +239,7 @@
             <span class="wordmark__hindi">पूरा<svg class="wordmark__swoosh" viewBox="0 0 60 10" aria-hidden="true" focusable="false"><path d="M2 7.5C16 3 38 2 58 4.5" fill="none" stroke="#F08A2A" stroke-width="2.4" stroke-linecap="round"/></svg></span>
           </span>
         </a>
-        <p class="footer__tag">Protein-packed Indian snacks. Pre-order the first batch.</p>
+        <p class="footer__tag">Protein-packed Indian snacks. Delivering across Bengaluru.</p>
       </div>
       <nav class="footer__nav" aria-label="Footer">
         <ul>
@@ -254,7 +252,13 @@
           <li><a href="/#faq">FAQ</a></li>
         </ul>
       </nav>
-      <p class="footer__legal">© 2026 Protein पूरा. Made in India.</p>
+      <address class="footer__contact">
+        <span class="footer__contact-label">Questions about an order?</span>
+        <a href="tel:+919311349922">93113 49922</a>
+        <span class="footer__sep" aria-hidden="true">·</span>
+        <a href="mailto:archit@ug30.mesaschool.co">archit@ug30.mesaschool.co</a>
+      </address>
+      <p class="footer__legal">© 2026 Protein पूरा. Delivering in Bengaluru. Made in India.</p>
     </div>
   </footer>
 
@@ -273,13 +277,13 @@
     </div>
   </dialog>
 
-  <script src="/assets/js/store-config.js?v=71" defer></script>
-  <script src="/assets/js/cart.js?v=71" defer></script>
-  <script src="/assets/js/main.js?v=71" defer></script>
+  <script src="/assets/js/store-config.js?v=73" defer></script>
+  <script src="/assets/js/cart.js?v=73" defer></script>
+  <script src="/assets/js/main.js?v=73" defer></script>
   <!-- Razorpay's own checkout.js is not loaded here. payment.js fetches it the
        first time someone actually pays, so a third-party script cannot delay
        or break the form for everyone who is still filling it in. -->
-  <script src="/assets/js/payment.js?v=71" defer></script>
-  <script src="/assets/js/preorder.js?v=71" defer></script>
+  <script src="/assets/js/payment.js?v=73" defer></script>
+  <script src="/assets/js/preorder.js?v=73" defer></script>
 </body>
 </html>

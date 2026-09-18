@@ -140,9 +140,13 @@ function phone(value) {
   return m[1];
 }
 
+/* Bengaluru is 560xxx, and Bengaluru is the only place we deliver, so the PIN
+   is the serviceability check. The same rule is a check constraint on the
+   table, because that is the one the browser cannot talk its way past. */
 function pincode(value) {
   const v = trim(value);
-  if (!/^[1-9]\d{5}$/.test(v)) throw badRequest('Enter a 6-digit PIN code.');
+  if (!/^\d{6}$/.test(v)) throw badRequest('Enter a 6-digit PIN code.');
+  if (!/^560\d{3}$/.test(v)) throw badRequest('We only deliver in Bengaluru for now, and that is not a Bengaluru PIN code.');
   return v;
 }
 
