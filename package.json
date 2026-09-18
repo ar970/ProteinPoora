@@ -13,6 +13,9 @@
   "scripts": {
     "check:prices": "node scripts/check-prices.js",
     "dev": "node scripts/dev-server.js",
-    "test:payments": "bash scripts/test-payments.sh"
+    "test:payments": "bash scripts/test-payments.sh",
+    "check:assets": "node scripts/check-assets.js",
+    "check:supabase": "node scripts/check-supabase.mjs",
+    "check": "npm run check:prices && npm run check:assets"
   }
 }

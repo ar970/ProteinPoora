@@ -163,6 +163,23 @@
 
     var dots = Array.prototype.slice.call(dotList.querySelectorAll('.dot'));
 
+    /* Only the active pouch is on screen on a phone; on a wider screen its two
+       neighbours show behind it. Everything else used to load anyway -- five
+       pack shots, about 1.4 MB, most of it for pouches nobody could see. The
+       markup hands those over as data-src and they are fetched when they come
+       within reach of being looked at. */
+    var narrow = window.matchMedia('(max-width: 767px)');
+    var reach = 0;
+
+    var hydrate = function (slide) {
+      var img = slide.querySelector('img[data-src]');
+      if (!img) return;
+      if (img.dataset.srcset) img.srcset = img.dataset.srcset;
+      img.src = img.dataset.src;
+      delete img.dataset.src;
+      delete img.dataset.srcset;
+    };
+
     /* Position every slide relative to the active one, wrapping both ways,
        so one advance shifts the whole row a single slot left. */
     var layout = function () {
@@ -171,8 +188,22 @@
         if (rel > count / 2) rel -= count;
         if (rel < -count / 2) rel += count;
         slide.dataset.rel = String(rel);
+        if (Math.abs(rel) <= (narrow.matches ? 0 : 1) + reach) hydrate(slide);
       });
     };
+
+    /* Once the page is quiet, widen that reach by one so a swipe or an advance
+       never waits on a download. The carousel advances on a timer, so this is
+       a prefetch either way, not an optimisation nobody asked for. */
+    var warm = function () {
+      reach = 1;
+      layout();
+    };
+    if (window.requestIdleCallback) window.requestIdleCallback(warm, { timeout: 4000 });
+    else setTimeout(warm, 2500);
+
+    /* Rotating a phone can reveal the neighbours that were never fetched. */
+    if (narrow.addEventListener) narrow.addEventListener('change', layout);
 
     var restartFill = function (index) {
       var fill = dots[index].querySelector('.dot__fill');

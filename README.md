@@ -43,7 +43,81 @@ Import the repository in Vercel. Framework preset: **Other**. Build command: non
 | `api/payment-status.js` | `GET /api/payment-status` — whether checkout is configured, test or live, and with `?check=1` whether Razorpay actually accepts the pair. Never echoes a key. |
 | `scripts/check-prices.js` | Fails if the three places prices are written down stop agreeing. |
 | `scripts/test-payments.sh` | The payment endpoints, checked with curl. |
+| `scripts/check-assets.js` | Fails if one page asks for a different `?v=` of an asset than another. |
+| `scripts/check-supabase.mjs` | Whether the orders table can actually take an order. |
 | `design-system/` | Design spec: colors, type, spacing, section order, Shopify plan. |
+
+## Weight, and why it is what it is
+
+Measured at 390px, the width of a cheap Android, with the dev server:
+
+| Page | Before | Now |
+|---|---|---|
+| Homepage (3x screen) | 2,364 KB | 2,267 KB |
+| Homepage (2x, most phones) | — | 1,176 KB |
+| `/preorder` | 1,441 KB | 631 KB |
+| Product page | 1,030 KB | 844 KB |
+
+Four things were wrong, and they are the four to check first if it regresses:
+
+**The hero preload and the hero `<img>` described different layout slots.** The
+preload said `520px`, the element said `360px`, so the browser fetched one
+candidate up front and the element then chose the other — the same pack
+downloaded twice on every homepage load. `imagesizes` and `sizes` must stay
+identical; that is the whole point of a preload.
+
+**The carousel loaded all five pouches.** Four of them are invisible on a phone
+and dimmed behind the active one on a desktop, but `opacity: 0` does not stop a
+download. They are `data-src` now and `main.js` fetches one when it comes within
+reach of being seen, then widens that reach on idle so a swipe never waits.
+**`.showcase__pack[data-src]` is hidden**, so an un-fetched slide shows nothing
+rather than its alt text. With scripting off you get the one pack the hero was
+built around, which is the honest fallback for a script-driven carousel.
+
+**Thumbnails were full pack shots.** The checkout picker renders them at 56px
+and the product gallery at 64px; both were being handed 720px files. 894 KB of
+picker thumbnails became 95 KB, and 1,039 KB of gallery thumbnails became 129 KB.
+
+**The line-up cards claimed `88vw`.** They are a swipe rail, so a card is about
+230px wide whatever the viewport and its image lands at 182px. The honest
+`sizes="200px"` plus a new 420px variant stopped phones taking the 1050px file
+for a card the width of a matchbox.
+
+Re-encoding the pack shots is **not** worth it — at q=82 they come down 7% and
+below that the edges go. They were already exported properly.
+
+## Caching, and the one thing that can go wrong with it
+
+`/assets/(css|js)/` is served `immutable` for a year. That is safe because the
+`?v=` in every URL is what busts it: a changed asset is a changed URL. It was
+`must-revalidate`, which cost every visitor a conditional request per file —
+five round trips before the page could render, on a connection where round
+trips are the expensive part.
+
+The failure that buys is a **partial bump**: one page updated and another left
+behind, so a browser holds last week's stylesheet against this week's markup
+for as long as it likes. Fresh browsers never see it, so it does not show up in
+testing. `npm run check:assets` fails when one asset carries two versions, and
+**`npm run check` runs it with the price check**. Run it before you deploy.
+
+## Is Supabase actually ready?
+
+```bash
+npm run check:supabase            # read-only, safe against production
+node scripts/check-supabase.mjs --write   # also places and deletes a test order
+```
+
+It reads the project URL and anon key out of `assets/js/store-config.js`, so it
+checks the table the website really writes to, and it reports three things: that
+every column the checkout sends exists, that the table refuses a non-Bengaluru
+PIN by itself, and — with `--write` — that a valid order inserts.
+
+This matters more than it sounds. The customer pays through Razorpay **and only
+then** does the browser write the order row. A missing column or an unapplied
+policy means the money is taken and the order is not recorded, and nothing
+tells you until it happens to a real person. `--write` leaves its test row
+behind unless `SUPABASE_SERVICE_ROLE_KEY` is set, because the public key may
+insert and nothing else; it prints the reference so you can delete it.
 
 ## Swapping the hero image
 
