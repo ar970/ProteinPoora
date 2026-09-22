@@ -69,6 +69,38 @@ function fromCards() {
   return out;
 }
 
+/**
+ * Delivery, written down wherever the customer is quoted it. A page promising
+ * free delivery over ₹400 while the server wants ₹500 is a number that changes
+ * at the payment window, which is the moment a customer decides you are not
+ * to be trusted.
+ */
+function deliveryQuotes() {
+  const cart = read('assets/js/cart.js');
+  const home = read('index.html');
+  const checkout = read('preorder/index.html');
+  // "₹100," in prose captures its trailing comma, and "₹1,000" its separator.
+  // Both come out right once commas are gone.
+  const rupees = (re, text) =>
+    Number(String((re.exec(text) || [])[1]).replace(/,/g, '')) * 100;
+
+  return {
+    threshold: [
+      ['api/_lib/catalogue.js', catalogue.FREE_DELIVERY_FROM_PAISE],
+      ['assets/js/cart.js', Number((/var FREE_DELIVERY_FROM = (\d+)/.exec(cart) || [])[1])],
+      ['index.html copy', rupees(/Free delivery over ₹([\d,]+)/, home)],
+      ['index.html FAQ', rupees(/Free on orders of ₹([\d,]+) or more/, home)],
+      ['preorder/index.html copy', rupees(/Delivery is free on orders of ₹([\d,]+) or more/, checkout)]
+    ],
+    charge: [
+      ['api/_lib/catalogue.js', catalogue.DELIVERY_PAISE],
+      ['assets/js/cart.js', Number((/var DELIVERY = (\d+)/.exec(cart) || [])[1])],
+      ['index.html FAQ', rupees(/Below that it is ₹([\d,]+)/, home)],
+      ['preorder/index.html copy', rupees(/or more, ₹([\d,]+) below that/, checkout)]
+    ]
+  };
+}
+
 /** The minimum, written down in four places. They have to be one number. */
 function boxMinimums() {
   return [
@@ -137,9 +169,19 @@ for (const [label, value] of minimums.slice(1)) {
   }
 }
 
+const delivery = deliveryQuotes();
+for (const [label, rows] of [['free-delivery threshold', delivery.threshold], ['delivery charge', delivery.charge]]) {
+  const wantedValue = rows[0][1];
+  for (const [where, value] of rows.slice(1)) {
+    if (value !== wantedValue) {
+      problems.push(`${where}: ${label} reads ${value} paise, but the server uses ${wantedValue}`);
+    }
+  }
+}
+
 if (problems.length) {
   console.error('Prices disagree:\n  ' + problems.join('\n  '));
   process.exit(1);
 }
 
-console.log(`prices agree across all three sources (${server.size} slugs)`);
+console.log(`prices agree across all three sources (${server.size} slugs), plus the box minimum and delivery`);

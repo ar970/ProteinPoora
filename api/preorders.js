@@ -19,7 +19,7 @@ const {
   readJson, send, guard, onError, badRequest,
   text, email, phone, pincode, quantity
 } = require('./_lib/http.js');
-const { BOX_PACKS, BOX_RATE_PAISE, BOX_MIN_PACKS } = require('./_lib/catalogue.js');
+const { BOX_PACKS, BOX_RATE_PAISE, BOX_MIN_PACKS, deliveryFor } = require('./_lib/catalogue.js');
 
 const MAX_LINES = 10;
 
@@ -105,7 +105,9 @@ async function priceItems(input) {
     total += rate * qty;
     items.push({ slug, name: product.name, qty, price_paise: rate });
   }
-  return { items, total };
+  // Delivery on the same terms as the paid path.
+  const delivery = deliveryFor(total);
+  return { items, total: total + delivery, subtotal: total, delivery };
 }
 
 module.exports = async function handler(req, res) {

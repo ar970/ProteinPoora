@@ -18,7 +18,7 @@
   <link rel="preload" href="/assets/fonts/baloo-2-devanagari-wordmark.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/assets/fonts/dm-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="/assets/css/fonts.css?v=3">
-  <link rel="stylesheet" href="/assets/css/style.css?v=82">
+  <link rel="stylesheet" href="/assets/css/style.css?v=83">
   <script>document.documentElement.classList.replace('no-js', 'js');</script>
 
   <!-- Meta Pixel. In a Liquid theme this block moves into theme.liquid once,
@@ -149,7 +149,7 @@
           <div>
             <fieldset class="checkout__step" id="choose">
               <legend class="checkout__legend"><span class="checkout__num" aria-hidden="true">1</span> Choose your snacks</legend>
-              <p class="checkout__note">Take a combo at its own price, or build a box from 6 loose packs or more at ₹85 each. Up to 20 of any one thing.</p>
+              <p class="checkout__note">Take a combo at its own price, or build a box from 5 loose packs or more at ₹85 each. Up to 20 of any one thing.</p>
               <ul class="picker" id="picker" data-loading>
                 <li class="summary__empty">Loading the line-up…</li>
               </ul>
@@ -217,12 +217,15 @@
             <h2 class="summary__title" id="summary-title">Your order</h2>
             <p class="summary__empty" id="summary-empty">Nothing chosen yet.</p>
             <ul class="summary__lines" id="summary-lines"></ul>
+            <p class="summary__row" id="summary-subtotal-row"><span>Subtotal</span> <span id="summary-subtotal">₹0</span></p>
+            <p class="summary__row" id="summary-delivery-row"><span>Delivery</span> <span id="summary-delivery">₹0</span></p>
+            <p class="summary__nudge" id="summary-nudge" hidden></p>
             <p class="summary__total"><span>Total</span> <span id="summary-total">₹0</span></p>
             <p style="margin-top:1.15rem">
               <button class="btn btn--navy btn--block" type="submit" id="submit-btn">Pay and place order</button>
             </p>
             <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
-            <p class="summary__note">You pay now, securely through Razorpay. We deliver across Bengaluru and email you when your order is on its way.</p>
+            <p class="summary__note">You pay now, securely through Razorpay. Delivery is free on orders of ₹400 or more, ₹100 below that. We deliver across Bengaluru and email you when your order is on its way.</p>
           </aside>
         </form>
       </div>
@@ -278,13 +281,13 @@
     </div>
   </dialog>
 
-  <script src="/assets/js/store-config.js?v=82" defer></script>
-  <script src="/assets/js/cart.js?v=82" defer></script>
-  <script src="/assets/js/main.js?v=82" defer></script>
+  <script src="/assets/js/store-config.js?v=83" defer></script>
+  <script src="/assets/js/cart.js?v=83" defer></script>
+  <script src="/assets/js/main.js?v=83" defer></script>
   <!-- Razorpay's own checkout.js is not loaded here. payment.js fetches it the
        first time someone actually pays, so a third-party script cannot delay
        or break the form for everyone who is still filling it in. -->
-  <script src="/assets/js/payment.js?v=82" defer></script>
-  <script src="/assets/js/preorder.js?v=82" defer></script>
+  <script src="/assets/js/payment.js?v=83" defer></script>
+  <script src="/assets/js/preorder.js?v=83" defer></script>
 </body>
 </html>

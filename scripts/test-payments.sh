@@ -35,10 +35,10 @@ s=$(call POST /api/create-order '{"items":[{"slug":"combo-bhujia-duo","qty":1.5}
 s=$(call POST /api/create-order '{"items":[{"slug":"combo-bhujia-duo","qty":11},{"slug":"combo-bhujia-duo","qty":11}]}')
                                                                                   check "split to beat cap"   400 "$s" "$(cat /tmp/body.json)"
 s=$(call POST /api/create-order '{"items":[{"slug":"masala-bhujia","qty":1}]}');      check "1 loose pack"        400 "$s" "$(cat /tmp/body.json)"
-s=$(call POST /api/create-order '{"items":[{"slug":"masala-bhujia","qty":5}]}');      check "5 loose packs"       400 "$s" "$(cat /tmp/body.json)"
-s=$(call POST /api/create-order '{"items":[{"slug":"masala-bhujia","qty":3},{"slug":"korean-bbq-peanuts","qty":2}]}')
+s=$(call POST /api/create-order '{"items":[{"slug":"masala-bhujia","qty":4}]}');      check "4 loose packs"       400 "$s" "$(cat /tmp/body.json)"
+s=$(call POST /api/create-order '{"items":[{"slug":"masala-bhujia","qty":2},{"slug":"korean-bbq-peanuts","qty":2}]}')
                                                                                   check "short box, mixed"    400 "$s" "$(cat /tmp/body.json)"
-s=$(call POST /api/create-order '{"items":[{"slug":"masala-bhujia","qty":3},{"slug":"combo-all-five","qty":1}]}')
+s=$(call POST /api/create-order '{"items":[{"slug":"masala-bhujia","qty":2},{"slug":"combo-all-five","qty":1}]}')
                                                                                   check "combo cannot fill a box" 400 "$s" "$(cat /tmp/body.json)"
 s=$(call GET /api/create-order '');                                                   check "GET not allowed"     405 "$s" "$(cat /tmp/body.json)"
 

@@ -43,7 +43,7 @@ const PRICES = Object.freeze({
 const BOX_RATE_PAISE = 8500;
 
 /** Fewer than this many loose packs is not a box. */
-const BOX_MIN_PACKS = 6;
+const BOX_MIN_PACKS = 5;
 
 /** The packs a box can be built from. Same slugs as their product pages. */
 const BOX_PACKS = Object.freeze({
@@ -65,6 +65,29 @@ function rateFor(slug) {
   if (Object.prototype.hasOwnProperty.call(PRICES, slug)) return PRICES[slug];
   if (Object.prototype.hasOwnProperty.call(BOX_PACKS, slug)) return BOX_RATE_PAISE;
   return undefined;
+}
+
+/**
+ * Delivery. Free from this much of goods, a flat charge below it.
+ *
+ * The threshold is read against the goods subtotal, never the total — adding
+ * the delivery charge to the figure that decides whether there is a delivery
+ * charge is how a ₹399 order becomes free.
+ */
+const FREE_DELIVERY_FROM_PAISE = 40000;
+const DELIVERY_PAISE = 10000;
+
+/**
+ * What delivery costs on a given subtotal, in paise.
+ *
+ * Nothing ordered means nothing to deliver. priceOrder never reaches here with
+ * an empty order, but the checkout calls the same rule to draw its summary,
+ * and an empty basket quoting a ₹100 delivery charge is a bad first thing to
+ * see.
+ */
+function deliveryFor(subtotalPaise) {
+  if (!subtotalPaise) return 0;
+  return subtotalPaise >= FREE_DELIVERY_FROM_PAISE ? 0 : DELIVERY_PAISE;
 }
 
 const MAX_LINES = 10;
@@ -122,23 +145,32 @@ function priceOrder(input, badRequest) {
   }
 
   const items = [];
-  let total = 0;
+  let subtotal = 0;
   for (const [slug, qty] of wanted) {
     if (qty > MAX_QTY) {
       throw badRequest(`Quantity must be a whole number between 1 and ${MAX_QTY}.`);
     }
     const rate = rateFor(slug);
-    total += rate * qty;
+    subtotal += rate * qty;
     items.push({ slug, name: NAMES[slug], qty, price_paise: rate });
   }
+
+  const delivery = deliveryFor(subtotal);
+  const total = subtotal + delivery;
 
   if (total < MIN_PAISE) throw badRequest('That order is below the minimum we can charge.');
   if (total > MAX_PAISE) throw badRequest('That order is larger than we can take online.');
 
-  return { items, total_paise: total };
+  return {
+    items,
+    subtotal_paise: subtotal,
+    delivery_paise: delivery,
+    total_paise: total
+  };
 }
 
 module.exports = {
   PRICES, NAMES, BOX_PACKS, BOX_RATE_PAISE, BOX_MIN_PACKS,
+  FREE_DELIVERY_FROM_PAISE, DELIVERY_PAISE, deliveryFor,
   MIN_PAISE, MAX_PAISE, rateFor, priceOrder
 };

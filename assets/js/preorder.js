@@ -23,6 +23,9 @@
   var summaryLines = document.getElementById('summary-lines');
   var summaryEmpty = document.getElementById('summary-empty');
   var summaryTotal = document.getElementById('summary-total');
+  var summarySubtotal = document.getElementById('summary-subtotal');
+  var summaryDelivery = document.getElementById('summary-delivery');
+  var summaryNudge = document.getElementById('summary-nudge');
   var statusEl = document.getElementById('form-status');
   var submitBtn = document.getElementById('submit-btn');
 
@@ -52,7 +55,17 @@
   /* A loose pack is only sold six or more at a time. The number comes from the
      cart so there is one of it on the client; the server has its own and is
      the one that counts. */
-  var BOX_MIN = (window.PPCart && window.PPCart.BOX_MIN) || 6;
+  var BOX_MIN = (window.PPCart && window.PPCart.BOX_MIN) || 5;
+
+  /* Delivery, from the cart so there is one copy of it on the client. The
+     server prices the order either way; this is what the customer is shown
+     before they agree to it. */
+  var FREE_DELIVERY_FROM = (window.PPCart && window.PPCart.FREE_DELIVERY_FROM) || 40000;
+  function deliveryFor(subtotal) {
+    if (!subtotal) return 0;
+    return window.PPCart ? window.PPCart.deliveryFor(subtotal)
+      : (subtotal >= FREE_DELIVERY_FROM ? 0 : 10000);
+  }
 
   /** True from the moment the payment window opens until it resolves. */
   var submitting = false;
@@ -252,14 +265,14 @@
   /* --- summary ---------------------------------------------------------- */
 
   function renderSummary() {
-    var total = 0;
+    var goods = 0;
     summaryLines.textContent = '';
 
     products.forEach(function (product) {
       var qty = chosen[product.slug];
       if (!qty) return;
       var amount = product.price_paise * qty;
-      total += amount;
+      goods += amount;
 
       var li = document.createElement('li');
       li.className = 'summary__line';
@@ -273,8 +286,22 @@
     });
 
     var any = summaryLines.children.length > 0;
+    var delivery = deliveryFor(goods);
     summaryEmpty.hidden = any;
-    summaryTotal.textContent = rupees(total);
+    summarySubtotal.textContent = rupees(goods);
+    summaryDelivery.textContent = delivery ? rupees(delivery) : 'Free';
+    summaryDelivery.classList.toggle('is-free', delivery === 0);
+    summaryTotal.textContent = rupees(goods + delivery);
+
+    // Only worth saying once there is something in the order to add to.
+    if (any && delivery) {
+      summaryNudge.hidden = false;
+      summaryNudge.textContent = 'Add ' + rupees(FREE_DELIVERY_FROM - goods) +
+        ' more and delivery is free.';
+    } else {
+      summaryNudge.hidden = true;
+    }
+
     paintBoxWarning();
   }
 
@@ -474,8 +501,27 @@
         price_paise: product.price_paise || 0
       };
     });
-    var total = priced.reduce(function (sum, i) { return sum + i.price_paise * i.qty; }, 0);
+    var goods = priced.reduce(function (sum, i) { return sum + i.price_paise * i.qty; }, 0);
+    var delivery = deliveryFor(goods);
+    var total = goods + delivery;
     var reference = makeReference();
+
+    /* The delivery charge has no column of its own, and inventing one would
+       make this insert depend on a migration — which is exactly how an order
+       was lost before. It goes in `notes`, where a person packing the order
+       will read it, and `total_paise` is what was charged rather than what the
+       goods came to, so it matches the Razorpay dashboard. `paid_paise` is
+       Razorpay's own figure for the same number: if the two ever disagree,
+       the row says so instead of hiding it. */
+    var charges = delivery
+      ? 'Delivery ₹' + (delivery / 100) + ' (goods ₹' + (goods / 100) + ')'
+      : 'Delivery free (goods ₹' + (goods / 100) + ')';
+    /* Charges first, then the customer's note. The field is capped at 500 and
+       a customer who fills it would otherwise push the delivery line off the
+       end. Their instructions are also on the Razorpay order, so putting them
+       second loses nothing; the charge line has only this one home. */
+    var customerNotes = String(payload.notes || '').trim();
+    var notes = charges + (customerNotes ? ' — ' + customerNotes : '');
 
     var paid = payload.payment || {};
     var row = {
@@ -495,7 +541,7 @@
       city: payload.city,
       state: payload.state,
       pincode: payload.pincode,
-      notes: payload.notes,
+      notes: notes.slice(0, 500),
       items: priced,
       total_paise: total
     };

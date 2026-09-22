@@ -2956,6 +2956,32 @@ button {
   list-style: none;
 }
 
+.summary__row {
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  margin: 0 0 0.35rem;
+  color: var(--text);
+  font-size: 0.9375rem;
+}
+
+.summary__row span:last-child {
+  color: var(--navy-ink);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.summary__row #summary-delivery.is-free {
+  color: var(--pack-green);
+}
+
+.summary__nudge {
+  margin: 0.25rem 0 0.6rem;
+  color: var(--pack-blue);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
 .summary__line {
   display: flex;
   gap: 1rem;
@@ -2979,6 +3005,7 @@ button {
 .summary__total {
   display: flex;
   justify-content: space-between;
+  margin-top: 0.4rem;
   padding-top: 0.9rem;
   border-top: 1px solid rgba(30, 45, 120, 0.15);
   color: var(--navy-ink);
@@ -3266,9 +3293,40 @@ button {
   background: var(--cream-soft);
 }
 
+/* Subtotal and delivery, above the total they add up to. Showing the charge
+   here rather than only at the checkout means nobody meets it for the first
+   time on the payment screen. */
+.drawer__row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.35rem;
+  color: var(--text);
+  font-size: 0.875rem;
+}
+
+.drawer__row span:last-child {
+  color: var(--navy-ink);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.drawer__free {
+  color: var(--pack-green) !important;
+}
+
+.drawer__nudge {
+  margin: -0.4rem 0 0.9rem;
+  color: var(--pack-blue);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
 .drawer__total {
   display: flex;
   justify-content: space-between;
+  margin-top: 0.6rem;
+  padding-top: 0.6rem;
+  border-top: 1px solid var(--line);
   margin-bottom: 0.9rem;
   color: var(--navy-ink);
   font-family: var(--font-display);

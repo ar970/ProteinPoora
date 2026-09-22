@@ -34,7 +34,14 @@
     'masala-bhujia', 'pudina-bhujia', 'sweet-chilli-chakli',
     'cheddar-cheese-chakli', 'korean-bbq-peanuts'
   ];
-  var BOX_MIN = 6;
+  var BOX_MIN = 5;
+
+  /* Delivery, mirroring api/_lib/catalogue.js. The server is the authority —
+     these are here so the drawer and the checkout can show the customer the
+     charge before they commit to it, not so the browser can decide it.
+     `npm run check:prices` fails if the two drift apart. */
+  var FREE_DELIVERY_FROM = 40000;
+  var DELIVERY = 10000;
   var ORDERABLE = ['combo-bhujia-duo', 'combo-chakli-duo', 'combo-all-five'].concat(BOX_PACKS);
 
   /* --- state ------------------------------------------------------------ */
@@ -99,6 +106,16 @@
     },
 
     BOX_MIN: BOX_MIN,
+    FREE_DELIVERY_FROM: FREE_DELIVERY_FROM,
+    DELIVERY: DELIVERY,
+
+    /** What delivery costs on a given subtotal. Free from the threshold up,
+     *  and nothing at all when there is nothing to deliver. */
+    deliveryFor: function (subtotal) {
+      if (!subtotal) return 0;
+      return subtotal >= FREE_DELIVERY_FROM ? 0 : DELIVERY;
+    },
+
 
     /** Adds to the existing quantity; returns the new quantity for that slug. */
     add: function (product, qty) {
@@ -305,10 +322,29 @@
     });
     d.__body.appendChild(list);
 
+    var goods = Cart.subtotal();
+    var delivery = Cart.deliveryFor(goods);
+
+    var sub = el('div', 'drawer__row');
+    sub.appendChild(el('span', null, 'Subtotal'));
+    sub.appendChild(el('span', null, rupees(goods)));
+    d.__foot.appendChild(sub);
+
+    var ship = el('div', 'drawer__row');
+    ship.appendChild(el('span', null, 'Delivery'));
+    ship.appendChild(el('span', delivery ? null : 'drawer__free', delivery ? rupees(delivery) : 'Free'));
+    d.__foot.appendChild(ship);
+
     var total = el('div', 'drawer__total');
-    total.appendChild(el('span', null, 'Subtotal'));
-    total.appendChild(el('span', null, rupees(Cart.subtotal())));
+    total.appendChild(el('span', null, 'Total'));
+    total.appendChild(el('span', null, rupees(goods + delivery)));
     d.__foot.appendChild(total);
+
+    // A number they can act on beats a rule they have to apply themselves.
+    if (delivery) {
+      d.__foot.appendChild(el('p', 'drawer__nudge',
+        'Add ' + rupees(FREE_DELIVERY_FROM - goods) + ' more and delivery is free.'));
+    }
 
     // A short box cannot go to checkout: the server would refuse it after the
     // customer had filled in their address. Say it here, where they can still

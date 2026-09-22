@@ -4,7 +4,12 @@
  * Open a Razorpay order.
  *
  *   POST /api/create-order   { items: [{ slug, qty }], delivery: {…} }
- *   → 200 { order_id, amount, currency, key_id, items, total_paise }
+ *   → 200 { order_id, amount, currency, key_id, items,
+ *           subtotal_paise, delivery_paise, total_paise }
+ *
+ * `amount` is goods plus delivery. The breakdown comes back so the page can
+ * show the customer the same three numbers the charge was built from, rather
+ * than recomputing them and hoping they agree.
  *
  * The amount is computed here from `_lib/catalogue.js`. The request body's
  * slugs and quantities are the only thing it is trusted for — an `amount` in
@@ -69,7 +74,8 @@ module.exports = async function handler(req, res) {
 
   try {
     const body = await readJson(req);
-    const { items, total_paise: amount } = priceOrder(body.items, badRequest);
+    const priced = priceOrder(body.items, badRequest);
+    const { items, subtotal_paise, delivery_paise, total_paise: amount } = priced;
 
     const { keyId } = credentials();
 
@@ -82,7 +88,10 @@ module.exports = async function handler(req, res) {
         // Everything needed to pack and deliver this order, on the payment
         // itself, so the dashboard is a sufficient record on its own.
         notes: Object.assign({
-          items: items.map((i) => `${i.slug}x${i.qty}`).join(',').slice(0, NOTE_MAX)
+          items: items.map((i) => `${i.slug}x${i.qty}`).join(',').slice(0, NOTE_MAX),
+          // So the dashboard says why the charge is what it is, without
+          // anyone having to re-derive it from the line items.
+          charges: `goods ${subtotal_paise} + delivery ${delivery_paise} = ${amount} paise`
         }, deliveryNotes(body.delivery))
       });
     } catch (err) {
@@ -95,6 +104,8 @@ module.exports = async function handler(req, res) {
       currency: order.currency,
       key_id: keyId,
       items,
+      subtotal_paise,
+      delivery_paise,
       total_paise: amount
     });
   } catch (err) {

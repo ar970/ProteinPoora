@@ -218,9 +218,9 @@ are what the design system always said; the built site had drifted.
 ## Combos and boxes
 
 **There are two ways to buy and they price differently.** A combo is a product
-with its own slug and its own fixed price. A box is six or more loose packs, any
-mix, at a flat ₹85 each. A loose pack on its own is not sold at all — below six
-it is refused, not discounted.
+with its own slug and its own fixed price. A box is five or more loose packs,
+any mix, at a flat ₹85 each. A loose pack on its own is not sold at all — below
+five it is refused, not discounted.
 
 Three bundles at `#combos`, between the line-up and the FAQ:
 
@@ -248,16 +248,16 @@ of the three, so its card spans the grid.
 
 ### Build your own box
 
-`#build-a-box`, between the combos and the FAQ. Five pack cards, a six-pip
+`#build-a-box`, between the combos and the FAQ. Five pack cards, a five-pip
 progress track, a running count and total, and a button that stays off until
-the box reaches six. The checkout picker builds the same box from the other
+the box reaches five. The checkout picker builds the same box from the other
 end, under its own heading.
 
 Each card shows **one control at a time**: `Add` until there is something in
 the box, then a stepper. The swap is the confirmation that the tap landed,
 which is why there is no toast — and it means focus has to be moved by hand
 when a control disappears, onto the `+` after an add and back onto `Add` when
-a stepper reaches zero. Six pips rather than a percentage bar, because six is
+a stepper reaches zero. Five pips rather than a percentage bar, because five is
 small enough to count at a glance; they turn green past the minimum and stop
 competing with the total. The one `navigator.vibrate` fires when the box
 becomes orderable and nowhere else.
@@ -268,7 +268,7 @@ silently drops to one card per row. Below 768px the bar is sticky, so the
 count, the total and the button follow you past the fold.
 
 Two numbers define it, and both live in `api/_lib/catalogue.js`:
-`BOX_RATE_PAISE` (8500) and `BOX_MIN_PACKS` (6). The minimum is enforced in four
+`BOX_RATE_PAISE` (8500) and `BOX_MIN_PACKS` (5). The minimum is enforced in four
 places, on purpose:
 
 | Where | What it does |
@@ -286,9 +286,47 @@ own product at its own price, and letting one prop up a short box would be a
 different offer than the one on the page.
 
 `npm run check:prices` fails if the four minimums stop agreeing, or if the ₹85
-in the page copy stops matching `BOX_RATE_PAISE`. A page quoting six while the
+in the page copy stops matching `BOX_RATE_PAISE`. A page quoting five while the
 server wants eight is a refusal after the customer has tried to pay, which is
 the one failure worth spending a check on.
+
+## Delivery
+
+**Free from ₹400 of goods, ₹100 below it.** `FREE_DELIVERY_FROM_PAISE` and
+`DELIVERY_PAISE` in `api/_lib/catalogue.js`, and `deliveryFor()` is the only
+thing that decides it. Exactly ₹400 is free: "over ₹400" is read the way a
+customer reads it, not the way a lawyer would.
+
+**The threshold is measured on goods, never on the total.** Adding the delivery
+charge to the number that decides whether there is a delivery charge is how a
+₹399 order quietly becomes free.
+
+In practice only the two duos ever pay it — five packs come to ₹425 and the
+Family Pack to ₹439, so every box and the largest combo clear the threshold on
+their own. `npm run check:prices` checks both numbers against every place the
+page quotes them, because a delivery charge that appears for the first time at
+the payment window is the moment a customer decides you are not to be trusted.
+
+`priceOrder` returns `{ items, subtotal_paise, delivery_paise, total_paise }`
+and `create-order` sends all three to the page, so the customer is shown the
+figures the charge was actually built from rather than a recomputation that
+might disagree. The Razorpay order carries a `charges` note saying the same
+thing, so the dashboard explains itself.
+
+### Why the delivery charge lives in `notes`
+
+The `preorders` table has no column for it and **it is not getting one.** An
+insert that names a column the table does not have is refused in full, address
+and all — that is how a paid order was lost once already, and a migration is
+not something to make a live checkout depend on again.
+
+So `total_paise` is **what was charged**, goods plus delivery, which makes it
+comparable with `paid_paise` (Razorpay's own figure) and with the dashboard. A
+mismatch between those two now means something is wrong rather than meaning
+nothing. The breakdown goes in `notes`, written **before** the customer's own
+note because that field is capped at 500 characters and a customer who fills it
+would otherwise push the delivery line off the end. Their instructions are on
+the Razorpay order too, so putting them second loses nothing.
 
 There are no product pages for combos, and no nutrition panels: each one is
 just its packs, which have their own pages.
