@@ -230,7 +230,7 @@ Three bundles at `#combos`, between the line-up and the FAQ:
 
 | Slug | Name | Price | Singles | Saving |
 |---|---|---|---|---|
-| `combo-all-five` | Poora Family Pack | ₹429 | ₹500 | ₹71 |
+| `combo-all-five` | Poora Family Pack | ₹439 | ₹500 | ₹61 |
 | `combo-bhujia-duo` | Bhujia Duo | ₹170 | ₹198 | ₹28 |
 | `combo-chakli-duo` | Chakli Duo | ₹150 | ₹178 | ₹28 |
 

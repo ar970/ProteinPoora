@@ -29,7 +29,7 @@
 const PRICES = Object.freeze({
   'combo-bhujia-duo': 17000,
   'combo-chakli-duo': 15000,
-  'combo-all-five': 42900
+  'combo-all-five': 43900
 });
 
 const NAMES = Object.freeze({
