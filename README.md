@@ -248,9 +248,24 @@ of the three, so its card spans the grid.
 
 ### Build your own box
 
-`#build-a-box`, between the combos and the FAQ. Five stepper rows, a running
-count and total, and a button that stays off until the box reaches six. The
-checkout picker builds the same box from the other end, under its own heading.
+`#build-a-box`, between the combos and the FAQ. Five pack cards, a six-pip
+progress track, a running count and total, and a button that stays off until
+the box reaches six. The checkout picker builds the same box from the other
+end, under its own heading.
+
+Each card shows **one control at a time**: `Add` until there is something in
+the box, then a stepper. The swap is the confirmation that the tap landed,
+which is why there is no toast — and it means focus has to be moved by hand
+when a control disappears, onto the `+` after an add and back onto `Add` when
+a stepper reaches zero. Six pips rather than a percentage bar, because six is
+small enough to count at a glance; they turn green past the minimum and stop
+competing with the total. The one `navigator.vibrate` fires when the box
+becomes orderable and nowhere else.
+
+The grid is explicit counts — two, three, five — not `auto-fit`: at 390px the
+panel's inner width is a few pixels short of two 150px tracks, and `auto-fit`
+silently drops to one card per row. Below 768px the bar is sticky, so the
+count, the total and the button follow you past the fold.
 
 Two numbers define it, and both live in `api/_lib/catalogue.js`:
 `BOX_RATE_PAISE` (8500) and `BOX_MIN_PACKS` (6). The minimum is enforced in four

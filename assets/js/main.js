@@ -384,7 +384,10 @@
    * built without script, so it says so in a <noscript> and sends people to
    * the checkout, whose picker can build the same box. */
 
-  /* --- Build your own box ------------------------------------------------ */
+  /* --- Build your own box ------------------------------------------------
+     Each card shows one control at a time: Add until there is something in the
+     box, then a stepper. The swap is itself the confirmation that the tap
+     landed, which is why there is no toast. */
   (function () {
     var grid = document.querySelector('[data-box]');
     if (!grid) return;
@@ -392,12 +395,16 @@
     var countEl = document.querySelector('[data-box-count]');
     var totalEl = document.querySelector('[data-box-total]');
     var addBtn = document.querySelector('[data-box-add]');
-    var rows = Array.prototype.slice.call(grid.querySelectorAll('[data-box-pack]'));
+    var progress = document.querySelector('[data-box-progress]');
+    var pips = progress ? Array.prototype.slice.call(progress.children) : [];
+    var cards = Array.prototype.slice.call(grid.querySelectorAll('[data-box-pack]'));
 
     /* The markup states the minimum, the same value the section's own copy
        quotes. check:prices fails if it drifts from the server's. */
     var MIN = parseInt(grid.getAttribute('data-box-min'), 10) || 6;
     var MAX_PER_PACK = 20;
+
+    var wasComplete = false;
 
     function rupees(paise) {
       var value = paise / 100;
@@ -407,19 +414,44 @@
       });
     }
 
-    function qtyOf(row) {
-      return parseInt(row.querySelector('.qty__input').value, 10) || 0;
+    function inputOf(card) { return card.querySelector('.qty__input'); }
+    function qtyOf(card) { return parseInt(inputOf(card).value, 10) || 0; }
+
+    function setQty(card, next) {
+      var qty = Math.max(0, Math.min(MAX_PER_PACK, Math.floor(Number(next) || 0)));
+      inputOf(card).value = String(qty);
+      paint();
+      return qty;
+    }
+
+    /* A brief nudge on the pack shot, restarted from zero each time so a
+       rapid tap-tap-tap is felt rather than swallowed by a running animation. */
+    function nudge(card) {
+      card.classList.remove('is-adding');
+      void card.offsetWidth;
+      card.classList.add('is-adding');
+      window.setTimeout(function () { card.classList.remove('is-adding'); }, 220);
     }
 
     function paint() {
       var packs = 0;
       var total = 0;
-      rows.forEach(function (row) {
-        var qty = qtyOf(row);
+
+      cards.forEach(function (card) {
+        var qty = qtyOf(card);
         packs += qty;
-        total += qty * (parseInt(row.getAttribute('data-price-paise'), 10) || 0);
-        row.classList.toggle('is-chosen', qty > 0);
+        total += qty * (parseInt(card.getAttribute('data-price-paise'), 10) || 0);
+        card.classList.toggle('is-chosen', qty > 0);
+        // One control at a time: Add until there is a quantity to step.
+        card.querySelector('[data-box-add-one]').hidden = qty > 0;
+        card.querySelector('[data-box-qty]').hidden = qty === 0;
       });
+
+      pips.forEach(function (pip, i) {
+        pip.classList.toggle('is-filled', i < packs);
+      });
+      var complete = packs >= MIN;
+      if (progress) progress.classList.toggle('is-complete', complete);
 
       var short = MIN - packs;
       if (packs === 0) {
@@ -428,46 +460,67 @@
         countEl.textContent = packs + (packs === 1 ? ' pack' : ' packs') + ' — ' +
           short + ' more to go.';
       } else {
-        countEl.textContent = packs + ' packs in your box.';
+        countEl.textContent = packs + ' packs in your box. Add as many as you like.';
       }
 
-      totalEl.textContent = rupees(total);
-      addBtn.disabled = packs < MIN;
-      addBtn.textContent = packs < MIN && packs > 0
-        ? 'Add ' + short + ' more'
-        : 'Add box to cart';
+      if (totalEl.textContent !== rupees(total)) {
+        totalEl.textContent = rupees(total);
+        totalEl.classList.add('is-bumped');
+        window.setTimeout(function () { totalEl.classList.remove('is-bumped'); }, 180);
+      }
+
+      addBtn.disabled = !complete;
+      addBtn.textContent = !complete && packs > 0 ? 'Add ' + short + ' more' : 'Add box to cart';
+
+      /* One buzz, at the moment the box becomes orderable. Buzzing on every
+         tap is the kind of thing people turn off. */
+      if (complete && !wasComplete && navigator.vibrate) navigator.vibrate(12);
+      wasComplete = complete;
     }
 
     grid.addEventListener('click', function (event) {
-      var btn = event.target.closest('[data-box-up], [data-box-down]');
-      if (!btn) return;
-      var input = btn.parentNode.querySelector('.qty__input');
-      var next = (parseInt(input.value, 10) || 0) + (btn.hasAttribute('data-box-up') ? 1 : -1);
-      input.value = String(Math.max(0, Math.min(MAX_PER_PACK, next)));
-      paint();
+      var card = event.target.closest('[data-box-pack]');
+      if (!card) return;
+
+      if (event.target.closest('[data-box-add-one]')) {
+        setQty(card, 1);
+        nudge(card);
+        // The Add button has just been hidden, so focus would be lost to the
+        // body. Hand it to the + that replaced it.
+        card.querySelector('[data-box-up]').focus();
+        return;
+      }
+      if (event.target.closest('[data-box-up]')) {
+        setQty(card, qtyOf(card) + 1);
+        nudge(card);
+        return;
+      }
+      if (event.target.closest('[data-box-down]')) {
+        var left = setQty(card, qtyOf(card) - 1);
+        // Back to zero: the stepper is gone, so put focus on its replacement.
+        if (left === 0) card.querySelector('[data-box-add-one]').focus();
+      }
     });
 
     grid.addEventListener('change', function (event) {
       if (!event.target.classList.contains('qty__input')) return;
-      var n = Math.floor(Number(event.target.value) || 0);
-      event.target.value = String(Math.max(0, Math.min(MAX_PER_PACK, n)));
-      paint();
+      setQty(event.target.closest('[data-box-pack]'), event.target.value);
     });
 
     addBtn.addEventListener('click', function () {
       if (!window.PPCart || addBtn.disabled) return;
-      rows.forEach(function (row) {
-        var qty = qtyOf(row);
+      cards.forEach(function (card) {
+        var qty = qtyOf(card);
         if (!qty) return;
         window.PPCart.add({
-          slug: row.getAttribute('data-box-pack'),
-          name: row.getAttribute('data-name'),
-          thumb: row.getAttribute('data-thumb') || '',
-          price_paise: parseInt(row.getAttribute('data-price-paise'), 10) || 0
+          slug: card.getAttribute('data-box-pack'),
+          name: card.getAttribute('data-name'),
+          thumb: card.getAttribute('data-thumb') || '',
+          price_paise: parseInt(card.getAttribute('data-price-paise'), 10) || 0
         }, qty);
         // The box has moved into the cart; leaving the steppers set would
         // invite someone to press Add again and double their order.
-        row.querySelector('.qty__input').value = '0';
+        inputOf(card).value = '0';
       });
       paint();
       window.PPCart.open();

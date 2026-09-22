@@ -10,6 +10,7 @@
   --navy-deep: #16225E;
   --navy-ink: #1A2456;
   --pack-blue: #2F63C9;
+  --pack-green: #257A60;   /* the pudina label, darkened for 4.5:1 on cream */
   --cream: #F7E9C3;
   --cream-soft: #FBF3DC;
   --cream-70: rgba(247, 233, 195, 0.7);
@@ -2186,106 +2187,164 @@ button {
 }
 
 /* --- Section: build your own box ----------------------------------------
-   The section itself stays on the page background so it does not make a third
+   The section stays on the page background so it does not make a third
    coloured band between the cream combos and the white FAQ. The panel does the
    separating instead — which also happens to look like what it is. */
 .box-panel {
-  padding: 1.25rem;
+  padding: 0.85rem;
   border: 1px solid var(--line);
   border-radius: 20px;
   background: var(--cream-soft);
 }
 
+/* Explicit counts rather than auto-fit: at 390px the panel's inner width is a
+   few pixels short of two 150px tracks, and auto-fit silently drops to one
+   enormous card per row. Two, three, five. */
 .box-grid {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 0.75rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.7rem;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-@media (min-width: 720px) {
+@media (min-width: 640px) {
+  .box-panel {
+    padding: 1.25rem;
+  }
+
+  .box-card {
+    padding: 0.7rem;
+  }
+
   .box-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  /* Five packs in two columns leaves one alone on the last row. Spanning it
-     reads as a decision; a hole beside it reads as a mistake. */
-  .box-pack:last-child:nth-child(odd) {
-    grid-column: 1 / -1;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.85rem;
   }
 }
 
-/* Same geometry as a checkout picker row, because it is the same job. */
-.box-pack {
-  display: grid;
-  grid-template-columns: 56px minmax(0, 1fr) auto;
-  gap: 0.9rem;
-  align-items: center;
-  padding: 0.75rem;
+@media (min-width: 1100px) {
+  .box-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 1rem;
+  }
+}
+
+/* A card, not a list row: the pack shots are the best thing the brand owns and
+   at 56px they were wallpaper. */
+.box-card {
+  display: flex;
+  flex-direction: column;
+  padding: 0.55rem;
   border: 1px solid var(--line);
-  border-radius: 14px;
+  border-radius: 16px;
   background: var(--paper);
-  transition: border-color var(--t-fast) var(--ease);
+  transition:
+    border-color var(--t-fast) var(--ease),
+    box-shadow var(--t-fast) var(--ease);
 }
 
-.box-pack.is-chosen {
-  border-color: var(--navy);
+.box-card.is-chosen {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
 }
 
-.box-pack__thumb {
-  width: 56px;
-  height: 56px;
+.box-card__media {
+  position: relative;
+  margin-bottom: 0.6rem;
+  padding: 0.35rem;
+  border-radius: 12px;
+  background: var(--tile);
+  aspect-ratio: 1;
+}
+
+.box-card__media img {
+  width: 100%;
+  height: 100%;
   object-fit: contain;
+  filter: drop-shadow(0 8px 12px rgba(23, 57, 122, 0.22));
+  transition: transform 220ms var(--ease);
 }
 
-.box-pack__name {
-  margin: 0;
+/* A pack going into the box should look like it went somewhere. */
+.box-card.is-adding .box-card__media img {
+  transform: scale(1.09);
+}
+
+.box-card__badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  display: grid;
+  place-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--cream);
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 0.8125rem;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.box-card__name {
+  margin: 0 0 0.15rem;
   color: var(--navy-ink);
-  font-weight: 600;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.9375rem;
+  line-height: 1.2;
 }
 
-.box-pack__meta {
-  margin: 0;
+.box-card__meta {
+  margin: 0 0 0.6rem;
   color: var(--text);
   font-size: 0.8125rem;
   font-variant-numeric: tabular-nums;
 }
 
-/* At phone width the thumb, the name and a 134px stepper do not fit on one
-   line, and the name breaks to three. The stepper drops to its own row and
-   takes the full width, which also makes it a far easier thing to thumb. */
-@media (max-width: 559px) {
-  .box-pack {
-    grid-template-columns: 48px minmax(0, 1fr);
-    grid-template-areas:
-      "thumb text"
-      "stepper stepper";
-    row-gap: 0.7rem;
-  }
-
-  .box-pack__thumb {
-    grid-area: thumb;
-    width: 48px;
-    height: 48px;
-  }
-
-  .box-pack__text {
-    grid-area: text;
-  }
-
-  .box-pack .qty {
-    grid-area: stepper;
-    display: flex;
-    justify-self: stretch;
-  }
-
-  .box-pack .qty__input {
-    flex: 1;
-    width: auto;
-  }
+/* Add first, stepper once there is something to step. One control at a time
+   is less to read, and the swap is itself the confirmation that it worked. */
+.box-card__add,
+.box-card .qty--box {
+  margin-top: auto;
+  width: 100%;
+  height: 44px;
 }
+
+.box-card__add {
+  border: 1.5px solid var(--navy);
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--navy);
+  font: inherit;
+  font-weight: 700;
+  font-size: 0.9375rem;
+  cursor: pointer;
+  transition:
+    background-color var(--t-fast) var(--ease),
+    color var(--t-fast) var(--ease);
+}
+
+.box-card__add:hover {
+  background: var(--navy);
+  color: var(--cream);
+}
+
+.box-card .qty--box {
+  display: flex;
+  justify-self: stretch;
+}
+
+.box-card .qty--box .qty__input {
+  flex: 1;
+  width: auto;
+}
+
+/* --- the bar --------------------------------------------------------- */
 
 .box-bar {
   display: flex;
@@ -2297,10 +2356,39 @@ button {
   border-top: 1px solid var(--line);
 }
 
-/* The count is the thing that tells someone why the button is off, so it
-   leads and the total follows. */
+.box-bar__state {
+  flex: 1 1 15rem;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.box-progress {
+  display: flex;
+  gap: 0.3rem;
+}
+
+.box-progress__pip {
+  width: 100%;
+  max-width: 2.5rem;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(30, 45, 120, 0.16);
+  transition:
+    background-color 220ms var(--ease),
+    transform 220ms var(--ease);
+}
+
+.box-progress__pip.is-filled {
+  background: var(--navy);
+}
+
+/* Past the minimum the track has done its job; it goes green and stops
+   competing with the total for attention. */
+.box-progress.is-complete .box-progress__pip {
+  background: var(--pack-green);
+}
+
 .box-bar__count {
-  flex: 1 1 14rem;
   margin: 0;
   color: var(--navy-ink);
   font-weight: 600;
@@ -2315,6 +2403,11 @@ button {
   font-size: 1.25rem;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
+  transition: transform 180ms var(--ease);
+}
+
+.box-bar__total.is-bumped {
+  transform: scale(1.06);
 }
 
 .box-bar__label {
@@ -2325,7 +2418,21 @@ button {
   font-size: 0.875rem;
 }
 
-@media (max-width: 559px) {
+/* On a phone the cards run past the fold, so the count, the total and the
+   button follow you down rather than waiting at the bottom. */
+@media (max-width: 767px) {
+  .box-bar {
+    position: sticky;
+    bottom: 0;
+    z-index: 2;
+    margin-inline: -0.85rem;
+    margin-bottom: -0.85rem;
+    padding: 0.85rem calc(0.85rem + env(safe-area-inset-left, 0px)) calc(0.85rem + env(safe-area-inset-bottom, 0px));
+    border-radius: 0 0 19px 19px;
+    background: var(--cream-soft);
+    box-shadow: 0 -8px 16px -12px rgba(23, 57, 122, 0.4);
+  }
+
   .box-bar .btn {
     flex: 1 1 100%;
   }
@@ -2521,6 +2628,18 @@ button {
   .product-card__media img,
   .product-card__btn {
     transition: none;
+  }
+
+  .box-card,
+  .box-card__media img,
+  .box-progress__pip,
+  .box-bar__total {
+    transition: none;
+  }
+
+  .box-card.is-adding .box-card__media img,
+  .box-bar__total.is-bumped {
+    transform: none;
   }
 
   .product-card:hover,
