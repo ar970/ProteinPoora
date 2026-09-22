@@ -21,7 +21,7 @@
         imagesrcset="/assets/img/masala-bhujia-pack-720.webp 720w, /assets/img/masala-bhujia-pack-1054.webp 1054w"
         imagesizes="(min-width: 1024px) 360px, 72vw">
   <link rel="stylesheet" href="/assets/css/fonts.css?v=3">
-  <link rel="stylesheet" href="/assets/css/style.css?v=80">
+  <link rel="stylesheet" href="/assets/css/style.css?v=81">
   <script>document.documentElement.classList.replace('no-js', 'js');</script>
 
   <!-- Meta Pixel. In a Liquid theme this block moves into theme.liquid once,
@@ -81,6 +81,7 @@
         <ul class="site-nav__list">
           <li><a class="site-nav__link" href="#line-up">Shop</a></li>
           <li><a class="site-nav__link" href="#combos">Combos</a></li>
+          <li><a class="site-nav__link" href="#build-a-box">Build a box</a></li>
           <li><a class="site-nav__link" href="#faq">FAQ</a></li>
         </ul>
       </nav>
@@ -269,7 +270,7 @@
         <div class="section__head">
           <div>
             <h2 class="section__title" id="lineup-title">The line-up</h2>
-            <p class="section__sub">Five snacks in the first batch. They go out in the combos below.</p>
+            <p class="section__sub">Five snacks in the first batch. Take a combo, or build a box of six.</p>
           </div>
         </div>
 
@@ -290,7 +291,7 @@
               <p class="product-card__facts">14 g protein · 60 g pack</p>
               <div class="product-card__buy">
                 <p class="product-card__price">₹99</p>
-                <p class="product-card__tag">Sold in combos</p>
+                <p class="product-card__tag">In combos &amp; boxes</p>
               </div>
             </article>
           </li>
@@ -310,7 +311,7 @@
               <p class="product-card__facts">14 g protein · 60 g pack</p>
               <div class="product-card__buy">
                 <p class="product-card__price">₹99</p>
-                <p class="product-card__tag">Sold in combos</p>
+                <p class="product-card__tag">In combos &amp; boxes</p>
               </div>
             </article>
           </li>
@@ -330,7 +331,7 @@
               <p class="product-card__facts">9 g protein · 50 g pack</p>
               <div class="product-card__buy">
                 <p class="product-card__price">₹89</p>
-                <p class="product-card__tag">Sold in combos</p>
+                <p class="product-card__tag">In combos &amp; boxes</p>
               </div>
             </article>
           </li>
@@ -350,7 +351,7 @@
               <p class="product-card__facts">9 g protein · 50 g pack</p>
               <div class="product-card__buy">
                 <p class="product-card__price">₹89</p>
-                <p class="product-card__tag">Sold in combos</p>
+                <p class="product-card__tag">In combos &amp; boxes</p>
               </div>
             </article>
           </li>
@@ -370,7 +371,7 @@
               <p class="product-card__facts">18 g protein · 65 g pack</p>
               <div class="product-card__buy">
                 <p class="product-card__price">₹99</p>
-                <p class="product-card__tag">Sold in combos</p>
+                <p class="product-card__tag">In combos &amp; boxes</p>
               </div>
             </article>
           </li>
@@ -476,6 +477,97 @@
       </div>
     </section>
 
+    <!-- section: build a box -->
+    <section class="section box-section" id="build-a-box" aria-labelledby="box-title">
+      <div class="section__inner">
+        <div class="section__head">
+          <div>
+            <h2 class="section__title" id="box-title">Build your own box</h2>
+            <p class="section__sub">Any 6 packs or more, ₹85 each. Mix them however you like.</p>
+          </div>
+        </div>
+
+        <div class="box-panel">
+        <ul class="box-grid" data-box data-box-min="6">
+          <li class="box-pack" data-box-pack="masala-bhujia"
+              data-name="Masala Bhujia" data-price-paise="8500" data-thumb="/assets/img/masala-bhujia-thumb-180.webp">
+            <img class="box-pack__thumb" src="/assets/img/masala-bhujia-thumb-180.webp" width="56" height="56" alt="Masala Bhujia pack" loading="lazy" decoding="async">
+            <div class="box-pack__text">
+              <p class="box-pack__name">Masala Bhujia</p>
+              <p class="box-pack__meta">₹85 · 60 g · 14 g protein</p>
+            </div>
+            <div class="qty" data-box-qty>
+              <button class="qty__btn" type="button" data-box-down aria-label="One less Masala Bhujia">−</button>
+              <input class="qty__input" type="number" value="0" min="0" max="20" step="1" inputmode="numeric" aria-label="Packs of Masala Bhujia">
+              <button class="qty__btn" type="button" data-box-up aria-label="One more Masala Bhujia">+</button>
+            </div>
+          </li>
+          <li class="box-pack" data-box-pack="pudina-bhujia"
+              data-name="Pudina Bhujia" data-price-paise="8500" data-thumb="/assets/img/pudina-bhujia-thumb-180.webp">
+            <img class="box-pack__thumb" src="/assets/img/pudina-bhujia-thumb-180.webp" width="56" height="56" alt="Pudina Bhujia pack" loading="lazy" decoding="async">
+            <div class="box-pack__text">
+              <p class="box-pack__name">Pudina Bhujia</p>
+              <p class="box-pack__meta">₹85 · 60 g · 14 g protein</p>
+            </div>
+            <div class="qty" data-box-qty>
+              <button class="qty__btn" type="button" data-box-down aria-label="One less Pudina Bhujia">−</button>
+              <input class="qty__input" type="number" value="0" min="0" max="20" step="1" inputmode="numeric" aria-label="Packs of Pudina Bhujia">
+              <button class="qty__btn" type="button" data-box-up aria-label="One more Pudina Bhujia">+</button>
+            </div>
+          </li>
+          <li class="box-pack" data-box-pack="sweet-chilli-chakli"
+              data-name="Sweet Chilli Chakli" data-price-paise="8500" data-thumb="/assets/img/sweet-chilli-chakli-thumb-180.webp">
+            <img class="box-pack__thumb" src="/assets/img/sweet-chilli-chakli-thumb-180.webp" width="56" height="56" alt="Sweet Chilli Chakli pack" loading="lazy" decoding="async">
+            <div class="box-pack__text">
+              <p class="box-pack__name">Sweet Chilli Chakli</p>
+              <p class="box-pack__meta">₹85 · 50 g · 9 g protein</p>
+            </div>
+            <div class="qty" data-box-qty>
+              <button class="qty__btn" type="button" data-box-down aria-label="One less Sweet Chilli Chakli">−</button>
+              <input class="qty__input" type="number" value="0" min="0" max="20" step="1" inputmode="numeric" aria-label="Packs of Sweet Chilli Chakli">
+              <button class="qty__btn" type="button" data-box-up aria-label="One more Sweet Chilli Chakli">+</button>
+            </div>
+          </li>
+          <li class="box-pack" data-box-pack="cheddar-cheese-chakli"
+              data-name="Cheddar Cheese Chakli" data-price-paise="8500" data-thumb="/assets/img/cheddar-cheese-chakli-thumb-180.webp">
+            <img class="box-pack__thumb" src="/assets/img/cheddar-cheese-chakli-thumb-180.webp" width="56" height="56" alt="Cheddar Cheese Chakli pack" loading="lazy" decoding="async">
+            <div class="box-pack__text">
+              <p class="box-pack__name">Cheddar Cheese Chakli</p>
+              <p class="box-pack__meta">₹85 · 50 g · 9 g protein</p>
+            </div>
+            <div class="qty" data-box-qty>
+              <button class="qty__btn" type="button" data-box-down aria-label="One less Cheddar Cheese Chakli">−</button>
+              <input class="qty__input" type="number" value="0" min="0" max="20" step="1" inputmode="numeric" aria-label="Packs of Cheddar Cheese Chakli">
+              <button class="qty__btn" type="button" data-box-up aria-label="One more Cheddar Cheese Chakli">+</button>
+            </div>
+          </li>
+          <li class="box-pack" data-box-pack="korean-bbq-peanuts"
+              data-name="Korean BBQ Peanuts" data-price-paise="8500" data-thumb="/assets/img/korean-bbq-peanuts-thumb-180.webp">
+            <img class="box-pack__thumb" src="/assets/img/korean-bbq-peanuts-thumb-180.webp" width="56" height="56" alt="Korean BBQ Peanuts pack" loading="lazy" decoding="async">
+            <div class="box-pack__text">
+              <p class="box-pack__name">Korean BBQ Peanuts</p>
+              <p class="box-pack__meta">₹85 · 65 g · 18 g protein</p>
+            </div>
+            <div class="qty" data-box-qty>
+              <button class="qty__btn" type="button" data-box-down aria-label="One less Korean BBQ Peanuts">−</button>
+              <input class="qty__input" type="number" value="0" min="0" max="20" step="1" inputmode="numeric" aria-label="Packs of Korean BBQ Peanuts">
+              <button class="qty__btn" type="button" data-box-up aria-label="One more Korean BBQ Peanuts">+</button>
+            </div>
+          </li>
+        </ul>
+
+        <div class="box-bar">
+          <p class="box-bar__count" data-box-count role="status">Pick 6 packs to start a box.</p>
+          <p class="box-bar__total"><span class="box-bar__label">Box total</span> <span data-box-total>₹0</span></p>
+          <button class="btn btn--navy" type="button" data-box-add disabled>Add box to cart</button>
+        </div>
+        </div>
+        <noscript>
+          <p class="box-bar__count">Building a box needs JavaScript. <a href="/preorder">Build it at the checkout instead.</a></p>
+        </noscript>
+      </div>
+    </section>
+
     <!-- section: faq -->
     <section class="section" id="faq" aria-labelledby="faq-title">
       <div class="section__inner">
@@ -513,6 +605,14 @@
             <div class="acc__body">
               <p>Korean BBQ Peanuts contain peanuts and soya. Pudina Bhujia contains soy, and is made in a facility that also handles nuts, seeds and milk-based products. Cheddar Cheese Chakli contains milk.</p>
               <p>Every product page carries that snack's own ingredients and allergen statement. Read it there before you order — it is the one that counts.</p>
+            </div>
+          </details>
+
+          <details class="acc">
+            <summary class="acc__head">Can I pick my own flavours?</summary>
+            <div class="acc__body">
+              <p>Yes — <a href="#build-a-box">build your own box</a>. Any 6 packs or more, ₹85 each, in whatever mix you like: six of one, one of everything and a spare, up to 20 of any single flavour.</p>
+              <p>Six is the floor, not the ceiling. Below six we cannot send a box, so a single pack on its own is not something we sell — take a combo instead if you only want one or two.</p>
             </div>
           </details>
 
@@ -596,7 +696,7 @@
     </div>
   </footer>
 
-  <script src="/assets/js/cart.js?v=80" defer></script>
-  <script src="/assets/js/main.js?v=80" defer></script>
+  <script src="/assets/js/cart.js?v=81" defer></script>
+  <script src="/assets/js/main.js?v=81" defer></script>
 </body>
 </html>

@@ -18,38 +18,54 @@
  */
 
 /**
- * slug → price in paise. Paise, not rupees: integers, so no float rounding.
+ * There are two ways to buy, and they price differently.
  *
- * Only the combos are here. The five single packs are still on the site —
- * their cards and their product pages — but they are not sold on their own, so
- * they are not priced. A slug that is not in this object is refused with a 400
- * before any money is involved, which is the point: taking the buttons off the
- * pages stops the ordinary customer, and this stops a hand-written request.
+ *   A combo   a product with its own slug and its own fixed price.
+ *   A box     six or more loose packs, any mix, at a flat rate each.
+ *
+ * A loose pack is never sold on its own. Below six it is not a cheaper snack,
+ * it is not a snack at all: the order is refused. That rule lives here because
+ * here is the only place that decides money.
  */
+
+/** slug → price in paise. Paise, not rupees: integers, so no float rounding. */
 const PRICES = Object.freeze({
   'combo-bhujia-duo': 17000,
   'combo-chakli-duo': 15000,
   'combo-all-five': 43900
 });
 
-const NAMES = Object.freeze({
+/**
+ * What one loose pack costs inside a box, whichever pack it is. Flat, so the
+ * page can say "₹85 each" and mean it — a customer should not have to add up
+ * five different numbers to know what their box comes to.
+ */
+const BOX_RATE_PAISE = 8500;
+
+/** Fewer than this many loose packs is not a box. */
+const BOX_MIN_PACKS = 6;
+
+/** The packs a box can be built from. Same slugs as their product pages. */
+const BOX_PACKS = Object.freeze({
+  'masala-bhujia': 'Masala Bhujia',
+  'pudina-bhujia': 'Pudina Bhujia',
+  'sweet-chilli-chakli': 'Sweet Chilli Chakli',
+  'cheddar-cheese-chakli': 'Cheddar Cheese Chakli',
+  'korean-bbq-peanuts': 'Korean BBQ Peanuts'
+});
+
+const NAMES = Object.freeze(Object.assign({
   'combo-bhujia-duo': 'Bhujia Duo',
   'combo-chakli-duo': 'Chakli Duo',
   'combo-all-five': 'Poora Family Pack'
-});
+}, BOX_PACKS));
 
-/**
- * Packs that exist but are not sold on their own. Purely so the customer gets
- * a sentence that explains itself instead of "no longer listed" — an old tab
- * or a shared link can still carry one of these long after the buttons went.
- */
-const COMBO_ONLY = Object.freeze([
-  'masala-bhujia',
-  'pudina-bhujia',
-  'sweet-chilli-chakli',
-  'cheddar-cheese-chakli',
-  'korean-bbq-peanuts'
-]);
+/** What a slug costs, or undefined if it is not sold at all. */
+function rateFor(slug) {
+  if (Object.prototype.hasOwnProperty.call(PRICES, slug)) return PRICES[slug];
+  if (Object.prototype.hasOwnProperty.call(BOX_PACKS, slug)) return BOX_RATE_PAISE;
+  return undefined;
+}
 
 const MAX_LINES = 10;
 const MAX_QTY = 20;
@@ -78,12 +94,8 @@ function priceOrder(input, badRequest) {
   for (const line of input) {
     const slug = String((line && line.slug) || '').trim().toLowerCase();
     if (!slug) throw badRequest('A snack was missing from the order.');
-    if (!Object.prototype.hasOwnProperty.call(PRICES, slug)) {
-      throw badRequest(
-        COMBO_ONLY.includes(slug)
-          ? 'That pack is only sold as part of a combo. Pick a combo instead.'
-          : 'One of those snacks is no longer listed.'
-      );
+    if (rateFor(slug) === undefined) {
+      throw badRequest('One of those snacks is no longer listed.');
     }
     const qty = Number(line.qty);
     if (!Number.isInteger(qty) || qty < 1 || qty > MAX_QTY) {
@@ -92,14 +104,32 @@ function priceOrder(input, badRequest) {
     wanted.set(slug, (wanted.get(slug) || 0) + qty);
   }
 
+  // A box is counted across the whole order, not per flavour: six of one pack
+  // is a box, and so is one of each plus a spare. Packs inside a combo do not
+  // count towards it — a combo is its own product at its own price, and
+  // letting it prop up a short box would be a different offer than the one on
+  // the page.
+  let loose = 0;
+  for (const [slug, qty] of wanted) {
+    if (Object.prototype.hasOwnProperty.call(BOX_PACKS, slug)) loose += qty;
+  }
+  if (loose > 0 && loose < BOX_MIN_PACKS) {
+    const short = BOX_MIN_PACKS - loose;
+    throw badRequest(
+      `A box needs at least ${BOX_MIN_PACKS} packs and you have ${loose}. ` +
+      `Add ${short} more ${short === 1 ? 'pack' : 'packs'}, or pick a combo instead.`
+    );
+  }
+
   const items = [];
   let total = 0;
   for (const [slug, qty] of wanted) {
     if (qty > MAX_QTY) {
       throw badRequest(`Quantity must be a whole number between 1 and ${MAX_QTY}.`);
     }
-    total += PRICES[slug] * qty;
-    items.push({ slug, name: NAMES[slug], qty, price_paise: PRICES[slug] });
+    const rate = rateFor(slug);
+    total += rate * qty;
+    items.push({ slug, name: NAMES[slug], qty, price_paise: rate });
   }
 
   if (total < MIN_PAISE) throw badRequest('That order is below the minimum we can charge.');
@@ -108,4 +138,7 @@ function priceOrder(input, badRequest) {
   return { items, total_paise: total };
 }
 
-module.exports = { PRICES, NAMES, COMBO_ONLY, MIN_PAISE, MAX_PAISE, priceOrder };
+module.exports = {
+  PRICES, NAMES, BOX_PACKS, BOX_RATE_PAISE, BOX_MIN_PACKS,
+  MIN_PAISE, MAX_PAISE, rateFor, priceOrder
+};

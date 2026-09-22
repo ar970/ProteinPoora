@@ -18,16 +18,24 @@
   var KEY = 'pp_cart_v1';
   var listeners = [];
 
-  /* What can actually be bought. The five single packs are still on the site
-     but are only sold inside a combo, so they are not here — and a cart saved
-     before that changed still has them in localStorage. Filtering on read
-     means such a cart quietly corrects itself on the next page view, instead
-     of showing a line the checkout would drop without saying why.
+  /* What can actually be bought, and how. A combo is a product with its own
+     price. A loose pack is only sold six or more at a time, as a box — so it
+     can sit in the cart, but a cart holding fewer than six of them cannot be
+     checked out. The drawer says so and the server refuses it either way.
 
-     `npm run check:prices` fails if this stops matching the checkout picker.
-     In the Shopify port it goes away: the cart holds variant ids, and a
-     variant that is not for sale cannot be added. */
-  var ORDERABLE = ['combo-bhujia-duo', 'combo-chakli-duo', 'combo-all-five'];
+     Anything outside ORDERABLE is dropped on read, so a cart saved before the
+     line-up changed corrects itself on the next page view instead of carrying
+     a line the checkout would silently discard.
+
+     `npm run check:prices` fails if these stop matching the checkout picker
+     and the server. In the Shopify port both go away: the cart holds variant
+     ids, and the minimum becomes a cart-level rule in the theme. */
+  var BOX_PACKS = [
+    'masala-bhujia', 'pudina-bhujia', 'sweet-chilli-chakli',
+    'cheddar-cheese-chakli', 'korean-bbq-peanuts'
+  ];
+  var BOX_MIN = 6;
+  var ORDERABLE = ['combo-bhujia-duo', 'combo-chakli-duo', 'combo-all-five'].concat(BOX_PACKS);
 
   /* --- state ------------------------------------------------------------ */
 
@@ -76,6 +84,21 @@
         return sum + (item.price_paise || 0) * item.qty;
       }, 0);
     },
+
+    /** Loose packs in the cart, across every flavour. Combos do not count. */
+    boxCount: function () {
+      return read().reduce(function (sum, item) {
+        return BOX_PACKS.indexOf(item.slug) === -1 ? sum : sum + item.qty;
+      }, 0);
+    },
+
+    /** How many packs short of a box, or 0 when there is nothing to fix. */
+    boxShortfall: function () {
+      var n = Cart.boxCount();
+      return n > 0 && n < BOX_MIN ? BOX_MIN - n : 0;
+    },
+
+    BOX_MIN: BOX_MIN,
 
     /** Adds to the existing quantity; returns the new quantity for that slug. */
     add: function (product, qty) {
@@ -287,9 +310,27 @@
     total.appendChild(el('span', null, rupees(Cart.subtotal())));
     d.__foot.appendChild(total);
 
-    var go = el('a', 'btn btn--navy btn--block', 'Order these');
-    go.href = '/preorder';
-    d.__foot.appendChild(go);
+    // A short box cannot go to checkout: the server would refuse it after the
+    // customer had filled in their address. Say it here, where they can still
+    // fix it in one tap, and make the button a button that does nothing rather
+    // than a link that leads somewhere disappointing.
+    var short = Cart.boxShortfall();
+    if (short) {
+      var warn = el('p', 'drawer__warn');
+      warn.setAttribute('role', 'status');
+      warn.textContent = 'A box is ' + BOX_MIN + ' packs or more. Add ' + short +
+        (short === 1 ? ' more pack' : ' more packs') + ' to check out — or remove them and pick a combo.';
+      d.__foot.appendChild(warn);
+
+      var blocked = el('button', 'btn btn--navy btn--block', 'Add ' + short + ' more to check out');
+      blocked.type = 'button';
+      blocked.disabled = true;
+      d.__foot.appendChild(blocked);
+    } else {
+      var go = el('a', 'btn btn--navy btn--block', 'Order these');
+      go.href = '/preorder';
+      d.__foot.appendChild(go);
+    }
     d.__foot.appendChild(el('p', 'drawer__note', 'You pay at checkout, securely through Razorpay. Delivering across Bengaluru.'));
   }
 

@@ -19,7 +19,7 @@ const {
   readJson, send, guard, onError, badRequest,
   text, email, phone, pincode, quantity
 } = require('./_lib/http.js');
-const { COMBO_ONLY } = require('./_lib/catalogue.js');
+const { BOX_PACKS, BOX_RATE_PAISE, BOX_MIN_PACKS } = require('./_lib/catalogue.js');
 
 const MAX_LINES = 10;
 
@@ -77,20 +77,33 @@ async function priceItems(input) {
   );
   const found = new Map(rows.map((r) => [r.slug, r]));
 
+  // The same box rule as the paid path, counted across the whole order.
+  let loose = 0;
+  for (const [slug, qty] of wanted) {
+    if (Object.prototype.hasOwnProperty.call(BOX_PACKS, slug)) loose += qty;
+  }
+  if (loose > 0 && loose < BOX_MIN_PACKS) {
+    const short = BOX_MIN_PACKS - loose;
+    throw badRequest(
+      `A box needs at least ${BOX_MIN_PACKS} packs and you have ${loose}. ` +
+      `Add ${short} more ${short === 1 ? 'pack' : 'packs'}, or pick a combo instead.`
+    );
+  }
+
   const items = [];
   let total = 0;
   for (const [slug, qty] of wanted) {
     const product = found.get(slug);
-    // Combos only, the same as the paid path. This route prices from the
-    // products table rather than the catalogue module, so without this a row
-    // left in that table would quietly put a single pack back on sale.
-    if (COMBO_ONLY.includes(slug)) {
-      throw badRequest('That pack is only sold as part of a combo. Pick a combo instead.');
-    }
     if (!product) throw badRequest('One of those snacks is no longer listed.');
     if (product.status !== 'available') throw badRequest(`${product.name} is not available for pre-order right now.`);
-    total += product.price_paise * qty;
-    items.push({ slug, name: product.name, qty, price_paise: product.price_paise });
+    // This route prices from the products table so the admin can change a
+    // price without a deploy — but a loose pack is sold at the flat box rate,
+    // not at the MRP the table carries for it. Without this, the same six
+    // packs would cost ₹85 each through the paid path and ₹99 through here.
+    const isLoose = Object.prototype.hasOwnProperty.call(BOX_PACKS, slug);
+    const rate = isLoose ? BOX_RATE_PAISE : product.price_paise;
+    total += rate * qty;
+    items.push({ slug, name: product.name, qty, price_paise: rate });
   }
   return { items, total };
 }

@@ -23,9 +23,13 @@ const path = require('path');
 const root = path.join(__dirname, '..');
 const read = (p) => fs.readFileSync(path.join(root, p), 'utf8');
 
+const catalogue = require(path.join(root, 'api/_lib/catalogue.js'));
+
+/** Everything the server will price, combos and loose packs alike. */
 function fromServer() {
-  const { PRICES } = require(path.join(root, 'api/_lib/catalogue.js'));
-  return new Map(Object.entries(PRICES));
+  const out = new Map(Object.entries(catalogue.PRICES));
+  for (const slug of Object.keys(catalogue.BOX_PACKS)) out.set(slug, catalogue.BOX_RATE_PAISE);
+  return out;
 }
 
 function fromPicker() {
@@ -38,19 +42,42 @@ function fromPicker() {
 
 function fromCartGuard() {
   const js = read('assets/js/cart.js');
-  const m = /var ORDERABLE = \[([^\]]*)\]/.exec(js);
-  if (!m) throw new Error('assets/js/cart.js: no ORDERABLE list found');
-  return new Set(m[1].split(',').map((s) => s.trim().replace(/^'|'$/g, '')).filter(Boolean));
+  // ORDERABLE is the combos plus BOX_PACKS, so both arrays have to be read.
+  const slugs = [];
+  for (const name of ['BOX_PACKS', 'ORDERABLE']) {
+    const m = new RegExp('var ' + name + ' = \\[([^\\]]*)\\]').exec(js);
+    if (!m) throw new Error(`assets/js/cart.js: no ${name} list found`);
+    for (const s of m[1].split(',')) {
+      const slug = s.trim().replace(/^'|'$/g, '');
+      if (slug) slugs.push(slug);
+    }
+  }
+  return new Set(slugs);
 }
 
 function fromCards() {
   const html = read('index.html');
   const out = new Map();
-  const re = /data-add-to-cart="([^"]+)"[^>]*?data-price-paise="(\d+)"/g;
-  let m;
-  while ((m = re.exec(html))) out.set(m[1], Number(m[2]));
-  if (!out.size) throw new Error('index.html: no data-add-to-cart prices found');
+  // Combo cards carry data-add-to-cart; box-builder rows carry data-box-pack.
+  // Both put a price in front of the customer, so both have to be right.
+  for (const attr of ['data-add-to-cart', 'data-box-pack']) {
+    const re = new RegExp(attr + '="([^"]+)"[\\s\\S]*?data-price-paise="(\\d+)"', 'g');
+    let m;
+    while ((m = re.exec(html))) out.set(m[1], Number(m[2]));
+  }
+  if (!out.size) throw new Error('index.html: no priced cards found');
   return out;
+}
+
+/** The minimum, written down in four places. They have to be one number. */
+function boxMinimums() {
+  return [
+    ['api/_lib/catalogue.js', catalogue.BOX_MIN_PACKS],
+    ['assets/js/cart.js', Number((/var BOX_MIN = (\d+)/.exec(read('assets/js/cart.js')) || [])[1])],
+    ['index.html data-box-min', Number((/data-box-min="(\d+)"/.exec(read('index.html')) || [])[1])],
+    ['index.html copy', Number((/Any (\d+) packs or more/.exec(read('index.html')) || [])[1])],
+    ['preorder/index.html copy', Number((/build a box from (\d+) loose packs/.exec(read('preorder/index.html')) || [])[1])]
+  ];
 }
 
 const sources = [
@@ -96,6 +123,17 @@ for (const slug of picker.keys()) {
 for (const slug of orderable) {
   if (!picker.has(slug)) {
     problems.push(`assets/js/cart.js: ORDERABLE allows "${slug}", which the checkout does not sell`);
+  }
+}
+
+// The box minimum is a number the customer is quoted before they commit. A
+// page promising six while the server wants eight is a refusal after payment
+// has been attempted, which is the one failure worth spending a check on.
+const minimums = boxMinimums();
+const wanted = minimums[0][1];
+for (const [label, value] of minimums.slice(1)) {
+  if (value !== wanted) {
+    problems.push(`${label}: box minimum reads ${value}, but the server wants ${wanted}`);
   }
 }
 

@@ -215,16 +215,12 @@ Calories and the claims are on the product pages, where someone reads them.
 Nothing on the page draws a box shadow, and there are five corner radii. Both
 are what the design system always said; the built site had drifted.
 
-## Combos
+## Combos and boxes
 
-**The combos are the only thing the site sells.** The five single packs still
-have their cards in the line-up and their own product pages — the photography,
-the nutrition table, the allergens — but there is no way to buy one on its own:
-no button on the card, none in the buy box, and they are not in the checkout
-picker. `api/_lib/catalogue.js` does not price them either, so a hand-written
-request for one is refused with a 400 before any money is involved. Putting
-singles back on sale means undoing all five of those, plus `ORDERABLE` in
-`assets/js/cart.js`.
+**There are two ways to buy and they price differently.** A combo is a product
+with its own slug and its own fixed price. A box is six or more loose packs, any
+mix, at a flat ₹85 each. A loose pack on its own is not sold at all — below six
+it is refused, not discounted.
 
 Three bundles at `#combos`, between the line-up and the FAQ:
 
@@ -249,6 +245,35 @@ these move with it.
 The cards are wide where the line-up's are tall, because the bundle photography
 is landscape and the packs in it are the point. The five-pack shot is the widest
 of the three, so its card spans the grid.
+
+### Build your own box
+
+`#build-a-box`, between the combos and the FAQ. Five stepper rows, a running
+count and total, and a button that stays off until the box reaches six. The
+checkout picker builds the same box from the other end, under its own heading.
+
+Two numbers define it, and both live in `api/_lib/catalogue.js`:
+`BOX_RATE_PAISE` (8500) and `BOX_MIN_PACKS` (6). The minimum is enforced in four
+places, on purpose:
+
+| Where | What it does |
+|---|---|
+| `index.html` `data-box-min` | the button will not enable below it |
+| `assets/js/cart.js` `BOX_MIN` | the drawer refuses to link to the checkout |
+| `assets/js/preorder.js` | the pay button is off and says how many short |
+| `api/_lib/catalogue.js` | a 400, whatever the browser did |
+
+Only the last one is a guard; the other three exist so nobody learns about the
+rule *after* the payment window has opened. **The minimum is counted across the
+whole order, not per flavour** — six of one pack is a box, and so is one of
+each plus a spare. Packs inside a combo do not count towards it: a combo is its
+own product at its own price, and letting one prop up a short box would be a
+different offer than the one on the page.
+
+`npm run check:prices` fails if the four minimums stop agreeing, or if the ₹85
+in the page copy stops matching `BOX_RATE_PAISE`. A page quoting six while the
+server wants eight is a refusal after the customer has tried to pay, which is
+the one failure worth spending a check on.
 
 There are no product pages for combos, and no nutrition panels: each one is
 just its packs, which have their own pages.
@@ -276,13 +301,15 @@ The base code reports page views only. **Nothing reports an add to cart or a com
 
 ## Pre-orders
 
-**Add to cart** on the combo cards fills a cart held in the browser's
-`localStorage`, so it survives moving between pages. `cart.js` keeps an
-`ORDERABLE` list of what can be bought and filters the stored cart against it
-on every read, so a cart saved while the singles were still on sale corrects
-itself on the next page view instead of carrying a line the checkout would drop
-without explanation. `npm run check:prices` fails if that list and the checkout
-picker stop matching. The header shows
+**Add to cart** on the combo cards, and **Add box to cart** in the box builder,
+fill a cart held in the browser's `localStorage`, so it survives moving between
+pages. `cart.js` keeps an `ORDERABLE` list of what can be bought and filters the
+stored cart against it on every read, so a cart saved before the line-up changed
+corrects itself on the next page view instead of carrying a line the checkout
+would drop without explanation. A cart holding fewer than six loose packs still
+renders — the drawer says how many are missing and gives you a dead button
+rather than a link to a checkout that would turn you away.
+`npm run check:prices` fails if that list and the checkout picker stop matching. The header shows
 a count and opens a drawer for a quick look; `/preorder` is the checkout, and
 its picker is the cart's editor — changing a quantity there changes the cart.
 Placing an order empties the cart and sends the customer to **`/thank-you`**,
@@ -298,8 +325,10 @@ and addresses behind it. Supabase already does the job, with real accounts.
 
 The add-to-cart buttons are links to `/preorder?product=…`, so they still do
 something sensible with JavaScript off; the cart script intercepts the click
-when it is on. The single packs' cards and buy boxes link to `/#combos`
-instead.
+when it is on. The box builder cannot work that way — a running total needs
+script — so it carries a `<noscript>` pointing at the checkout, whose picker
+builds the same box. The single packs' cards and buy boxes link to
+`/#build-a-box`.
 
 **The PIN code box only accepts digits**, six of them — anything else is stripped as it is typed, including out of a paste, and the caret is put back where it was rather than jumping to the end. Submitting still checks the whole thing (`[1-9]` then five digits: an Indian PIN never starts with a zero), and `docs/supabase-setup.sql` now carries the same rule as a database constraint, because the form is not the guard — anyone can post to that table with the public key. If your table already exists, the bottom of that file has the one `alter table` to add it.
 

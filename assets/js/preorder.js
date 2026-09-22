@@ -49,6 +49,26 @@
   var products = catalogue.slice();
   var chosen = Object.create(null); // slug -> qty
 
+  /* A loose pack is only sold six or more at a time. The number comes from the
+     cart so there is one of it on the client; the server has its own and is
+     the one that counts. */
+  var BOX_MIN = (window.PPCart && window.PPCart.BOX_MIN) || 6;
+
+  /** True from the moment the payment window opens until it resolves. */
+  var submitting = false;
+
+  function boxCount() {
+    return products.reduce(function (sum, p) {
+      return p.box && chosen[p.slug] ? sum + chosen[p.slug] : sum;
+    }, 0);
+  }
+
+  /** Packs short of a box, or 0 when the order is fine as it stands. */
+  function boxShortfall() {
+    var n = boxCount();
+    return n > 0 && n < BOX_MIN ? BOX_MIN - n : 0;
+  }
+
   var cart = window.PPCart || null;
 
   /** Mirrors the picker's quantities into the shared cart. */
@@ -125,7 +145,19 @@
       return;
     }
 
+    var split = false;
     products.forEach(function (product) {
+      // One heading between the combos and the loose packs, so the ₹85 rows
+      // are not read as five suspiciously cheap products.
+      if (product.box && !split) {
+        split = true;
+        var head = document.createElement('li');
+        head.className = 'picker__split';
+        head.appendChild(nodeP('strong', 'Or build your own box'));
+        head.appendChild(nodeP('span', 'Any ' + BOX_MIN + ' packs or more, ₹85 each. Mix them however you like.'));
+        picker.appendChild(head);
+      }
+
       var out = product.status !== 'available';
       var row = document.createElement('li');
       row.className = 'picker__row' + (out ? ' is-out' : '');
@@ -243,6 +275,45 @@
     var any = summaryLines.children.length > 0;
     summaryEmpty.hidden = any;
     summaryTotal.textContent = rupees(total);
+    paintBoxWarning();
+  }
+
+  /* The submit button is switched off while the box is short, because paying
+     first and being refused afterwards is the one outcome worth engineering
+     away. The message sits beside the total, where the number that changes is.
+     Razorpay is never opened for an order the server would reject. */
+  function paintBoxWarning() {
+    var short = boxShortfall();
+    var note = document.getElementById('box-warning');
+
+    // The steppers stay live while the Razorpay window is open. Without this,
+    // nudging one would hand the button back mid-payment.
+    if (submitting) return;
+
+    if (!short) {
+      if (note) note.hidden = true;
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Pay and place order';
+      return;
+    }
+
+    if (!note) {
+      note = document.createElement('p');
+      note.id = 'box-warning';
+      note.className = 'summary__warn';
+      note.setAttribute('role', 'status');
+      // summaryTotal is the <span> holding the figure; the row is its parent.
+      // Putting the note inside that row would nest a <p> in a <p> and break
+      // the flex that keeps "Total" and the amount at opposite ends.
+      var row = summaryTotal.closest('.summary__total');
+      row.parentNode.insertBefore(note, row.nextSibling);
+    }
+    note.hidden = false;
+    note.textContent = 'A box is ' + BOX_MIN + ' packs or more, and you have ' +
+      boxCount() + '. Add ' + short + (short === 1 ? ' more pack' : ' more packs') +
+      ', or take a combo instead.';
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Add ' + short + ' more to your box';
   }
 
   /* --- validation ------------------------------------------------------- */
@@ -289,6 +360,18 @@
       }
     }
 
+    // The button is already off in this state, so this only catches a submit
+    // that got past it — a stray Enter key, an extension, a stale page.
+    var short = boxShortfall();
+    if (short) {
+      say('A box is ' + BOX_MIN + ' packs or more. Add ' + short +
+          (short === 1 ? ' more pack' : ' more packs') + ', or take a combo instead.', 'error');
+      if (!firstBad) {
+        picker.scrollIntoView({ block: 'center', behavior: 'smooth' });
+        return false;
+      }
+    }
+
     if (firstBad) {
       firstBad.focus();
       firstBad.scrollIntoView({ block: 'center', behavior: 'smooth' });
@@ -318,6 +401,7 @@
       notes: form.elements.notes.value
     };
 
+    submitting = true;
     submitBtn.disabled = true;
     say('Opening the payment window…');
 
@@ -332,7 +416,10 @@
       })
       .then(goToThankYou)
       .catch(function (err) {
-        submitBtn.disabled = false;
+        submitting = false;
+        // Hand the button back through the same path that decides its label,
+        // so a cart edited during payment is reflected rather than assumed.
+        paintBoxWarning();
         say(
           err.message || 'We could not place that order. Please try again.',
           err.cancelled ? null : 'error'

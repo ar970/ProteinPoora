@@ -378,9 +378,103 @@
   }
 
   /* Adding to the cart is handled by assets/js/cart.js, which delegates from
-   * the document so it covers the line-up cards and the product buy button
-   * alike. Both are links to /preorder, so they still do something sensible
-   * with JavaScript off. */
+   * the document so it covers the combo cards and the drawer alike. They are
+   * links to /preorder, so they still do something sensible with JavaScript
+   * off. The box builder below is the exception: a running total cannot be
+   * built without script, so it says so in a <noscript> and sends people to
+   * the checkout, whose picker can build the same box. */
+
+  /* --- Build your own box ------------------------------------------------ */
+  (function () {
+    var grid = document.querySelector('[data-box]');
+    if (!grid) return;
+
+    var countEl = document.querySelector('[data-box-count]');
+    var totalEl = document.querySelector('[data-box-total]');
+    var addBtn = document.querySelector('[data-box-add]');
+    var rows = Array.prototype.slice.call(grid.querySelectorAll('[data-box-pack]'));
+
+    /* The markup states the minimum, the same value the section's own copy
+       quotes. check:prices fails if it drifts from the server's. */
+    var MIN = parseInt(grid.getAttribute('data-box-min'), 10) || 6;
+    var MAX_PER_PACK = 20;
+
+    function rupees(paise) {
+      var value = paise / 100;
+      return '₹' + value.toLocaleString('en-IN', {
+        minimumFractionDigits: value % 1 === 0 ? 0 : 2,
+        maximumFractionDigits: 2
+      });
+    }
+
+    function qtyOf(row) {
+      return parseInt(row.querySelector('.qty__input').value, 10) || 0;
+    }
+
+    function paint() {
+      var packs = 0;
+      var total = 0;
+      rows.forEach(function (row) {
+        var qty = qtyOf(row);
+        packs += qty;
+        total += qty * (parseInt(row.getAttribute('data-price-paise'), 10) || 0);
+        row.classList.toggle('is-chosen', qty > 0);
+      });
+
+      var short = MIN - packs;
+      if (packs === 0) {
+        countEl.textContent = 'Pick ' + MIN + ' packs to start a box.';
+      } else if (short > 0) {
+        countEl.textContent = packs + (packs === 1 ? ' pack' : ' packs') + ' — ' +
+          short + ' more to go.';
+      } else {
+        countEl.textContent = packs + ' packs in your box.';
+      }
+
+      totalEl.textContent = rupees(total);
+      addBtn.disabled = packs < MIN;
+      addBtn.textContent = packs < MIN && packs > 0
+        ? 'Add ' + short + ' more'
+        : 'Add box to cart';
+    }
+
+    grid.addEventListener('click', function (event) {
+      var btn = event.target.closest('[data-box-up], [data-box-down]');
+      if (!btn) return;
+      var input = btn.parentNode.querySelector('.qty__input');
+      var next = (parseInt(input.value, 10) || 0) + (btn.hasAttribute('data-box-up') ? 1 : -1);
+      input.value = String(Math.max(0, Math.min(MAX_PER_PACK, next)));
+      paint();
+    });
+
+    grid.addEventListener('change', function (event) {
+      if (!event.target.classList.contains('qty__input')) return;
+      var n = Math.floor(Number(event.target.value) || 0);
+      event.target.value = String(Math.max(0, Math.min(MAX_PER_PACK, n)));
+      paint();
+    });
+
+    addBtn.addEventListener('click', function () {
+      if (!window.PPCart || addBtn.disabled) return;
+      rows.forEach(function (row) {
+        var qty = qtyOf(row);
+        if (!qty) return;
+        window.PPCart.add({
+          slug: row.getAttribute('data-box-pack'),
+          name: row.getAttribute('data-name'),
+          thumb: row.getAttribute('data-thumb') || '',
+          price_paise: parseInt(row.getAttribute('data-price-paise'), 10) || 0
+        }, qty);
+        // The box has moved into the cart; leaving the steppers set would
+        // invite someone to press Add again and double their order.
+        row.querySelector('.qty__input').value = '0';
+      });
+      paint();
+      window.PPCart.open();
+    });
+
+    paint();
+  })();
 
   /* --- The site bar takes a ground once it is off the hero --------------- */
   (function () {
