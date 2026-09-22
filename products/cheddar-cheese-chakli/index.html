@@ -21,7 +21,7 @@
         imagesrcset="/assets/img/cheddar-chakli-pack-720-v2.webp 720w, /assets/img/cheddar-chakli-pack-1051-v2.webp 1051w"
         imagesizes="(min-width: 900px) 480px, 100vw">
   <link rel="stylesheet" href="/assets/css/fonts.css?v=3">
-  <link rel="stylesheet" href="/assets/css/style.css?v=78">
+  <link rel="stylesheet" href="/assets/css/style.css?v=79">
   <script>document.documentElement.classList.replace('no-js', 'js');</script>
 
   <!-- Meta Pixel. In a Liquid theme this block moves into theme.liquid once,
@@ -94,7 +94,7 @@
           </svg>
           <span class="cart-button__count" data-cart-count hidden>0</span>
         </button>
-        <a class="btn btn--cream btn--sm" href="#buy">Order</a>
+        <a class="btn btn--cream btn--sm" href="/#combos">Order</a>
         <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
           <span class="visually-hidden menu-toggle__label">Open menu</span>
           <svg class="menu-toggle__icon" viewBox="0 0 20 20" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
@@ -109,7 +109,6 @@
 
   <main id="main">
     <div class="hero-frame hero-frame--compact">
-
 
     </div>
 
@@ -170,20 +169,9 @@
               </ul>
             </div>
 
-            <div class="field">
-              <label class="field__label" for="qty">Quantity</label>
-              <div class="qty" data-qty>
-                <button class="qty__btn" type="button" data-qty-down aria-label="Decrease quantity">−</button>
-                <input class="qty__input" id="qty" name="quantity" type="number" value="1" min="1" max="20" step="1" inputmode="numeric">
-                <button class="qty__btn" type="button" data-qty-up aria-label="Increase quantity">+</button>
-              </div>
-            </div>
-
-            <a class="btn btn--navy btn--block" href="/preorder?product=cheddar-cheese-chakli"
-               data-add-to-cart="cheddar-cheese-chakli" data-thumb="/assets/img/cheddar-chakli-pack-720-v2.webp" data-name="Cheddar Cheese Chakli" data-price-paise="8900"
-               data-qty-from="#qty">Add to cart · ₹89</a>
-            <p class="buy__status" role="status" aria-live="polite"></p>
-            <p class="buy__note">Pay now, we ship when the first batch is ready.</p>
+            <p class="buy__only">This pack is sold inside a combo, not on its own.</p>
+            <a class="btn btn--navy btn--block" href="/#combos">See the combos</a>
+            <p class="buy__note">Pay securely through Razorpay. We deliver across Bengaluru.</p>
 
             <details class="acc" open>
               <summary class="acc__head">Product description</summary>
@@ -316,7 +304,7 @@
     </div>
   </dialog>
 
-  <script src="/assets/js/cart.js?v=78" defer></script>
-  <script src="/assets/js/main.js?v=78" defer></script>
+  <script src="/assets/js/cart.js?v=79" defer></script>
+  <script src="/assets/js/main.js?v=79" defer></script>
 </body>
 </html>

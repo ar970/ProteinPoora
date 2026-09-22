@@ -1459,6 +1459,22 @@ button {
   transform: translateY(-2px);
 }
 
+/* The five singles are catalogue, not checkout: they are only sold inside a
+   combo, so where a card used to carry a button it now carries a quiet label.
+   Not a link — the card's title already stretches a link over the whole card,
+   and a second link to the same page is noise to a screen reader. */
+.product-card__tag {
+  margin: 0;
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-pill);
+  background: var(--tile);
+  color: var(--pack-blue);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
 /* --- Section: product page ---------------------------------------------- */
 .crumbs {
   margin: 0 0 1.25rem;
@@ -1695,6 +1711,17 @@ button {
   color: var(--navy-ink);
   font-size: 0.875rem;
   font-weight: 500;
+}
+
+.buy__only {
+  margin: 0;
+  padding: 0.75rem 0.9rem;
+  border-radius: 12px;
+  background: var(--tile);
+  color: var(--navy-ink);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.4;
 }
 
 .buy__note {

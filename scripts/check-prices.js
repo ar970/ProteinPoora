@@ -36,6 +36,13 @@ function fromPicker() {
   return new Map(rows.map((r) => [r.slug, r.price_paise]));
 }
 
+function fromCartGuard() {
+  const js = read('assets/js/cart.js');
+  const m = /var ORDERABLE = \[([^\]]*)\]/.exec(js);
+  if (!m) throw new Error('assets/js/cart.js: no ORDERABLE list found');
+  return new Set(m[1].split(',').map((s) => s.trim().replace(/^'|'$/g, '')).filter(Boolean));
+}
+
 function fromCards() {
   const html = read('index.html');
   const out = new Map();
@@ -73,6 +80,22 @@ const [, picker] = sources[1];
 for (const slug of server.keys()) {
   if (!picker.has(slug)) {
     problems.push(`preorder/index.html: "${slug}" is priced on the server but not in the picker`);
+  }
+}
+
+// The cart drops anything outside its own list on read, so that list has to be
+// exactly what the checkout sells. Too narrow and a combo silently vanishes
+// from the drawer; too wide and a delisted pack sits in the cart until the
+// server refuses it at the worst possible moment.
+const orderable = fromCartGuard();
+for (const slug of picker.keys()) {
+  if (!orderable.has(slug)) {
+    problems.push(`assets/js/cart.js: "${slug}" is in the checkout but ORDERABLE drops it from the cart`);
+  }
+}
+for (const slug of orderable) {
+  if (!picker.has(slug)) {
+    problems.push(`assets/js/cart.js: ORDERABLE allows "${slug}", which the checkout does not sell`);
   }
 }
 

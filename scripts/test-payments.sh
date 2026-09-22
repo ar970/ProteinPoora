@@ -26,23 +26,24 @@ call () { # method path json
 }
 
 echo "create-order — validation (runs before any Razorpay call)"
-s=$(call POST /api/create-order '{"items":[]}');                                  check "empty basket"        400 "$s" "$(cat /tmp/body.json)"
-s=$(call POST /api/create-order '{}');                                            check "no items key"        400 "$s" "$(cat /tmp/body.json)"
-s=$(call POST /api/create-order '{"items":[{"slug":"not-a-snack","qty":1}]}');     check "unknown slug"        400 "$s" "$(cat /tmp/body.json)"
-s=$(call POST /api/create-order '{"items":[{"slug":"masala-bhujia","qty":0}]}');   check "qty 0"               400 "$s" "$(cat /tmp/body.json)"
-s=$(call POST /api/create-order '{"items":[{"slug":"masala-bhujia","qty":21}]}');  check "qty 21"              400 "$s" "$(cat /tmp/body.json)"
-s=$(call POST /api/create-order '{"items":[{"slug":"masala-bhujia","qty":1.5}]}'); check "fractional qty"      400 "$s" "$(cat /tmp/body.json)"
-s=$(call POST /api/create-order '{"items":[{"slug":"masala-bhujia","qty":11},{"slug":"masala-bhujia","qty":11}]}')
+s=$(call POST /api/create-order '{"items":[]}');                                      check "empty basket"        400 "$s" "$(cat /tmp/body.json)"
+s=$(call POST /api/create-order '{}');                                                check "no items key"        400 "$s" "$(cat /tmp/body.json)"
+s=$(call POST /api/create-order '{"items":[{"slug":"not-a-snack","qty":1}]}');        check "unknown slug"        400 "$s" "$(cat /tmp/body.json)"
+s=$(call POST /api/create-order '{"items":[{"slug":"combo-bhujia-duo","qty":0}]}');   check "qty 0"               400 "$s" "$(cat /tmp/body.json)"
+s=$(call POST /api/create-order '{"items":[{"slug":"combo-bhujia-duo","qty":21}]}');  check "qty 21"              400 "$s" "$(cat /tmp/body.json)"
+s=$(call POST /api/create-order '{"items":[{"slug":"combo-bhujia-duo","qty":1.5}]}'); check "fractional qty"      400 "$s" "$(cat /tmp/body.json)"
+s=$(call POST /api/create-order '{"items":[{"slug":"combo-bhujia-duo","qty":11},{"slug":"combo-bhujia-duo","qty":11}]}')
                                                                                   check "split to beat cap"   400 "$s" "$(cat /tmp/body.json)"
-s=$(call GET /api/create-order '');                                               check "GET not allowed"     405 "$s" "$(cat /tmp/body.json)"
+s=$(call POST /api/create-order '{"items":[{"slug":"masala-bhujia","qty":1}]}');      check "single pack"         400 "$s" "$(cat /tmp/body.json)"
+s=$(call GET /api/create-order '');                                                   check "GET not allowed"     405 "$s" "$(cat /tmp/body.json)"
 
 echo
 echo "verify-payment — missing fields and signature (HMAC runs before any fetch)"
-s=$(call POST /api/verify-payment '{}');                                          check "no fields"           400 "$s" "$(cat /tmp/body.json)"
-s=$(call POST /api/verify-payment '{"razorpay_order_id":"order_x"}');             check "missing payment id"  400 "$s" "$(cat /tmp/body.json)"
+s=$(call POST /api/verify-payment '{}');                                              check "no fields"           400 "$s" "$(cat /tmp/body.json)"
+s=$(call POST /api/verify-payment '{"razorpay_order_id":"order_x"}');                 check "missing payment id"  400 "$s" "$(cat /tmp/body.json)"
 s=$(call POST /api/verify-payment '{"razorpay_order_id":"order_x","razorpay_payment_id":"pay_x","razorpay_signature":"deadbeef"}')
                                                                                   check "bad signature"       400 "$s" "$(cat /tmp/body.json)"
-s=$(call GET /api/verify-payment '');                                             check "GET not allowed"     405 "$s" "$(cat /tmp/body.json)"
+s=$(call GET /api/verify-payment '');                                                 check "GET not allowed"     405 "$s" "$(cat /tmp/body.json)"
 
 echo
 echo "$pass passed, $fail failed"

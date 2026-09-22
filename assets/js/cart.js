@@ -18,6 +18,17 @@
   var KEY = 'pp_cart_v1';
   var listeners = [];
 
+  /* What can actually be bought. The five single packs are still on the site
+     but are only sold inside a combo, so they are not here — and a cart saved
+     before that changed still has them in localStorage. Filtering on read
+     means such a cart quietly corrects itself on the next page view, instead
+     of showing a line the checkout would drop without saying why.
+
+     `npm run check:prices` fails if this stops matching the checkout picker.
+     In the Shopify port it goes away: the cart holds variant ids, and a
+     variant that is not for sale cannot be added. */
+  var ORDERABLE = ['combo-bhujia-duo', 'combo-chakli-duo', 'combo-all-five'];
+
   /* --- state ------------------------------------------------------------ */
 
   function read() {
@@ -28,6 +39,7 @@
       if (!data || !Array.isArray(data.items)) return [];
       return data.items.filter(function (item) {
         return item && typeof item.slug === 'string' &&
+          ORDERABLE.indexOf(item.slug) !== -1 &&
           Number.isFinite(item.qty) && item.qty > 0;
       });
     } catch (err) {
@@ -231,8 +243,8 @@
     if (!items.length) {
       var empty = el('div', 'drawer__empty');
       empty.appendChild(el('p', null, 'Your cart is empty.'));
-      var browse = el('a', 'btn btn--navy', 'Browse the snacks');
-      browse.href = '/#line-up';
+      var browse = el('a', 'btn btn--navy', 'See the combos');
+      browse.href = '/#combos';
       empty.appendChild(browse);
       d.__body.appendChild(empty);
       return;

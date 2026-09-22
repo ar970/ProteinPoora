@@ -217,6 +217,15 @@ are what the design system always said; the built site had drifted.
 
 ## Combos
 
+**The combos are the only thing the site sells.** The five single packs still
+have their cards in the line-up and their own product pages — the photography,
+the nutrition table, the allergens — but there is no way to buy one on its own:
+no button on the card, none in the buy box, and they are not in the checkout
+picker. `api/_lib/catalogue.js` does not price them either, so a hand-written
+request for one is refused with a 400 before any money is involved. Putting
+singles back on sale means undoing all five of those, plus `ORDERABLE` in
+`assets/js/cart.js`.
+
 Three bundles at `#combos`, between the line-up and the FAQ:
 
 | Slug | Name | Price | Singles | Saving |
@@ -264,8 +273,13 @@ The base code reports page views only. **Nothing reports an add to cart or a com
 
 ## Pre-orders
 
-**Add to cart** on the line-up cards and product pages fills a cart held in the
-browser's `localStorage`, so it survives moving between pages. The header shows
+**Add to cart** on the combo cards fills a cart held in the browser's
+`localStorage`, so it survives moving between pages. `cart.js` keeps an
+`ORDERABLE` list of what can be bought and filters the stored cart against it
+on every read, so a cart saved while the singles were still on sale corrects
+itself on the next page view instead of carrying a line the checkout would drop
+without explanation. `npm run check:prices` fails if that list and the checkout
+picker stop matching. The header shows
 a count and opens a drawer for a quick look; `/preorder` is the checkout, and
 its picker is the cart's editor — changing a quantity there changes the cart.
 Placing an order empties the cart and sends the customer to **`/thank-you`**,
@@ -279,9 +293,10 @@ in to that project. There is no admin page on this site: one would have to hold
 a password in a public repository and would put customer names, phone numbers
 and addresses behind it. Supabase already does the job, with real accounts.
 
-Both add-to-cart buttons are links to `/preorder`, so they still do something
-sensible with JavaScript off; the cart script intercepts the click when it is
-on.
+The add-to-cart buttons are links to `/preorder?product=…`, so they still do
+something sensible with JavaScript off; the cart script intercepts the click
+when it is on. The single packs' cards and buy boxes link to `/#combos`
+instead.
 
 **The PIN code box only accepts digits**, six of them — anything else is stripped as it is typed, including out of a paste, and the caret is put back where it was rather than jumping to the end. Submitting still checks the whole thing (`[1-9]` then five digits: an Indian PIN never starts with a zero), and `docs/supabase-setup.sql` now carries the same rule as a database constraint, because the form is not the guard — anyone can post to that table with the public key. If your table already exists, the bottom of that file has the one `alter table` to add it.
 
@@ -442,7 +457,9 @@ that the project's build settings were not changed.
 card in `index.html`. There is no build step to generate one from the others,
 and the server cannot price an order from a file the customer can edit. What is
 not acceptable is the three drifting apart, so **`npm run check:prices` fails if
-they disagree** — run it after any price change.
+they disagree** — run it after any price change. It also checks the `ORDERABLE`
+list in `assets/js/cart.js` against the picker, since a cart that drops a combo
+on read is a combo nobody can buy.
 
 ### Testing
 

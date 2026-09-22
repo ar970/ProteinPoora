@@ -19,6 +19,7 @@ const {
   readJson, send, guard, onError, badRequest,
   text, email, phone, pincode, quantity
 } = require('./_lib/http.js');
+const { COMBO_ONLY } = require('./_lib/catalogue.js');
 
 const MAX_LINES = 10;
 
@@ -80,6 +81,12 @@ async function priceItems(input) {
   let total = 0;
   for (const [slug, qty] of wanted) {
     const product = found.get(slug);
+    // Combos only, the same as the paid path. This route prices from the
+    // products table rather than the catalogue module, so without this a row
+    // left in that table would quietly put a single pack back on sale.
+    if (COMBO_ONLY.includes(slug)) {
+      throw badRequest('That pack is only sold as part of a combo. Pick a combo instead.');
+    }
     if (!product) throw badRequest('One of those snacks is no longer listed.');
     if (product.status !== 'available') throw badRequest(`${product.name} is not available for pre-order right now.`);
     total += product.price_paise * qty;

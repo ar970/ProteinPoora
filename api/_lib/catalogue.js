@@ -17,30 +17,39 @@
  * In a Liquid theme this whole module goes away: Shopify prices the cart.
  */
 
-/** slug → price in paise. Paise, not rupees: integers, so no float rounding. */
+/**
+ * slug → price in paise. Paise, not rupees: integers, so no float rounding.
+ *
+ * Only the combos are here. The five single packs are still on the site —
+ * their cards and their product pages — but they are not sold on their own, so
+ * they are not priced. A slug that is not in this object is refused with a 400
+ * before any money is involved, which is the point: taking the buttons off the
+ * pages stops the ordinary customer, and this stops a hand-written request.
+ */
 const PRICES = Object.freeze({
-  'masala-bhujia': 9900,
-  'pudina-bhujia': 9900,
-  'sweet-chilli-chakli': 8900,
-  'cheddar-cheese-chakli': 8900,
-  'korean-bbq-peanuts': 9900,
-
   'combo-bhujia-duo': 17000,
   'combo-chakli-duo': 15000,
   'combo-all-five': 42900
 });
 
 const NAMES = Object.freeze({
-  'masala-bhujia': 'Masala Bhujia',
-  'pudina-bhujia': 'Pudina Bhujia',
-  'sweet-chilli-chakli': 'Sweet Chilli Chakli',
-  'cheddar-cheese-chakli': 'Cheddar Cheese Chakli',
-  'korean-bbq-peanuts': 'Korean BBQ Peanuts',
-
   'combo-bhujia-duo': 'Bhujia Duo',
   'combo-chakli-duo': 'Chakli Duo',
   'combo-all-five': 'Poora Family Pack'
 });
+
+/**
+ * Packs that exist but are not sold on their own. Purely so the customer gets
+ * a sentence that explains itself instead of "no longer listed" — an old tab
+ * or a shared link can still carry one of these long after the buttons went.
+ */
+const COMBO_ONLY = Object.freeze([
+  'masala-bhujia',
+  'pudina-bhujia',
+  'sweet-chilli-chakli',
+  'cheddar-cheese-chakli',
+  'korean-bbq-peanuts'
+]);
 
 const MAX_LINES = 10;
 const MAX_QTY = 20;
@@ -70,7 +79,11 @@ function priceOrder(input, badRequest) {
     const slug = String((line && line.slug) || '').trim().toLowerCase();
     if (!slug) throw badRequest('A snack was missing from the order.');
     if (!Object.prototype.hasOwnProperty.call(PRICES, slug)) {
-      throw badRequest('One of those snacks is no longer listed.');
+      throw badRequest(
+        COMBO_ONLY.includes(slug)
+          ? 'That pack is only sold as part of a combo. Pick a combo instead.'
+          : 'One of those snacks is no longer listed.'
+      );
     }
     const qty = Number(line.qty);
     if (!Number.isInteger(qty) || qty < 1 || qty > MAX_QTY) {
@@ -95,4 +108,4 @@ function priceOrder(input, badRequest) {
   return { items, total_paise: total };
 }
 
-module.exports = { PRICES, NAMES, MIN_PAISE, MAX_PAISE, priceOrder };
+module.exports = { PRICES, NAMES, COMBO_ONLY, MIN_PAISE, MAX_PAISE, priceOrder };
