@@ -243,7 +243,7 @@ Three bundles at `#combos`, between the line-up and the FAQ:
 |---|---|---|---|
 | `combo-all-five` | Poora Family Pack | ₹450 | ₹495 |
 | `combo-bhujia-duo` | Bhujia Duo | ₹170 | ₹198 |
-| `combo-chakli-duo` | Chakli Duo | ₹150 | ₹198 |
+| `combo-chakli-duo` | Chakli Duo | ₹170 | ₹198 |
 
 They are ordinary cart items, not a discount rule: a combo has its own slug and
 its own price, so nothing has to reason about what is in a basket. Each one is

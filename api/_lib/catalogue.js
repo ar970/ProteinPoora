@@ -31,7 +31,7 @@
 /** slug → price in paise. Paise, not rupees: integers, so no float rounding. */
 const PRICES = Object.freeze({
   'combo-bhujia-duo': 17000,
-  'combo-chakli-duo': 15000,
+  'combo-chakli-duo': 17000,
   'combo-all-five': 45000
 });
 
