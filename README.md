@@ -200,7 +200,22 @@ dark moments with pale sections breathing between them. The hero went warm and
 the ledger was removed, so everything above the footer is now pale, separated
 by card edges and white gutters rather than by contrast. It reads, but the page
 has no dark anchor until its last section. If a section ever needs to carry
-weight, making the proof strip the dark one is the move.
+weight, making the proof strip the dark one is the move — it is four white
+cards on cream now, so inverting it would be a background swap rather than a
+rebuild.
+
+**The proof strip leads with the figure, not the icon.** It used to be three
+centred captions with a 24px line icon floating above each — the shape every
+template ships with, and one of those icons was a credit card sitting over
+"Never deep fried". It is four cards now (`9–18 g`, `Never`, `0%`, `100%`),
+left-aligned, each with a label and one supporting line. The icon sits small in
+a tinted tile and is there to be recognised, not to carry the meaning: at 24px
+a line icon can say "something crossed out" and little else, which is why the
+two negative claims are the crossed-out ones and the number does the talking.
+
+Its four claims are the four on the packs, so the strip and the photography say
+the same thing. Adding a fifth means the row wraps 4+1 on wide screens — pick a
+replacement instead.
 
 **The line-up is five across on wide screens and a swipe rail below that.**
 Five products never divided into three columns: the old grid stranded two

@@ -21,7 +21,7 @@
         imagesrcset="/assets/img/masala-bhujia-pack-720.webp 720w, /assets/img/masala-bhujia-pack-1054.webp 1054w"
         imagesizes="(min-width: 1024px) 360px, 72vw">
   <link rel="stylesheet" href="/assets/css/fonts.css?v=3">
-  <link rel="stylesheet" href="/assets/css/style.css?v=84">
+  <link rel="stylesheet" href="/assets/css/style.css?v=85">
   <script>document.documentElement.classList.replace('no-js', 'js');</script>
 
   <!-- Meta Pixel. In a Liquid theme this block moves into theme.liquid once,
@@ -236,29 +236,51 @@
 
     </div>
 
-    <!-- section: proof-strip -->
+    <!-- section: proof-strip
+         Four claims, each leading with the figure rather than an icon. The
+         figure is the thing worth reading; the icon is there to be recognised
+         at a glance, not to carry the meaning. -->
     <section class="proof" aria-label="Why these snacks">
       <ul class="proof__list">
         <li class="proof__item">
-          <svg class="proof__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M6 20V9M12 20V4M18 20v-7"/>
-          </svg>
-          <p class="proof__fact">9–18 g protein</p>
-          <p class="proof__note">In every pack, not a scoop</p>
+          <span class="proof__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M7.75 8v8M16.25 8v8M4.25 10v4M19.75 10v4M7.75 12h8.5"/>
+            </svg>
+          </span>
+          <p class="proof__figure">9–18 g</p>
+          <p class="proof__label">Protein per pack</p>
+          <p class="proof__note">From the snack itself, not a coating on it.</p>
         </li>
         <li class="proof__item">
-          <svg class="proof__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="5" width="18" height="15" rx="2"/><path d="M3 10h18M7 15h4"/>
-          </svg>
-          <p class="proof__fact">Never deep fried</p>
-          <p class="proof__note">Baked, or roasted</p>
+          <span class="proof__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2.5 10.5h13.5v1.5a5.5 5.5 0 0 1-5.5 5.5H8a5.5 5.5 0 0 1-5.5-5.5z"/><path d="M16 11.25h5.5"/><path d="M4 3.5l16 17"/>
+            </svg>
+          </span>
+          <p class="proof__figure">Never</p>
+          <p class="proof__label">Deep fried</p>
+          <p class="proof__note">The bhujia and chakli are baked; the peanuts roasted.</p>
         </li>
         <li class="proof__item">
-          <svg class="proof__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/>
-          </svg>
-          <p class="proof__fact">No palm oil</p>
-          <p class="proof__note">In any of the five</p>
+          <span class="proof__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2.75c0 0 5.25 6 5.25 9.5a5.25 5.25 0 0 1-10.5 0C6.75 8.75 12 2.75 12 2.75z"/><path d="M4 3.5l16 17"/>
+            </svg>
+          </span>
+          <p class="proof__figure">0%</p>
+          <p class="proof__label">Palm oil</p>
+          <p class="proof__note">Not in any of the five, and never was.</p>
+        </li>
+        <li class="proof__item">
+          <span class="proof__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M11 20.5C6 20.5 3 17 3 12.75 3 7 8.75 3.5 21 3c0 10.5-4.5 17.5-10 17.5z"/><path d="M4 21c2.75-6 7.5-10.75 13-13.25"/>
+            </svg>
+          </span>
+          <p class="proof__figure">100%</p>
+          <p class="proof__label">Vegetarian</p>
+          <p class="proof__note">Every ingredient list is on its product page.</p>
         </li>
       </ul>
     </section>
@@ -756,7 +778,7 @@
     </div>
   </footer>
 
-  <script src="/assets/js/cart.js?v=84" defer></script>
-  <script src="/assets/js/main.js?v=84" defer></script>
+  <script src="/assets/js/cart.js?v=85" defer></script>
+  <script src="/assets/js/main.js?v=85" defer></script>
 </body>
 </html>

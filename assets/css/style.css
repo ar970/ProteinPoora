@@ -1991,60 +1991,97 @@ button {
 /* The one value-prop beat between the hero and the shop. It also breaks the
    hero's navy from the sections below it, which used to run together as a
    single blue slab. */
+/* --- Proof strip ---------------------------------------------------------
+   Four claims under the hero. It used to be three centred captions with a
+   small icon floating above each, which is the shape every template ships
+   with — and one of the icons was a credit card. Cards now, left-aligned, led
+   by the figure: the number is what is worth reading, and left alignment gives
+   four short blocks a spine to sit on instead of drifting in their columns. */
 .proof {
-  padding: 1.5rem var(--gutter);
+  padding: 2rem var(--gutter) 2.25rem;
   background: var(--cream-soft);
 }
 
 .proof__list {
   display: grid;
-  gap: 0.9rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.7rem;
   max-width: var(--container);
   margin-inline: auto;
   padding: 0;
   list-style: none;
-  text-align: center;
 }
 
-@media (min-width: 720px) {
+@media (min-width: 900px) {
   .proof__list {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 2rem;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1rem;
   }
 }
 
 .proof__item {
-  display: grid;
-  justify-items: center;
-  gap: 0.2rem;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 0.9rem 1.05rem;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--paper);
 }
 
+@media (min-width: 900px) {
+  .proof__item {
+    padding: 1.15rem 1.15rem 1.25rem;
+  }
+}
+
+/* The icon is a marker, not the message, so it sits small and above rather
+   than large and centred. */
 .proof__icon {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  margin-bottom: 0.8rem;
+  border-radius: 12px;
+  background: var(--sand);
+  color: var(--rust);
+}
+
+.proof__icon svg {
   width: 24px;
   height: 24px;
-  color: var(--orange);
 }
 
-/* Three facts stand in a row from the first breakpoint up; stacked on the
-   narrowest screens they are still only three short lines. */
-.proof__item {
-  align-content: start;
-}
-
-.proof__fact {
+.proof__figure {
   margin: 0;
   color: var(--navy-ink);
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: 1.125rem;
-  line-height: 1.2;
+  font-size: 1.625rem;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (min-width: 900px) {
+  .proof__figure {
+    font-size: 1.875rem;
+  }
+}
+
+.proof__label {
+  margin: 0.2rem 0 0.4rem;
+  color: var(--navy-ink);
+  font-weight: 700;
+  font-size: 0.9375rem;
+  line-height: 1.25;
 }
 
 .proof__note {
   margin: 0;
   color: var(--text);
-  font-size: 0.875rem;
-  line-height: 1.4;
+  font-size: 0.8125rem;
+  line-height: 1.45;
 }
 
 /* --- Section: combos ---------------------------------------------------- */
