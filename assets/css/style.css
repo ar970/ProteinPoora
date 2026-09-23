@@ -662,6 +662,10 @@ button {
   text-transform: uppercase;
 }
 
+.eyebrow__best {
+  font-weight: 800;
+}
+
 .eyebrow__sep {
   margin: 0 0.35em;
 }
@@ -1368,6 +1372,38 @@ button {
 
 .product-card:hover .product-card__media img {
   transform: scale(1.04);
+}
+
+/* Bestseller, quietly. It sits inside the tile rather than overflowing the
+   corner like the protein badge, and it is white with a hairline rather than
+   a filled colour — the point is that someone scanning five packs notices two
+   of them, not that the page shouts. The star carries the accent; the words
+   stay navy so they read at a glance without competing with the name. */
+.product-card__best {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.28rem;
+  margin: 0;
+  padding: 0.24rem 0.5rem 0.24rem 0.42rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  background: var(--paper);
+  color: var(--navy-ink);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.product-card__best svg {
+  width: 12px;
+  height: 12px;
+  color: var(--orange);
 }
 
 .product-card__badge {
