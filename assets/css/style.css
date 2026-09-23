@@ -2567,8 +2567,57 @@ button {
 
 .box-bar__state {
   flex: 1 1 15rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.box-bar__meter {
+  flex: 1 1 auto;
   display: grid;
   gap: 0.45rem;
+  min-width: 0;
+}
+
+/* Where a pack lands. It is the target of the flight, so it has to be a fixed,
+   findable point rather than a label that moves as the count text rewraps. */
+.box-crate {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--paper);
+  color: var(--navy);
+  transition: transform 220ms var(--ease), border-color 220ms var(--ease);
+}
+
+.box-crate svg {
+  width: 24px;
+  height: 24px;
+}
+
+/* A pack has just gone in. */
+.box-crate.is-catching {
+  transform: scale(1.12);
+  border-color: var(--navy);
+}
+
+.box-crate.is-full {
+  border-color: var(--pack-green);
+  color: var(--pack-green);
+}
+
+/* The pack in flight: a clone, so nothing in the card moves or reflows. */
+.pack-fly {
+  position: fixed;
+  z-index: 60;
+  pointer-events: none;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 14px rgba(23, 57, 122, 0.3));
+  will-change: transform, opacity;
 }
 
 .box-progress {
@@ -2842,8 +2891,13 @@ button {
   .box-card,
   .box-card__media img,
   .box-progress__pip,
-  .box-bar__total {
+  .box-bar__total,
+  .box-crate {
     transition: none;
+  }
+
+  .box-crate.is-catching {
+    transform: none;
   }
 
   .box-card.is-adding .box-card__media img,

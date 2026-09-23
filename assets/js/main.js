@@ -525,7 +525,70 @@
     var MIN = parseInt(grid.getAttribute('data-box-min'), 10) || 6;
     var MAX_PER_PACK = 20;
 
+    var crate = document.querySelector('[data-box-crate]');
     var wasComplete = false;
+
+    var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    var canFly = typeof Element.prototype.animate === 'function';
+
+    /* A pack going into the box, literally. A clone of the pack shot is flown
+       from the card to the crate in the bar — a clone, so nothing in the card
+       moves, reflows, or is left behind if the animation is interrupted.
+       Fixed positioning means it does not care what is scrolled or clipped
+       between the two.
+
+       Three keyframes rather than two: a straight line between a card and a
+       bar below it reads as a slide, and the arc is what makes it read as
+       something being dropped in. */
+    function flyToCrate(card) {
+      if (!crate || !canFly || reducedMotion.matches) return;
+
+      var pack = card.querySelector('.box-card__media img');
+      if (!pack) return;
+
+      var from = pack.getBoundingClientRect();
+      var to = crate.getBoundingClientRect();
+      if (!from.width || !to.width) return;
+
+      // The bar is sticky, so the crate is normally on screen — but not at
+      // every scroll position. Flying a pack to a point nobody can see reads
+      // as the pack leaving the page, so when the crate is out of view the
+      // add just happens, with the count and the pips to show for it.
+      if (to.bottom < 0 || to.top > window.innerHeight) return;
+
+      var flyer = pack.cloneNode(true);
+      flyer.className = 'pack-fly';
+      flyer.removeAttribute('loading');
+      flyer.style.left = from.left + 'px';
+      flyer.style.top = from.top + 'px';
+      flyer.style.width = from.width + 'px';
+      flyer.style.height = from.height + 'px';
+      document.body.appendChild(flyer);
+
+      var dx = (to.left + to.width / 2) - (from.left + from.width / 2);
+      var dy = (to.top + to.height / 2) - (from.top + from.height / 2);
+      // Enough lift to be an arc, but capped so a long flight on a tall page
+      // does not sail off the top of the screen.
+      var lift = Math.min(110, Math.max(40, Math.abs(dy) * 0.32));
+
+      var run = flyer.animate([
+        { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+        { transform: 'translate(' + (dx * 0.5) + 'px, ' + (dy * 0.5 - lift) + 'px) scale(0.62)',
+          opacity: 1, offset: 0.5 },
+        { transform: 'translate(' + dx + 'px, ' + dy + 'px) scale(0.16)', opacity: 0.25 }
+      ], { duration: 620, easing: 'cubic-bezier(.34,.05,.28,1)', fill: 'forwards' });
+
+      var land = function () {
+        flyer.remove();
+        crate.classList.add('is-catching');
+        window.setTimeout(function () { crate.classList.remove('is-catching'); }, 220);
+      };
+      if (run.finished && typeof run.finished.then === 'function') {
+        run.finished.then(land, land);
+      } else {
+        run.onfinish = land;
+      }
+    }
 
     function rupees(paise) {
       var value = paise / 100;
@@ -573,6 +636,7 @@
       });
       var complete = packs >= MIN;
       if (progress) progress.classList.toggle('is-complete', complete);
+      if (crate) crate.classList.toggle('is-full', complete);
 
       var short = MIN - packs;
       if (packs === 0) {
@@ -606,14 +670,20 @@
       if (event.target.closest('[data-box-add-one]')) {
         setQty(card, 1);
         nudge(card);
+        flyToCrate(card);
         // The Add button has just been hidden, so focus would be lost to the
         // body. Hand it to the + that replaced it.
         card.querySelector('[data-box-up]').focus();
         return;
       }
       if (event.target.closest('[data-box-up]')) {
-        setQty(card, qtyOf(card) + 1);
-        nudge(card);
+        var before = qtyOf(card);
+        if (setQty(card, before + 1) > before) {
+          nudge(card);
+          // Only when a pack actually went in — at the cap the + does nothing,
+          // and a pack flying off a stepper that refused is a lie.
+          flyToCrate(card);
+        }
         return;
       }
       if (event.target.closest('[data-box-down]')) {

@@ -21,7 +21,7 @@
         imagesrcset="/assets/img/masala-bhujia-pack-720.webp 720w, /assets/img/masala-bhujia-pack-1054.webp 1054w"
         imagesizes="(min-width: 1024px) 360px, 72vw">
   <link rel="stylesheet" href="/assets/css/fonts.css?v=3">
-  <link rel="stylesheet" href="/assets/css/style.css?v=88">
+  <link rel="stylesheet" href="/assets/css/style.css?v=90">
   <script>document.documentElement.classList.replace('no-js', 'js');</script>
 
   <!-- Meta Pixel. In a Liquid theme this block moves into theme.liquid once,
@@ -1071,7 +1071,17 @@
 
         <div class="box-bar">
           <div class="box-bar__state">
-            <!-- Six pips, because six is small enough to count at a glance and
+            <!-- The crate is where a pack flies to when it is added. It is
+                 decorative: the count beside it is what a screen reader gets. -->
+            <span class="box-crate" data-box-crate aria-hidden="true">
+              <svg viewBox="0 0 24 24" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3.5 9.5h17v9a1.5 1.5 0 0 1-1.5 1.5H5a1.5 1.5 0 0 1-1.5-1.5z"/>
+                <path d="M3.5 9.5L6 5.5h12l2.5 4"/>
+                <path d="M12 9.5V20"/>
+              </svg>
+            </span>
+            <div class="box-bar__meter">
+            <!-- Five pips, because five is small enough to count at a glance and
                  a percentage bar would say nothing a number does not. The
                  running text beside it is what a screen reader announces. -->
             <div class="box-progress" data-box-progress aria-hidden="true">
@@ -1082,6 +1092,7 @@
             <span class="box-progress__pip"></span>
             </div>
             <p class="box-bar__count" data-box-count role="status">Pick 5 packs to start a box.</p>
+            </div>
           </div>
           <p class="box-bar__total"><span class="box-bar__label">Box total</span> <span data-box-total>₹0</span></p>
           <button class="btn btn--navy" type="button" data-box-add disabled>Add box to cart</button>
@@ -1229,8 +1240,8 @@
     </div>
   </footer>
 
-  <script src="/assets/js/cart.js?v=88" defer></script>
-  <script src="/assets/js/main.js?v=88" defer></script>
+  <script src="/assets/js/cart.js?v=90" defer></script>
+  <script src="/assets/js/main.js?v=90" defer></script>
   <!-- Nutrition, without leaving the page. The line-up's button opens this;
        the product pages keep their own full table. -->
   <dialog class="nutri" id="nutrition-dialog" aria-labelledby="nutri-title">
