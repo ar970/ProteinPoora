@@ -1385,43 +1385,61 @@ button {
    and where a full-size pill would cover most of the pack. */
 .best-pill {
   position: absolute;
-  top: 8px;
-  left: 8px;
+  top: 10px;
+  left: 10px;
   z-index: 2;
   display: inline-flex;
   align-items: center;
-  gap: 0.28rem;
+  gap: 0.32rem;
   margin: 0;
-  padding: 0.24rem 0.5rem 0.24rem 0.42rem;
-  border: 1px solid var(--line);
+  padding: 0.3rem 0.62rem 0.3rem 0.5rem;
+  /* A firmer edge than --line: the pill is white on a near-white tile, and
+     the border is the only thing holding its shape. */
+  border: 1px solid rgba(30, 45, 120, 0.18);
   border-radius: var(--radius-pill);
   background: var(--paper);
   color: var(--navy-ink);
-  font-size: 0.6875rem;
+  font-size: 0.8125rem;
   font-weight: 700;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.01em;
   line-height: 1.2;
   white-space: nowrap;
 }
 
 .best-pill svg {
-  width: 12px;
-  height: 12px;
+  width: 14px;
+  height: 14px;
   color: var(--orange);
 }
 
+/* The builder's cards are narrower than the line-up's at every width, and
+   half a phone wide below 640px, so the pill steps down twice rather than
+   once — a label should not cover the pack it is labelling. */
 .best-pill--sm {
-  top: 5px;
-  left: 5px;
-  gap: 0.22rem;
-  padding: 0.18rem 0.42rem 0.18rem 0.34rem;
-  font-size: 0.625rem;
-  letter-spacing: 0;
+  top: 7px;
+  left: 7px;
+  gap: 0.26rem;
+  padding: 0.24rem 0.52rem 0.24rem 0.42rem;
+  font-size: 0.75rem;
 }
 
 .best-pill--sm svg {
-  width: 10px;
-  height: 10px;
+  width: 12px;
+  height: 12px;
+}
+
+@media (max-width: 639px) {
+  .best-pill--sm {
+    top: 6px;
+    left: 6px;
+    padding: 0.2rem 0.46rem 0.2rem 0.36rem;
+    font-size: 0.6875rem;
+  }
+
+  .best-pill--sm svg {
+    width: 11px;
+    height: 11px;
+  }
 }
 
 .product-card__badge {
