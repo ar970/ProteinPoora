@@ -52,15 +52,15 @@
   var products = catalogue.slice();
   var chosen = Object.create(null); // slug -> qty
 
-  /* A loose pack is only sold six or more at a time. The number comes from the
-     cart so there is one of it on the client; the server has its own and is
-     the one that counts. */
+  /* A loose pack is only sold five or more at a time. The number comes from
+     the cart so there is one of it on the client; the server has its own and
+     is the one that counts. */
   var BOX_MIN = (window.PPCart && window.PPCart.BOX_MIN) || 5;
 
   /* Delivery, from the cart so there is one copy of it on the client. The
      server prices the order either way; this is what the customer is shown
      before they agree to it. */
-  var FREE_DELIVERY_FROM = (window.PPCart && window.PPCart.FREE_DELIVERY_FROM) || 40000;
+  var FREE_DELIVERY_FROM = (window.PPCart && window.PPCart.FREE_DELIVERY_FROM) || 45000;
   function deliveryFor(subtotal) {
     if (!subtotal) return 0;
     return window.PPCart ? window.PPCart.deliveryFor(subtotal)
@@ -160,14 +160,16 @@
 
     var split = false;
     products.forEach(function (product) {
-      // One heading between the combos and the loose packs, so the ₹85 rows
-      // are not read as five suspiciously cheap products.
+      // One heading between the combos and the loose packs, so the box rows
+      // are not read as five suspiciously cheap products. The rate comes from
+      // the row it is describing rather than being typed in again here.
       if (product.box && !split) {
         split = true;
         var head = document.createElement('li');
         head.className = 'picker__split';
         head.appendChild(nodeP('strong', 'Or build your own box'));
-        head.appendChild(nodeP('span', 'Any ' + BOX_MIN + ' packs or more, ₹85 each. Mix them however you like.'));
+        head.appendChild(nodeP('span', 'Any ' + BOX_MIN + ' packs or more, ' +
+          rupees(product.price_paise) + ' each. Mix them however you like.'));
         picker.appendChild(head);
       }
 

@@ -21,9 +21,9 @@
  * There are two ways to buy, and they price differently.
  *
  *   A combo   a product with its own slug and its own fixed price.
- *   A box     six or more loose packs, any mix, at a flat rate each.
+ *   A box     five or more loose packs, any mix, at a flat rate each.
  *
- * A loose pack is never sold on its own. Below six it is not a cheaper snack,
+ * A loose pack is never sold on its own. Below five it is not a cheaper snack,
  * it is not a snack at all: the order is refused. That rule lives here because
  * here is the only place that decides money.
  */
@@ -32,15 +32,15 @@
 const PRICES = Object.freeze({
   'combo-bhujia-duo': 17000,
   'combo-chakli-duo': 15000,
-  'combo-all-five': 43900
+  'combo-all-five': 45000
 });
 
 /**
  * What one loose pack costs inside a box, whichever pack it is. Flat, so the
- * page can say "₹85 each" and mean it — a customer should not have to add up
+ * page can say "₹90 each" and mean it — a customer should not have to add up
  * five different numbers to know what their box comes to.
  */
-const BOX_RATE_PAISE = 8500;
+const BOX_RATE_PAISE = 9000;
 
 /** Fewer than this many loose packs is not a box. */
 const BOX_MIN_PACKS = 5;
@@ -74,8 +74,20 @@ function rateFor(slug) {
  * the delivery charge to the figure that decides whether there is a delivery
  * charge is how a ₹399 order becomes free.
  */
-const FREE_DELIVERY_FROM_PAISE = 40000;
+const FREE_DELIVERY_FROM_PAISE = 45000;
 const DELIVERY_PAISE = 10000;
+
+/*
+ * These three are set to meet, and changing one alone breaks the offer:
+ *
+ *   BOX_MIN_PACKS (5) × BOX_RATE_PAISE (9000) = 45000 = FREE_DELIVERY_FROM_PAISE
+ *
+ * so the smallest possible box lands exactly on free delivery, and every box
+ * above it is free too. The comparison below is `>=` for that reason — at `>`
+ * the minimum box would miss by a rupee and the whole arrangement would read
+ * as a trick. The Poora Family Pack is priced at the same 45000 so the made-up
+ * box and the build-it-yourself box cost the same.
+ */
 
 /**
  * What delivery costs on a given subtotal, in paise.
@@ -127,8 +139,8 @@ function priceOrder(input, badRequest) {
     wanted.set(slug, (wanted.get(slug) || 0) + qty);
   }
 
-  // A box is counted across the whole order, not per flavour: six of one pack
-  // is a box, and so is one of each plus a spare. Packs inside a combo do not
+  // A box is counted across the whole order, not per flavour: five of one pack
+  // is a box, and so is one of each flavour. Packs inside a combo do not
   // count towards it — a combo is its own product at its own price, and
   // letting it prop up a short box would be a different offer than the one on
   // the page.

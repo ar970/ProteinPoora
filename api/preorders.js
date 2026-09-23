@@ -99,7 +99,7 @@ async function priceItems(input) {
     // This route prices from the products table so the admin can change a
     // price without a deploy — but a loose pack is sold at the flat box rate,
     // not at the MRP the table carries for it. Without this, the same six
-    // packs would cost ₹85 each through the paid path and ₹99 through here.
+    // packs would cost ₹90 each through the paid path and ₹99 through here.
     const isLoose = Object.prototype.hasOwnProperty.call(BOX_PACKS, slug);
     const rate = isLoose ? BOX_RATE_PAISE : product.price_paise;
     total += rate * qty;

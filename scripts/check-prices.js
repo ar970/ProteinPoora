@@ -92,6 +92,13 @@ function deliveryQuotes() {
       ['index.html FAQ', rupees(/Free on orders of ₹([\d,]+) or more/, home)],
       ['preorder/index.html copy', rupees(/Delivery is free on orders of ₹([\d,]+) or more/, checkout)]
     ],
+    boxRate: [
+      ['api/_lib/catalogue.js', catalogue.BOX_RATE_PAISE],
+      ['index.html copy', rupees(/packs or more, ₹([\d,]+) each/, home)],
+      ['index.html FAQ', rupees(/Any 5 packs or more, ₹([\d,]+) each, in whatever mix/, home)],
+      ['preorder/index.html copy', rupees(/loose packs or more at ₹([\d,]+) each/, checkout)],
+      ['products/masala-bhujia', rupees(/packs or more — ₹([\d,]+) each/, read('products/masala-bhujia/index.html'))]
+    ],
     charge: [
       ['api/_lib/catalogue.js', catalogue.DELIVERY_PAISE],
       ['assets/js/cart.js', Number((/var DELIVERY = (\d+)/.exec(cart) || [])[1])],
@@ -170,7 +177,11 @@ for (const [label, value] of minimums.slice(1)) {
 }
 
 const delivery = deliveryQuotes();
-for (const [label, rows] of [['free-delivery threshold', delivery.threshold], ['delivery charge', delivery.charge]]) {
+for (const [label, rows] of [
+  ['free-delivery threshold', delivery.threshold],
+  ['delivery charge', delivery.charge],
+  ['box rate', delivery.boxRate]
+]) {
   const wantedValue = rows[0][1];
   for (const [where, value] of rows.slice(1)) {
     if (value !== wantedValue) {

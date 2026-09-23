@@ -19,8 +19,8 @@
   var listeners = [];
 
   /* What can actually be bought, and how. A combo is a product with its own
-     price. A loose pack is only sold six or more at a time, as a box — so it
-     can sit in the cart, but a cart holding fewer than six of them cannot be
+     price. A loose pack is only sold five or more at a time, as a box — so it
+     can sit in the cart, but a cart holding fewer than five of them cannot be
      checked out. The drawer says so and the server refuses it either way.
 
      Anything outside ORDERABLE is dropped on read, so a cart saved before the
@@ -40,7 +40,7 @@
      these are here so the drawer and the checkout can show the customer the
      charge before they commit to it, not so the browser can decide it.
      `npm run check:prices` fails if the two drift apart. */
-  var FREE_DELIVERY_FROM = 40000;
+  var FREE_DELIVERY_FROM = 45000;
   var DELIVERY = 10000;
   var ORDERABLE = ['combo-bhujia-duo', 'combo-chakli-duo', 'combo-all-five'].concat(BOX_PACKS);
 

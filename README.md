@@ -219,14 +219,14 @@ are what the design system always said; the built site had drifted.
 
 **There are two ways to buy and they price differently.** A combo is a product
 with its own slug and its own fixed price. A box is five or more loose packs,
-any mix, at a flat ₹85 each. A loose pack on its own is not sold at all — below
+any mix, at a flat ₹90 each. A loose pack on its own is not sold at all — below
 five it is refused, not discounted.
 
 Three bundles at `#combos`, between the line-up and the FAQ:
 
 | Slug | Name | Price | Struck out |
 |---|---|---|---|
-| `combo-all-five` | Poora Family Pack | ₹439 | ₹495 |
+| `combo-all-five` | Poora Family Pack | ₹450 | ₹495 |
 | `combo-bhujia-duo` | Bhujia Duo | ₹170 | ₹198 |
 | `combo-chakli-duo` | Chakli Duo | ₹150 | ₹198 |
 
@@ -268,7 +268,7 @@ silently drops to one card per row. Below 768px the bar is sticky, so the
 count, the total and the button follow you past the fold.
 
 Two numbers define it, and both live in `api/_lib/catalogue.js`:
-`BOX_RATE_PAISE` (8500) and `BOX_MIN_PACKS` (5). The minimum is enforced in four
+`BOX_RATE_PAISE` (9000) and `BOX_MIN_PACKS` (5). The minimum is enforced in four
 places, on purpose:
 
 | Where | What it does |
@@ -285,24 +285,33 @@ each plus a spare. Packs inside a combo do not count towards it: a combo is its
 own product at its own price, and letting one prop up a short box would be a
 different offer than the one on the page.
 
-`npm run check:prices` fails if the four minimums stop agreeing, or if the ₹85
-in the page copy stops matching `BOX_RATE_PAISE`. A page quoting five while the
-server wants eight is a refusal after the customer has tried to pay, which is
-the one failure worth spending a check on.
+`npm run check:prices` fails if the four minimums stop agreeing, or if the ₹90
+quoted in the page copy stops matching `BOX_RATE_PAISE`. A page quoting five
+while the server wants eight is a refusal after the customer has tried to pay,
+which is the one failure worth spending a check on.
 
 ## Delivery
 
-**Free from ₹400 of goods, ₹100 below it.** `FREE_DELIVERY_FROM_PAISE` and
+**Free from ₹450 of goods, ₹100 below it.** `FREE_DELIVERY_FROM_PAISE` and
 `DELIVERY_PAISE` in `api/_lib/catalogue.js`, and `deliveryFor()` is the only
-thing that decides it. Exactly ₹400 is free: "over ₹400" is read the way a
-customer reads it, not the way a lawyer would.
+thing that decides it.
+
+**Three numbers are set to meet, and changing one alone breaks the offer:**
+
+    BOX_MIN_PACKS (5) × BOX_RATE_PAISE (9000) = 45000 = FREE_DELIVERY_FROM_PAISE
+
+The smallest box a customer can build lands *exactly* on free delivery. That is
+why the comparison is `>=` and not `>` — at `>` the minimum box would miss by a
+rupee and the whole arrangement would read as a trick. The Poora Family Pack is
+priced at the same ₹450, so the made-up box and the build-it-yourself box cost
+the same. **Move any one of those three and re-check the other two.**
 
 **The threshold is measured on goods, never on the total.** Adding the delivery
 charge to the number that decides whether there is a delivery charge is how a
 ₹399 order quietly becomes free.
 
-In practice only the two duos ever pay it — five packs come to ₹425 and the
-Family Pack to ₹439, so every box and the largest combo clear the threshold on
+In practice only the two duos ever pay it — five packs come to ₹450 and the
+Family Pack is ₹450, so every box and the largest combo clear the threshold on
 their own. `npm run check:prices` checks both numbers against every place the
 page quotes them, because a delivery charge that appears for the first time at
 the payment window is the moment a customer decides you are not to be trusted.
