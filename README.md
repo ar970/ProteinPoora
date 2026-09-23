@@ -226,9 +226,9 @@ Three bundles at `#combos`, between the line-up and the FAQ:
 
 | Slug | Name | Price | Struck out |
 |---|---|---|---|
-| `combo-all-five` | Poora Family Pack | ₹439 | ₹475 |
+| `combo-all-five` | Poora Family Pack | ₹439 | ₹495 |
 | `combo-bhujia-duo` | Bhujia Duo | ₹170 | ₹198 |
-| `combo-chakli-duo` | Chakli Duo | ₹150 | ₹178 |
+| `combo-chakli-duo` | Chakli Duo | ₹150 | ₹198 |
 
 They are ordinary cart items, not a discount rule: a combo has its own slug and
 its own price, so nothing has to reason about what is in a basket. Each one is
@@ -236,7 +236,7 @@ in two places and both must agree — the card's `data-price-paise` in
 `index.html`, and the `#catalogue` JSON in `preorder/index.html` that the
 checkout picker and the order both read. **Change a price and change it in
 both.** The struck-out figure is the singles total and nothing else — ₹99 + ₹99
-for the Bhujia Duo, ₹89 + ₹89 for the Chakli Duo, ₹475 for all five. It used to
+for the Bhujia Duo, ₹99 + ₹99 for the Chakli Duo, ₹495 for all five. It used to
 be a round ₹500 on the Family Pack with a "Save ₹61" badge beside it; the badge
 is gone and the number is the real sum, because a struck-out price that matches
 no actual total is a claim the packs do not support. If a single's price moves,

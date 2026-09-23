@@ -21,8 +21,8 @@ const { Pool } = require('pg');
 const SEED_PRODUCTS = [
   { slug: 'masala-bhujia',         name: 'Masala Bhujia',         price_paise: 9900, pack_size: '60 g', protein: '14 g', sort_order: 1 },
   { slug: 'pudina-bhujia',         name: 'Pudina Bhujia',         price_paise: 9900, pack_size: '60 g', protein: '14 g', sort_order: 2 },
-  { slug: 'sweet-chilli-chakli',   name: 'Sweet Chilli Chakli',   price_paise: 8900, pack_size: '50 g', protein: '9 g',  sort_order: 3 },
-  { slug: 'cheddar-cheese-chakli', name: 'Cheddar Cheese Chakli', price_paise: 8900, pack_size: '50 g', protein: '9 g',  sort_order: 4 },
+  { slug: 'sweet-chilli-chakli',   name: 'Sweet Chilli Chakli',   price_paise: 9900, pack_size: '50 g', protein: '9 g',  sort_order: 3 },
+  { slug: 'cheddar-cheese-chakli', name: 'Cheddar Cheese Chakli', price_paise: 9900, pack_size: '50 g', protein: '9 g',  sort_order: 4 },
   { slug: 'korean-bbq-peanuts',    name: 'Korean BBQ Peanuts',    price_paise: 9900, pack_size: '65 g', protein: '18 g', sort_order: 5 }
 ];
 
