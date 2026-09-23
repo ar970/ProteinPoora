@@ -301,6 +301,23 @@ small enough to count at a glance; they turn green past the minimum and stop
 competing with the total. The one `navigator.vibrate` fires when the box
 becomes orderable and nowhere else.
 
+**A pack flies into the crate when it is added.** The bar carries a small crate
+icon, and adding a pack sends a *clone* of that pack shot arcing into it — a
+clone, so nothing in the card moves, reflows, or is stranded if the animation
+is cut short, and `position: fixed` so it does not care what is scrolled or
+clipped between the card and the bar. Three keyframes rather than two: a
+straight line from a card to a bar directly below it reads as a slide, while
+the arc reads as something dropped in. The lift scales with the distance but
+caps at 110px, so a flight from the top of a tall page does not sail off the
+screen on the way down.
+
+Three cases deliberately fly nothing, and all three still add the pack:
+`prefers-reduced-motion`; a `+` at the 20-pack cap, because a pack leaving a
+stepper that refused is a lie; and a crate scrolled out of view, because a
+flight to a point nobody can see reads as the pack leaving the page. Testing
+that last one needs the click fired in-page — Playwright scrolls an element
+into view before clicking it, so a naive test passes for the wrong reason.
+
 The grid is explicit counts — two, three, five — not `auto-fit`: at 390px the
 panel's inner width is a few pixels short of two 150px tracks, and `auto-fit`
 silently drops to one card per row. Below 768px the bar is sticky, so the
