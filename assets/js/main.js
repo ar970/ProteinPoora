@@ -384,6 +384,127 @@
    * built without script, so it says so in a <noscript> and sends people to
    * the checkout, whose picker can build the same box. */
 
+  /* --- Nutrition, from the line-up ---------------------------------------
+     The card's button opens the table for that pack without leaving the page.
+     The numbers are the product pages' own, lifted into #nutrition-data at
+     build time by hand rather than typed twice; the dialog just renders them.
+
+     Without <dialog> support, or with the data missing, the button is left as
+     a plain link-through to the product page, which has the same table. */
+  (function () {
+    var dialog = document.getElementById('nutrition-dialog');
+    var source = document.getElementById('nutrition-data');
+    var buttons = document.querySelectorAll('[data-nutrition]');
+    if (!buttons.length) return;
+
+    var data = null;
+    try {
+      data = source ? JSON.parse(source.textContent) : null;
+    } catch (err) {
+      data = null;
+    }
+
+    var canDialog = dialog && typeof dialog.showModal === 'function';
+    if (!canDialog || !data) {
+      Array.prototype.forEach.call(buttons, function (button) {
+        var slug = button.getAttribute('data-nutrition');
+        var link = document.createElement('a');
+        link.className = button.className;
+        link.href = '/products/' + slug + '#nutrition';
+        link.innerHTML = button.innerHTML;
+        // Keep the hook, so the element is still findable as the same thing.
+        link.setAttribute('data-nutrition', slug);
+        button.parentNode.replaceChild(link, button);
+      });
+      return;
+    }
+
+    var title = dialog.querySelector('#nutri-title');
+    var sub = dialog.querySelector('[data-nutri-sub]');
+    var body = dialog.querySelector('[data-nutri-body]');
+    var foot = dialog.querySelector('[data-nutri-foot]');
+    var link = dialog.querySelector('[data-nutri-link]');
+    var opener = null;
+
+    function cell(tag, text, scope) {
+      var node = document.createElement(tag);
+      node.textContent = text;
+      if (scope) node.setAttribute('scope', scope);
+      return node;
+    }
+
+    function render(slug) {
+      var info = data[slug];
+      if (!info) return false;
+
+      title.textContent = info.name;
+      sub.textContent = info.sub;
+      foot.textContent = info.foot;
+      link.href = '/products/' + slug + '#nutrition';
+
+      var table = document.createElement('table');
+
+      // The dialog's own heading already names the pack, so the table's
+      // caption would say it a second time. It stays for screen readers,
+      // where a table out of context still needs naming.
+      var caption = cell('caption', 'Nutritional information for ' + info.name);
+      caption.className = 'visually-hidden';
+      table.appendChild(caption);
+
+      var thead = document.createElement('thead');
+      var hrow = document.createElement('tr');
+      ['Nutrient', info.per, '% RDA per serve'].forEach(function (label) {
+        hrow.appendChild(cell('th', label, 'col'));
+      });
+      thead.appendChild(hrow);
+      table.appendChild(thead);
+
+      var tbody = document.createElement('tbody');
+      info.rows.forEach(function (row) {
+        var tr = document.createElement('tr');
+        if (row.kind) tr.className = row.kind;
+        tr.appendChild(cell('th', row.name, 'row'));
+        tr.appendChild(cell('td', row.amount));
+        tr.appendChild(cell('td', row.rda));
+        tbody.appendChild(tr);
+      });
+      table.appendChild(tbody);
+
+      body.textContent = '';
+      body.appendChild(table);
+      return true;
+    }
+
+    Array.prototype.forEach.call(buttons, function (button) {
+      button.addEventListener('click', function () {
+        if (!render(button.getAttribute('data-nutrition'))) {
+          window.location.href = '/products/' + button.getAttribute('data-nutrition') + '#nutrition';
+          return;
+        }
+        opener = button;
+        dialog.showModal();
+        // The table scrolls; start it at the top rather than wherever the
+        // last pack left it.
+        body.scrollTop = 0;
+      });
+    });
+
+    dialog.querySelector('[data-nutri-close]').addEventListener('click', function () {
+      dialog.close();
+    });
+
+    // Clicking the backdrop closes it. The dialog itself is the click target
+    // only when the pointer is outside the panel.
+    dialog.addEventListener('click', function (event) {
+      if (event.target === dialog) dialog.close();
+    });
+
+    dialog.addEventListener('close', function () {
+      if (opener && opener.focus) opener.focus();
+      opener = null;
+    });
+  })();
+
   /* --- Build your own box ------------------------------------------------
      Each card shows one control at a time: Add until there is something in the
      box, then a stepper. The swap is itself the confirmation that the tap

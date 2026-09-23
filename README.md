@@ -217,6 +217,21 @@ Its four claims are the four on the packs, so the strip and the photography say
 the same thing. Adding a fifth means the row wraps 4+1 on wide screens — pick a
 replacement instead.
 
+**Each line-up card has a "Protein numbers" button**, so the nutrition table
+is one tap away without leaving the page. It opens a `<dialog>` filled from
+`#nutrition-data` in `index.html` — a JSON block holding all five tables.
+
+**Those numbers are not typed twice.** They were lifted out of the five product
+pages' own `#nutrition` tables by script, and the dialog renders them. If a
+value changes, change it on the product page and re-extract; do not hand-edit
+the JSON, because then there are two sets of nutrition figures and only one of
+them is right.
+
+The dialog's heading names the pack, so the table's caption is
+`visually-hidden` rather than shown — otherwise the pack is named twice, a
+row apart. Without `<dialog>` support the buttons are swapped for links to
+`/products/<slug>#nutrition`, which is the same table on its own page.
+
 **The line-up is five across on wide screens and a swipe rail below that.**
 Five products never divided into three columns: the old grid stranded two
 cards beside a hole, and stacked to 3,400px on a phone. The rail puts the

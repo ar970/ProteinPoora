@@ -21,7 +21,7 @@
         imagesrcset="/assets/img/masala-bhujia-pack-720.webp 720w, /assets/img/masala-bhujia-pack-1054.webp 1054w"
         imagesizes="(min-width: 1024px) 360px, 72vw">
   <link rel="stylesheet" href="/assets/css/fonts.css?v=3">
-  <link rel="stylesheet" href="/assets/css/style.css?v=85">
+  <link rel="stylesheet" href="/assets/css/style.css?v=86">
   <script>document.documentElement.classList.replace('no-js', 'js');</script>
 
   <!-- Meta Pixel. In a Liquid theme this block moves into theme.liquid once,
@@ -296,6 +296,438 @@
           </div>
         </div>
 
+        <!-- The five nutrition tables, lifted verbatim from the product pages so
+             there is one set of numbers rather than two. In Liquid this becomes a
+             metafield loop; nothing here is typed by hand. -->
+        <script type="application/json" id="nutrition-data">
+{
+  "cheddar-cheese-chakli": {
+    "foot": "Values are approximate, per 50 g pack as tested. % RDA is per 30 g serve.",
+    "name": "Cheddar Cheese Chakli",
+    "per": "Per 50 g (approx.)",
+    "rows": [
+      {
+        "amount": "271.17 kcal",
+        "kind": "",
+        "name": "Energy",
+        "rda": "8.1%"
+      },
+      {
+        "amount": "9.16 g",
+        "kind": "is-hero",
+        "name": "Protein",
+        "rda": "10.2%"
+      },
+      {
+        "amount": "21.43 g",
+        "kind": "",
+        "name": "Carbohydrate",
+        "rda": "–"
+      },
+      {
+        "amount": "1 g",
+        "kind": "is-sub",
+        "name": "Total sugar",
+        "rda": "–"
+      },
+      {
+        "amount": "0.5 g",
+        "kind": "is-sub",
+        "name": "Added sugar",
+        "rda": "0.6%"
+      },
+      {
+        "amount": "2.46 g",
+        "kind": "",
+        "name": "Dietary fibre",
+        "rda": "4.9%"
+      },
+      {
+        "amount": "16.53 g",
+        "kind": "",
+        "name": "Total fat",
+        "rda": "14.8%"
+      },
+      {
+        "amount": "6.03 g",
+        "kind": "is-sub",
+        "name": "Saturated fat",
+        "rda": "16.5%"
+      },
+      {
+        "amount": "10.49 g",
+        "kind": "is-sub",
+        "name": "Unsaturated fat",
+        "rda": "–"
+      },
+      {
+        "amount": "0.05 g",
+        "kind": "is-sub",
+        "name": "Trans fat",
+        "rda": "1.5%"
+      },
+      {
+        "amount": "2.75 mg",
+        "kind": "",
+        "name": "Cholesterol",
+        "rda": "–"
+      },
+      {
+        "amount": "210.36 mg",
+        "kind": "",
+        "name": "Sodium",
+        "rda": "6.3%"
+      }
+    ],
+    "sub": "Per 50 g pack, as tested. Serving size 30 g, 1.66 serves in this pack."
+  },
+  "korean-bbq-peanuts": {
+    "foot": "Values are per 65 g pack as tested. % RDA is per 40 g serve. ND means not detected above the stated limit.",
+    "name": "Korean BBQ Peanuts",
+    "per": "Per 65 g",
+    "rows": [
+      {
+        "amount": "415.48 kcal",
+        "kind": "",
+        "name": "Energy",
+        "rda": "12.8%"
+      },
+      {
+        "amount": "17.71 g",
+        "kind": "is-hero",
+        "name": "Protein",
+        "rda": "–"
+      },
+      {
+        "amount": "10.58 g",
+        "kind": "",
+        "name": "Carbohydrate",
+        "rda": "–"
+      },
+      {
+        "amount": "6.12 g",
+        "kind": "",
+        "name": "Dietary fibre",
+        "rda": "12.6%"
+      },
+      {
+        "amount": "1.52 g",
+        "kind": "",
+        "name": "Total sugar",
+        "rda": "–"
+      },
+      {
+        "amount": "ND (&lt;0.3 g)",
+        "kind": "",
+        "name": "Added sugar",
+        "rda": "0.4%"
+      },
+      {
+        "amount": "33.58 g",
+        "kind": "",
+        "name": "Total fat",
+        "rda": "30.8%"
+      },
+      {
+        "amount": "6.53 g",
+        "kind": "is-sub",
+        "name": "Saturated fat",
+        "rda": "18.3%"
+      },
+      {
+        "amount": "27.04 g",
+        "kind": "is-sub",
+        "name": "Unsaturated fat",
+        "rda": "–"
+      },
+      {
+        "amount": "ND (&lt;0.03 g)",
+        "kind": "is-sub",
+        "name": "Trans fat",
+        "rda": "1.0%"
+      },
+      {
+        "amount": "ND (&lt;1.3 g)",
+        "kind": "",
+        "name": "Cholesterol",
+        "rda": "–"
+      },
+      {
+        "amount": "166.5 mg",
+        "kind": "",
+        "name": "Sodium",
+        "rda": "5.1%"
+      }
+    ],
+    "sub": "Per 65 g pack, as tested. Serving size 40 g."
+  },
+  "masala-bhujia": {
+    "foot": "Values are approximate, per 60 g pack as tested. % RDA is per 30 g serve.",
+    "name": "Masala Bhujia",
+    "per": "Per 60 g (approx.)",
+    "rows": [
+      {
+        "amount": "279.88 kcal",
+        "kind": "",
+        "name": "Energy",
+        "rda": "7.0%"
+      },
+      {
+        "amount": "14 g",
+        "kind": "is-hero",
+        "name": "Protein",
+        "rda": "12.1%"
+      },
+      {
+        "amount": "32.76 g",
+        "kind": "",
+        "name": "Carbohydrate",
+        "rda": "–"
+      },
+      {
+        "amount": "1.31 g",
+        "kind": "is-sub",
+        "name": "Total sugar",
+        "rda": "–"
+      },
+      {
+        "amount": "0.36 g",
+        "kind": "is-sub",
+        "name": "Added sugar",
+        "rda": "0.37%"
+      },
+      {
+        "amount": "6.48 g",
+        "kind": "",
+        "name": "Dietary fibre",
+        "rda": "10.8%"
+      },
+      {
+        "amount": "10.56 g",
+        "kind": "",
+        "name": "Total fat",
+        "rda": "7.9%"
+      },
+      {
+        "amount": "3.32 g",
+        "kind": "is-sub",
+        "name": "Saturated fat",
+        "rda": "7.6%"
+      },
+      {
+        "amount": "7.26 g",
+        "kind": "is-sub",
+        "name": "Unsaturated fat",
+        "rda": "–"
+      },
+      {
+        "amount": "3.40 g",
+        "kind": "is-sub",
+        "name": "Monounsaturated fat",
+        "rda": "–"
+      },
+      {
+        "amount": "3.84 g",
+        "kind": "is-sub",
+        "name": "Polyunsaturated fat",
+        "rda": "–"
+      },
+      {
+        "amount": "0 g",
+        "kind": "is-sub",
+        "name": "Trans fat",
+        "rda": "–"
+      },
+      {
+        "amount": "0 mg",
+        "kind": "",
+        "name": "Cholesterol",
+        "rda": "–"
+      },
+      {
+        "amount": "368.13 mg",
+        "kind": "",
+        "name": "Sodium",
+        "rda": "9.7%"
+      }
+    ],
+    "sub": "Per 60 g pack, as tested. Serving size 30 g, 2 serves in this pack."
+  },
+  "pudina-bhujia": {
+    "foot": "Values are approximate, per 60 g pack as tested. % RDA is per 30 g serve. ND means not detected above the stated limit.",
+    "name": "Pudina Bhujia",
+    "per": "Per 60 g (approx.)",
+    "rows": [
+      {
+        "amount": "292.63 kcal",
+        "kind": "",
+        "name": "Energy",
+        "rda": "6.8%"
+      },
+      {
+        "amount": "14.94 g",
+        "kind": "is-hero",
+        "name": "Protein",
+        "rda": "12.8%"
+      },
+      {
+        "amount": "37.38 g",
+        "kind": "",
+        "name": "Carbohydrate",
+        "rda": "–"
+      },
+      {
+        "amount": "1.21 g",
+        "kind": "is-sub",
+        "name": "Total sugar",
+        "rda": "–"
+      },
+      {
+        "amount": "0.39 g",
+        "kind": "is-sub",
+        "name": "Added sugar",
+        "rda": "0.4%"
+      },
+      {
+        "amount": "6.75 g",
+        "kind": "",
+        "name": "Dietary fibre",
+        "rda": "10.4%"
+      },
+      {
+        "amount": "9.99 g",
+        "kind": "",
+        "name": "Total fat",
+        "rda": "6.9%"
+      },
+      {
+        "amount": "2.69 g",
+        "kind": "is-sub",
+        "name": "Saturated fat",
+        "rda": "5.7%"
+      },
+      {
+        "amount": "7.29 g",
+        "kind": "is-sub",
+        "name": "Unsaturated fat",
+        "rda": "–"
+      },
+      {
+        "amount": "3.54 g",
+        "kind": "is-sub",
+        "name": "Monounsaturated fat",
+        "rda": "–"
+      },
+      {
+        "amount": "3.76 g",
+        "kind": "is-sub",
+        "name": "Polyunsaturated fat",
+        "rda": "–"
+      },
+      {
+        "amount": "ND (&lt;0.03 g)",
+        "kind": "is-sub",
+        "name": "Trans fat",
+        "rda": "0.7%"
+      },
+      {
+        "amount": "ND (&lt;1.3 mg)",
+        "kind": "",
+        "name": "Cholesterol",
+        "rda": "–"
+      },
+      {
+        "amount": "469.63 mg",
+        "kind": "",
+        "name": "Sodium",
+        "rda": "10.8%"
+      }
+    ],
+    "sub": "Per 60 g pack, as tested. Serving size 30 g, 2.16 serves in this pack."
+  },
+  "sweet-chilli-chakli": {
+    "foot": "Values are approximate, per 50 g pack as tested. % RDA is per 30 g serve.",
+    "name": "Sweet Chilli Chakli",
+    "per": "Per 50 g (approx.)",
+    "rows": [
+      {
+        "amount": "270.77 kcal",
+        "kind": "",
+        "name": "Energy",
+        "rda": "8.1%"
+      },
+      {
+        "amount": "8.82 g",
+        "kind": "is-hero",
+        "name": "Protein",
+        "rda": "9.8%"
+      },
+      {
+        "amount": "21.04 g",
+        "kind": "",
+        "name": "Carbohydrate",
+        "rda": "–"
+      },
+      {
+        "amount": "3.22 g",
+        "kind": "is-sub",
+        "name": "Total sugar",
+        "rda": "–"
+      },
+      {
+        "amount": "1.64 g",
+        "kind": "is-sub",
+        "name": "Added sugar",
+        "rda": "2.0%"
+      },
+      {
+        "amount": "2.43 g",
+        "kind": "",
+        "name": "Dietary fibre",
+        "rda": "4.9%"
+      },
+      {
+        "amount": "16.81 g",
+        "kind": "",
+        "name": "Total fat",
+        "rda": "15.1%"
+      },
+      {
+        "amount": "6.01 g",
+        "kind": "is-sub",
+        "name": "Saturated fat",
+        "rda": "16.4%"
+      },
+      {
+        "amount": "10.79 g",
+        "kind": "is-sub",
+        "name": "Unsaturated fat",
+        "rda": "–"
+      },
+      {
+        "amount": "0.05 g",
+        "kind": "is-sub",
+        "name": "Trans fat",
+        "rda": "1.5%"
+      },
+      {
+        "amount": "2.84 mg",
+        "kind": "",
+        "name": "Cholesterol",
+        "rda": "–"
+      },
+      {
+        "amount": "511.08 mg",
+        "kind": "",
+        "name": "Sodium",
+        "rda": "15.3%"
+      }
+    ],
+    "sub": "Per 50 g pack, as tested. Serving size 30 g, 1.66 serves in this pack."
+  }
+}
+        </script>
+
         <ul class="product-grid" data-reveal-grid>
           <li style="--i: 0">
             <article class="product-card" style="--accent: #E8862E">
@@ -315,6 +747,9 @@
                 <p class="product-card__price">₹99</p>
                 <p class="product-card__tag">In combos &amp; boxes</p>
               </div>
+              <button class="product-card__btn" type="button" data-nutrition="masala-bhujia">
+                Protein numbers<span class="visually-hidden"> for Masala Bhujia</span>
+              </button>
             </article>
           </li>
           <li style="--i: 1">
@@ -335,6 +770,9 @@
                 <p class="product-card__price">₹99</p>
                 <p class="product-card__tag">In combos &amp; boxes</p>
               </div>
+              <button class="product-card__btn" type="button" data-nutrition="pudina-bhujia">
+                Protein numbers<span class="visually-hidden"> for Pudina Bhujia</span>
+              </button>
             </article>
           </li>
           <li style="--i: 2">
@@ -355,6 +793,9 @@
                 <p class="product-card__price">₹99</p>
                 <p class="product-card__tag">In combos &amp; boxes</p>
               </div>
+              <button class="product-card__btn" type="button" data-nutrition="sweet-chilli-chakli">
+                Protein numbers<span class="visually-hidden"> for Sweet Chilli Chakli</span>
+              </button>
             </article>
           </li>
           <li style="--i: 3">
@@ -375,6 +816,9 @@
                 <p class="product-card__price">₹99</p>
                 <p class="product-card__tag">In combos &amp; boxes</p>
               </div>
+              <button class="product-card__btn" type="button" data-nutrition="cheddar-cheese-chakli">
+                Protein numbers<span class="visually-hidden"> for Cheddar Cheese Chakli</span>
+              </button>
             </article>
           </li>
           <li style="--i: 4">
@@ -395,6 +839,9 @@
                 <p class="product-card__price">₹99</p>
                 <p class="product-card__tag">In combos &amp; boxes</p>
               </div>
+              <button class="product-card__btn" type="button" data-nutrition="korean-bbq-peanuts">
+                Protein numbers<span class="visually-hidden"> for Korean BBQ Peanuts</span>
+              </button>
             </article>
           </li>
         </ul>
@@ -778,7 +1225,29 @@
     </div>
   </footer>
 
-  <script src="/assets/js/cart.js?v=85" defer></script>
-  <script src="/assets/js/main.js?v=85" defer></script>
+  <script src="/assets/js/cart.js?v=86" defer></script>
+  <script src="/assets/js/main.js?v=86" defer></script>
+  <!-- Nutrition, without leaving the page. The line-up's button opens this;
+       the product pages keep their own full table. -->
+  <dialog class="nutri" id="nutrition-dialog" aria-labelledby="nutri-title">
+    <div class="nutri__head">
+      <div>
+        <p class="nutri__eyebrow">The protein numbers</p>
+        <h2 class="nutri__title" id="nutri-title"></h2>
+        <p class="nutri__sub" data-nutri-sub></p>
+      </div>
+      <button class="nutri__close" type="button" data-nutri-close aria-label="Close">
+        <svg viewBox="0 0 20 20" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M5 5l10 10M15 5L5 15"/>
+        </svg>
+      </button>
+    </div>
+    <div class="nutri__body nutrition" data-nutri-body></div>
+    <div class="nutri__foot">
+      <p class="nutri__note" data-nutri-foot></p>
+      <a class="btn btn--navy btn--sm" data-nutri-link href="/products/masala-bhujia">Full product page</a>
+    </div>
+  </dialog>
+
 </body>
 </html>

@@ -1429,9 +1429,10 @@ button {
 
 .product-card__buy {
   display: flex;
-  align-items: center;
+  flex-wrap: wrap;
+  align-items: baseline;
   justify-content: space-between;
-  gap: 0.75rem;
+  gap: 0.35rem 0.75rem;
   margin-top: auto;
 }
 
@@ -1452,13 +1453,16 @@ button {
   justify-content: center;
   min-height: 44px;
   padding: 0 1.25rem;
+  border: 0;
   border-radius: var(--radius-pill);
   background: var(--navy);
   color: var(--cream);
+  font-family: inherit;
   font-weight: 600;
   font-size: 0.9375rem;
   text-decoration: none;
   white-space: nowrap;
+  cursor: pointer;
   transition:
     background-color 200ms var(--ease),
     transform 200ms var(--ease);
@@ -1475,10 +1479,7 @@ button {
    and a second link to the same page is noise to a screen reader. */
 .product-card__tag {
   margin: 0;
-  padding: 0.4rem 0.75rem;
-  border-radius: var(--radius-pill);
-  background: var(--tile);
-  color: var(--pack-blue);
+  color: var(--text);
   font-size: 0.8125rem;
   font-weight: 600;
   line-height: 1.2;
@@ -2082,6 +2083,123 @@ button {
   color: var(--text);
   font-size: 0.8125rem;
   line-height: 1.45;
+}
+
+/* The line-up's button sits under the price row rather than beside it:
+   "Protein numbers" does not fit next to ₹99 in a 217px card, and a full-width
+   target is easier to hit. */
+.product-card > .product-card__btn {
+  width: 100%;
+  margin-top: 0.7rem;
+}
+
+/* --- Nutrition dialog ---------------------------------------------------
+   The same table the product page carries, without the trip. */
+.nutri {
+  width: min(94vw, 620px);
+  max-height: 88vh;
+  padding: 0;
+  border: 0;
+  border-radius: 20px;
+  background: var(--paper);
+  color: var(--navy-ink);
+  overflow: hidden;
+}
+
+.nutri::backdrop {
+  background: rgba(16, 24, 56, 0.55);
+}
+
+.nutri__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.15rem 1.15rem 0.9rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.nutri__eyebrow {
+  margin: 0 0 0.15rem;
+  color: var(--pack-blue);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.nutri__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.25rem;
+  line-height: 1.15;
+}
+
+.nutri__sub {
+  margin: 0.25rem 0 0;
+  color: var(--text);
+  font-size: 0.8125rem;
+  line-height: 1.45;
+}
+
+.nutri__close {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin: -0.35rem -0.35rem 0 0;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--paper);
+  color: var(--navy-ink);
+  cursor: pointer;
+}
+
+.nutri__close svg {
+  width: 18px;
+  height: 18px;
+}
+
+.nutri__close:hover {
+  background: var(--tile);
+}
+
+/* The table's own border and radius belong to the page version; inside the
+   dialog the dialog is the frame. */
+.nutri__body {
+  max-width: none;
+  border-top: 0;
+  max-height: min(58vh, 460px);
+  border: 0;
+  border-radius: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+.nutri__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.9rem 1.15rem 1.15rem;
+  border-top: 1px solid var(--line);
+}
+
+.nutri__note {
+  flex: 1 1 14rem;
+  margin: 0;
+  color: var(--text);
+  font-size: 0.75rem;
+  line-height: 1.45;
+}
+
+@media (max-width: 480px) {
+  .nutri__foot .btn {
+    flex: 1 1 100%;
+  }
 }
 
 /* --- Section: combos ---------------------------------------------------- */
