@@ -232,6 +232,15 @@ The dialog's heading names the pack, so the table's caption is
 row apart. Without `<dialog>` support the buttons are swapped for links to
 `/products/<slug>#nutrition`, which is the same table on its own page.
 
+**`.best-pill` marks a bestseller**, on the line-up cards and again in the box
+builder, which is where flavours are actually being chosen. One component, two
+sizes: `--sm` for the builder, whose cards are half the width on a phone and
+where a full-size pill would cover most of the pack. It is white with a
+hairline rather than a filled colour, and it sits *inside* the pack tile rather
+than overflowing the corner like the protein badge, so a card never has two
+loud things on it. Which packs are marked is markup, not data — there is no
+sales figure behind it.
+
 **The line-up is five across on wide screens and a swipe rail below that.**
 Five products never divided into three columns: the old grid stranded two
 cards beside a hole, and stacked to 3,400px on a phone. The rail puts the

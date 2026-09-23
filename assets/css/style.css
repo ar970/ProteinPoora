@@ -1378,8 +1378,12 @@ button {
    corner like the protein badge, and it is white with a hairline rather than
    a filled colour — the point is that someone scanning five packs notices two
    of them, not that the page shouts. The star carries the accent; the words
-   stay navy so they read at a glance without competing with the name. */
-.product-card__best {
+   stay navy so they read at a glance without competing with the name.
+
+   One component, used on the line-up cards and again in the box builder. The
+   --sm modifier is for the builder, whose cards are half the width on a phone
+   and where a full-size pill would cover most of the pack. */
+.best-pill {
   position: absolute;
   top: 8px;
   left: 8px;
@@ -1400,10 +1404,24 @@ button {
   white-space: nowrap;
 }
 
-.product-card__best svg {
+.best-pill svg {
   width: 12px;
   height: 12px;
   color: var(--orange);
+}
+
+.best-pill--sm {
+  top: 5px;
+  left: 5px;
+  gap: 0.22rem;
+  padding: 0.18rem 0.42rem 0.18rem 0.34rem;
+  font-size: 0.625rem;
+  letter-spacing: 0;
+}
+
+.best-pill--sm svg {
+  width: 10px;
+  height: 10px;
 }
 
 .product-card__badge {
