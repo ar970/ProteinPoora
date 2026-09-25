@@ -367,6 +367,15 @@ the same. **Move any one of those three and re-check the other two.**
 charge to the number that decides whether there is a delivery charge is how a
 ₹399 order quietly becomes free.
 
+**One flat rate for the whole country, by construction.** `deliveryFor()` takes
+a subtotal and nothing else — the address never reaches the pricing module, so
+there is no code path where a PIN code or a state could change what someone
+pays. That is deliberate and it is the thing to preserve: zone pricing would
+mean the number moves after the customer has entered their address, which is
+the moment they were being asked to trust it. If a courier's rates ever force
+the issue, the honest version is a higher flat rate for everyone, not a
+surcharge that appears once we know where they live.
+
 In practice only the two duos ever pay it — five packs come to ₹450 and the
 Family Pack is ₹450, so every box and the largest combo clear the threshold on
 their own. `npm run check:prices` checks both numbers against every place the
