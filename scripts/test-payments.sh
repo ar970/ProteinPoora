@@ -40,6 +40,10 @@ s=$(call POST /api/create-order '{"items":[{"slug":"masala-bhujia","qty":2},{"sl
                                                                                   check "short box, mixed"    400 "$s" "$(cat /tmp/body.json)"
 s=$(call POST /api/create-order '{"items":[{"slug":"masala-bhujia","qty":2},{"slug":"combo-all-five","qty":1}]}')
                                                                                   check "combo cannot fill a box" 400 "$s" "$(cat /tmp/body.json)"
+s=$(call POST /api/create-order '{"items":[{"slug":"combo-all-five","qty":1}],"delivery":{"customer_name":"A","phone":"9811122233","address1":"12 Road","city":"C","state":"S","pincode":"12345"}}');
+                                                                                  check "PIN 12345"           400 "$s" "$(cat /tmp/body.json)"
+s=$(call POST /api/create-order '{"items":[{"slug":"combo-all-five","qty":1}],"delivery":{"customer_name":"A","phone":"9811122233","address1":"12 Road","city":"C","state":"S","pincode":"060001"}}');
+                                                                                  check "PIN 060001"          400 "$s" "$(cat /tmp/body.json)"
 s=$(call GET /api/create-order '');                                                   check "GET not allowed"     405 "$s" "$(cat /tmp/body.json)"
 
 echo

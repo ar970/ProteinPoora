@@ -22,11 +22,11 @@ create table if not exists public.preorders (
   address2      text        not null default '',
   city          text        not null,
   state         text        not null,
-  -- Bengaluru PIN codes, and only those: 560xxx. We deliver in one city, and
-  -- the form filters what can be typed, but the form is not the guard --
-  -- anyone can post to this table with the public key, so the rule lives here
-  -- too. Widen this the day a second city opens, not before.
-  pincode       text        not null check (pincode ~ '^560[0-9]{3}$'),
+  -- Any Indian PIN code: six digits, first never 0, because that range was
+  -- never allocated. We deliver across India, so this is a format rule rather
+  -- than a serviceability one -- but it still lives here, because the form is
+  -- not the guard: anyone can post to this table with the public key.
+  pincode       text        not null check (pincode ~ '^[1-9][0-9]{5}$'),
   notes         text        not null default '',
   items         jsonb       not null,
   -- Money as whole paise. ₹99 is 9900. Never a decimal.

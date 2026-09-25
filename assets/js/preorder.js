@@ -356,15 +356,16 @@
       return /^(?:\+?91)?[6-9]\d{9}$/.test(v.replace(/[\s()-]/g, '')) ? '' : 'Enter a 10-digit Indian mobile number.';
     },
     address1: function (v) { return v.length >= 4 ? '' : 'Please enter your street address.'; },
-    /* We deliver in Bengaluru and nowhere else yet, so the PIN is the whole
-       serviceability check: 560xxx is the city. Telling someone here beats
-       taking their money and finding out afterwards. The same rule is a check
-       constraint on the table -- this is the convenience, not the guard. */
+    /* We deliver across India, so this is a format check, not a serviceability
+       one: six digits, first never 0. Mirrors api/_lib/http.js, which is the
+       rule that counts. */
     pincode: function (v) {
       if (!/^\d{6}$/.test(v)) return 'Enter a 6-digit PIN code.';
-      if (!/^560\d{3}$/.test(v)) return 'We only deliver in Bengaluru for now, and that is not a Bengaluru PIN code.';
+      if (!/^[1-9]\d{5}$/.test(v)) return 'That is not a valid Indian PIN code — it cannot start with a zero.';
       return '';
-    }
+    },
+    city: function (v) { return v.length >= 2 ? '' : 'Please enter your city or town.'; },
+    state: function (v) { return v ? '' : 'Please choose your state.'; }
   };
 
   function validate() {

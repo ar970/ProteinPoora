@@ -116,7 +116,7 @@ const row = (pin) => ({
   email: 'setup-check@example.com',
   phone: '9999999999',
   address1: 'Automated check from scripts/check-supabase.mjs',
-  address2: '', city: 'Bengaluru', state: 'Karnataka',
+  address2: '', city: 'Delhi', state: 'Delhi',
   pincode: pin, notes: 'safe to delete',
   items: [{ slug: 'masala-bhujia', name: 'Masala Bhujia', qty: 1, price_paise: 9900 }],
   total_paise: 9900,
@@ -130,19 +130,22 @@ const insert = (body, extra = {}) =>
     body: JSON.stringify(body)
   });
 
-console.log('\ndelivery area');
+console.log('\nPIN code rule');
 try {
-  // A Delhi PIN must be refused by the table, not merely by the form.
-  const res = await insert(row('110001'));
+  /* We deliver across India now, so what this proves has flipped: the rule
+     should refuse a malformed PIN and nothing else. 060001 is the test because
+     no Indian PIN starts with a zero, so a table that takes it has no rule at
+     all — and, unlike a Delhi PIN, it cannot accidentally be a real order. */
+  const res = await insert(row('060001'));
   if (res.ok) {
-    bad('the table accepted a Delhi PIN code — the 560xxx constraint is not applied');
-    console.log('        → run the pincode alter table in docs/supabase-setup.sql');
+    bad('the table accepted 060001 — there is no PIN rule on it at all');
+    console.log('        → run docs/migrate-pan-india.sql');
     const [created] = await res.json().catch(() => []);
     if (created?.id) console.log(`        → and delete the row it just made (id ${created.id})`);
   } else {
     const body = await res.text();
     if (/violates check constraint|pincode/i.test(body)) {
-      ok('a non-Bengaluru PIN code is refused by the table itself');
+      ok('a malformed PIN code is refused by the table itself');
     } else {
       bad(`refused, but not by the PIN rule — ${res.status}: ${body.slice(0, 160)}`);
     }
@@ -156,13 +159,18 @@ if (!WRITE) {
   console.log('  skip  pass --write to place and then remove a real test order');
 } else {
   try {
-    const res = await insert(row('560001'));
+    // Deliberately a Delhi PIN: this is the one check that proves the
+    // pan-India migration actually ran against the live table.
+    const res = await insert(row('110001'));
     if (!res.ok) {
-      bad(`a valid Bengaluru order was refused — ${res.status}: ${(await res.text()).slice(0, 200)}`);
-      console.log('        → the anon insert policy in docs/supabase-setup.sql is missing');
+      const body = (await res.text()).slice(0, 200);
+      bad(`a Delhi order was refused — ${res.status}: ${body}`);
+      console.log(/pincode|check constraint/i.test(body)
+        ? '        → the table still has the Bengaluru-only PIN rule. Run docs/migrate-pan-india.sql.'
+        : '        → the anon insert policy in docs/supabase-setup.sql is missing');
     } else {
       const [created] = await res.json().catch(() => []);
-      ok(`a valid order inserts${created?.id ? ` (id ${created.id})` : ''}`);
+      ok(`a Delhi order inserts — delivery is open across India${created?.id ? ` (id ${created.id})` : ''}`);
 
       const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
       if (!serviceKey) {

@@ -140,13 +140,17 @@ function phone(value) {
   return m[1];
 }
 
-/* Bengaluru is 560xxx, and Bengaluru is the only place we deliver, so the PIN
-   is the serviceability check. The same rule is a check constraint on the
-   table, because that is the one the browser cannot talk its way past. */
+/* We deliver across India, so the PIN is a format check rather than a
+   serviceability gate: six digits, and the first is never 0 because that range
+   was never allocated. The same rule is a check constraint on the table,
+   because that is the one the browser cannot talk its way past — see
+   docs/migrate-pan-india.sql, which has to be run before this goes live or a
+   PIN outside Bengaluru is refused by the database after the customer has
+   paid. */
 function pincode(value) {
   const v = trim(value);
   if (!/^\d{6}$/.test(v)) throw badRequest('Enter a 6-digit PIN code.');
-  if (!/^560\d{3}$/.test(v)) throw badRequest('We only deliver in Bengaluru for now, and that is not a Bengaluru PIN code.');
+  if (!/^[1-9]\d{5}$/.test(v)) throw badRequest('That is not a valid Indian PIN code — it cannot start with a zero.');
   return v;
 }
 

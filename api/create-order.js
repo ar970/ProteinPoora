@@ -48,14 +48,15 @@ const clean = (v) => String(v == null ? '' : v).replace(/\s+/g, ' ').trim().slic
  */
 function deliveryNotes(delivery) {
   const d = delivery && typeof delivery === 'object' ? delivery : {};
-  const pin = pincode(d.pincode);            // throws a 400 for anything but 560xxx
+  const pin = pincode(d.pincode);            // throws a 400 for a malformed PIN
   const street = [clean(d.address1), clean(d.address2)].filter(Boolean).join(', ');
   return {
     customer: clean(d.customer_name),
     phone: clean(d.phone),
     email: clean(d.email),
     address: clean(street),
-    city: clean(d.city) || 'Bengaluru',
+    city: clean(d.city),
+    state: clean(d.state),
     pincode: pin,
     instructions: clean(d.notes)
   };
@@ -79,6 +80,18 @@ module.exports = async function handler(req, res) {
 
     const { keyId } = credentials();
 
+    /* Built before the try, not inside it. deliveryNotes() validates the PIN,
+       and inside that block its 400 was being swallowed by asApiError and
+       reported as "we could not reach our payment provider" — so a customer
+       who mistyped a PIN was told our payments were down. Nothing had been
+       charged, but the message sent them away for no reason. */
+    const notes = Object.assign({
+      items: items.map((i) => `${i.slug}x${i.qty}`).join(',').slice(0, NOTE_MAX),
+      // So the dashboard says why the charge is what it is, without anyone
+      // having to re-derive it from the line items.
+      charges: `goods ${subtotal_paise} + delivery ${delivery_paise} = ${amount} paise`
+    }, deliveryNotes(body.delivery));
+
     let order;
     try {
       order = await razorpay().orders.create({
@@ -87,12 +100,7 @@ module.exports = async function handler(req, res) {
         receipt: receipt(),
         // Everything needed to pack and deliver this order, on the payment
         // itself, so the dashboard is a sufficient record on its own.
-        notes: Object.assign({
-          items: items.map((i) => `${i.slug}x${i.qty}`).join(',').slice(0, NOTE_MAX),
-          // So the dashboard says why the charge is what it is, without
-          // anyone having to re-derive it from the line items.
-          charges: `goods ${subtotal_paise} + delivery ${delivery_paise} = ${amount} paise`
-        }, deliveryNotes(body.delivery))
+        notes
       });
     } catch (err) {
       throw asApiError(err);

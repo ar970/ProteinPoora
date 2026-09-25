@@ -109,8 +109,9 @@ node scripts/check-supabase.mjs --write   # also places and deletes a test order
 
 It reads the project URL and anon key out of `assets/js/store-config.js`, so it
 checks the table the website really writes to, and it reports three things: that
-every column the checkout sends exists, that the table refuses a non-Bengaluru
-PIN by itself, and — with `--write` — that a valid order inserts.
+every column the checkout sends exists, that the table refuses a malformed PIN
+by itself, and — with `--write` — that a **Delhi** order inserts. That last one
+is the check that proves `docs/migrate-pan-india.sql` was actually run.
 
 This matters more than it sounds. The customer pays through Razorpay **and only
 then** does the browser write the order row. A missing column or an unapplied
@@ -450,24 +451,33 @@ builds the same box. The single packs' cards and buy boxes link to
 
 **The PIN code box only accepts digits**, six of them — anything else is stripped as it is typed, including out of a paste, and the caret is put back where it was rather than jumping to the end. Submitting still checks the whole thing (`[1-9]` then five digits: an Indian PIN never starts with a zero), and `docs/supabase-setup.sql` now carries the same rule as a database constraint, because the form is not the guard — anyone can post to that table with the public key. If your table already exists, the bottom of that file has the one `alter table` to add it.
 
-**We deliver in Bengaluru and nowhere else**, so the checkout enforces it
-rather than only saying it. The city and state are not questions any more —
-they are shown as "Bengaluru, Karnataka" and submitted from hidden inputs, so
-the order row keeps its shape — and the PIN code is the serviceability check:
-`560xxx` passes, everything else is refused with a reason before any money
-moves. Someone in Delhi finds out on the form, not after paying.
+**We deliver across India.** The PIN code is no longer a serviceability gate,
+only a format rule: six digits, first never 0, because that range was never
+allocated. City is a text field and state is a 36-option `<select>` — a list
+rather than a box, because a state typed by hand is a state spelled thirty ways
+in the orders table.
 
 The rule is written in three places on purpose. `assets/js/preorder.js` is the
-convenience, `pincode()` in `api/_lib/http.js` covers the dormant API path, and
-the `check (pincode ~ '^560[0-9]{3}$')` constraint in `docs/supabase-setup.sql`
-is the one that actually holds — the browser writes that row itself, so the
-table is the only guard it cannot talk past. **Widen all three together**, and
-run the `alter table` at the bottom of that file on an existing table.
+convenience, `pincode()` in `api/_lib/http.js` is what the API enforces, and
+the `check (pincode ~ '^[1-9][0-9]{5}$')` constraint in
+`docs/supabase-setup.sql` is the one that actually holds — the browser writes
+that row itself, so the table is the only guard it cannot talk past. **Change
+all three together.**
 
-The state dropdown and the ~150-city `CITY_STATE` autofill map that used to
-fill it in are gone, along with the 36-item `STATES` list. They existed to make
-a nationwide address easy to type; with one city there is nothing to choose.
-Both are in git history if a second city arrives.
+### Opening delivery up: run the migration first
+
+`docs/migrate-pan-india.sql` widens that constraint on a table that already
+exists. **It has to be run before the pan-India site is live.** Postgres
+refuses an INSERT that breaks a check constraint, and it refuses the *whole*
+row — so with the old `560xxx` rule still on the table, a customer in Delhi
+pays and then the order is thrown away at the last step. The site cannot talk
+its way past a constraint and has no business trying.
+
+It would not actually be lost: the address and items go into the Razorpay
+order's notes before the payment, so the dashboard is enough to fulfil it, and
+the customer is told to call rather than fobbed off. That is a backstop, not a
+plan. `npm run check:supabase -- --write` answers the question directly by
+inserting a Delhi order and removing it again.
 
 **Customers can reach a human.** The phone number and email are in the footer
 of all eight pages, and the FAQ answer about cancelling points at both. That

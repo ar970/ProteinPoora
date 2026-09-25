@@ -367,7 +367,7 @@
       go.href = '/preorder';
       d.__foot.appendChild(go);
     }
-    d.__foot.appendChild(el('p', 'drawer__note', 'You pay at checkout, securely through Razorpay. Delivering across Bengaluru.'));
+    d.__foot.appendChild(el('p', 'drawer__note', 'You pay at checkout, securely through Razorpay. Delivering across India.'));
   }
 
   function stepper(item) {

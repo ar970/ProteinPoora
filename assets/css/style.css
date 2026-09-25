@@ -3003,20 +3003,21 @@ button {
   font-size: 0.8125rem;
 }
 
-/* .field is a grid, and its rows stretch to match the taller field beside it,
-   which floated the value away from its own label. */
-.field--fixed {
-  align-content: start;
+/* select.input inherits the input's box, but not its type colour or its
+   arrow room, and Safari will not give it the same height without this. */
+select.input {
+  height: 48px;
+  padding-right: 2.25rem;
+  color: var(--navy-ink);
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%231A2456' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 8l5 5 5-5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.85rem center;
+  background-size: 18px 18px;
 }
 
-/* An answer rather than a question: we deliver in one city, so the city and
-   state are shown, not asked. Styled to read as a stated fact — a readonly
-   input here would look like a field the customer is failing to type into. */
-.field__fixed {
-  margin: 0;
-  padding: 0.6rem 0;
-  color: var(--navy-ink);
-  font-weight: 600;
+select.input:invalid {
+  color: var(--text);
 }
 
 .field__error {
