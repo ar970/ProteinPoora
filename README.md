@@ -190,6 +190,57 @@ change with it.
 In a Liquid theme this is one `header.liquid` section with a "sticky" setting,
 included from `theme.liquid` above `{{ content_for_layout }}`.
 
+## Search and AI assistants
+
+Every indexable page carries a canonical URL, Open Graph and Twitter card tags,
+and a 1200×630 share card in `assets/img/og-*.png`. The cards are generated
+from the real pack shots and brand type rather than being a cropped photo, so
+a link pasted into WhatsApp looks like the shop.
+
+`robots.txt` names the AI crawlers individually — GPTBot, ClaudeBot,
+PerplexityBot, Google-Extended and the rest — rather than leaving them to the
+wildcard. The wildcard is only a fallback, and being found by name is the point
+of allowing them at all. To turn one away, change its `Allow` to `Disallow`
+there; do not rely on the wildcard.
+
+`llms.txt` is a plain-text summary for assistants that read one: the snacks,
+the prices, how buying works, and a closing note that there are no discount
+codes or free-sample programmes — so a model that has hallucinated one has
+something to contradict it.
+
+### Structured data
+
+| Page | Types |
+|---|---|
+| `/` | `Organization`, `WebSite`, `OfferShippingDetails`, three `Product` + `Offer` (the combos), `FAQPage` |
+| `/products/*` | `Product` with `NutritionInformation`, `BreadcrumbList` |
+
+**The five single packs carry no `offers`, on purpose.** They are not sold on
+their own, so any price in the markup would be a price nobody can pay, and
+structured data that disagrees with the page is the one thing Google treats as
+a violation rather than a mistake. The offers live on the three combos, where
+the prices are real and payable.
+
+Both the FAQ entries and the nutrition figures are **lifted out of the visible
+page by script**, never retyped. Markup that has drifted from what a reader
+sees is worse than no markup.
+
+### Keeping it honest
+
+`sitemap.xml` is generated, not maintained. `npm run check` fails when it
+disagrees with the pages on disk, so adding a product page and forgetting the
+sitemap is a failed check rather than a URL nobody crawls.
+
+```bash
+npm run build:sitemap    # rewrite it
+npm run check:seo        # fail if it is stale
+```
+
+A page is listed when it has a canonical URL and no `noindex` — the same two
+facts a crawler uses, read out of the markup rather than from a second list
+here that could disagree with it. `/preorder` and `/thank-you` are both
+`noindex` and both left out.
+
 ## Homepage structure
 
 Sand hero, cream proof strip, white line-up, cream combos, white FAQ, navy

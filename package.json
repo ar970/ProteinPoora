@@ -16,6 +16,8 @@
     "test:payments": "bash scripts/test-payments.sh",
     "check:assets": "node scripts/check-assets.js",
     "check:supabase": "node scripts/check-supabase.mjs",
-    "check": "npm run check:prices && npm run check:assets"
+    "check": "npm run check:prices && npm run check:assets && npm run check:seo",
+    "build:sitemap": "node scripts/build-sitemap.mjs",
+    "check:seo": "node scripts/build-sitemap.mjs --check"
   }
 }

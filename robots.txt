@@ -1,0 +1,51 @@
+# proteinpoora.shop
+
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /thank-you
+
+# AI assistants are named explicitly rather than left to the wildcard, because
+# the wildcard is what a crawler falls back to and being found by name is the
+# whole point of allowing them. If any of these should ever be turned away,
+# change Allow to Disallow here — do not rely on the wildcard above.
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Amazonbot
+Allow: /
+
+User-agent: meta-externalagent
+Allow: /
+
+Sitemap: https://proteinpoora.shop/sitemap.xml
