@@ -47,18 +47,44 @@ alter table public.preorders
   alter column state drop default;
 
 
--- 3. Tell me it worked. -------------------------------------------------------
--- Expect: one row, and its definition should read ~ '^[1-9][0-9]{5}$'.
+-- 3. Prove it, with a real Delhi order. ---------------------------------------
+--
+-- Checking the rule by reading it back only proves the rule was written. This
+-- puts an actual Delhi row through the same table the website writes to, which
+-- is the thing that has been failing, and then deletes it again. It leaves
+-- nothing behind.
+--
+-- If the migration above did not take, THIS is where it stops, with Postgres
+-- saying exactly why. That error is the answer, not a problem with this file.
 
-select conname, pg_get_constraintdef(oid) as definition
+insert into public.preorders
+  (reference, status, customer_name, email, phone,
+   address1, address2, city, state, pincode, notes, items, total_paise)
+values
+  ('PP-SELFTEST', 'test', 'Self test — this row deletes itself',
+   'selftest@example.com', '9999999999',
+   'Automated check from docs/migrate-pan-india.sql', '',
+   'New Delhi', 'Delhi', '110001', 'safe to delete', '[]'::jsonb, 0);
+
+delete from public.preorders where reference = 'PP-SELFTEST';
+
+
+-- 4. Tell me it worked. -------------------------------------------------------
+-- Expect one row, reading: CHECK ((pincode ~ '^[1-9][0-9]{5}$'::text)) NOT VALID
+-- Getting this far at all means a Delhi order inserted cleanly, because step 3
+-- would have stopped the whole thing otherwise.
+
+select pg_get_constraintdef(oid) as pin_rule_now,
+       'A Delhi order inserted and was removed. The table is open across India.'
+         as result
 from pg_constraint
 where conrelid = 'public.preorders'::regclass
   and conname = 'preorders_pincode_check';
 
 
 -- ---------------------------------------------------------------------------
--- Afterwards, a Delhi PIN should insert cleanly. `npm run check:supabase`
--- checks exactly that against the live table, and says so in one line:
+-- From a terminal, with the repo checked out, the same check again plus the
+-- column list the checkout needs:
 --
---   npm run check:supabase           -- read-only
+--   npm run check:supabase              -- read-only
 --   npm run check:supabase -- --write   -- places and removes a test order
