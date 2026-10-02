@@ -111,8 +111,20 @@
     });
   }
 
-  function say(message, tone) {
-    statusEl.textContent = message || '';
+  /* `detail` is the operator's half of the message: the actual reason the
+     database gave, rendered quietly under the sentence the customer reads.
+     Without it a rejected order is a screenshot that says "we could not save
+     the order" and nothing else, and finding out why means asking somebody to
+     open devtools on a phone. */
+  function say(message, tone, detail) {
+    statusEl.textContent = '';
+    if (message) statusEl.appendChild(document.createTextNode(message));
+    if (detail) {
+      var small = document.createElement('span');
+      small.className = 'form-status__detail';
+      small.textContent = detail;
+      statusEl.appendChild(small);
+    }
     if (tone) statusEl.setAttribute('data-tone', tone);
     else statusEl.removeAttribute('data-tone');
   }
@@ -452,7 +464,8 @@
         paintBoxWarning();
         say(
           err.message || 'We could not place that order. Please try again.',
-          err.cancelled ? null : 'error'
+          err.cancelled ? null : 'error',
+          err.detail
         );
       });
   });
@@ -603,12 +616,47 @@
         });
       });
     }).catch(function (err) {
-      console.error('[preorder] supabase rejected the order:', err && err.message);
-      throw new Error(
+      var body = (err && err.message) || '';
+
+      /* The payment id is unique in the table on purpose: one payment, one
+         order. So "duplicate key" on that index does not mean the order was
+         lost — it means it is already saved and this is a second submit. The
+         customer should see the thank-you page, not a phone number. */
+      if (/duplicate key|preorders_payment_idx/i.test(body)) {
+        console.warn('[preorder] this payment is already in the table; treating as placed.');
+        return done;
+      }
+
+      console.error('[preorder] supabase rejected the order:', body);
+      var e = new Error(
         'Your payment went through, but we could not save the order. ' +
         'Please call 93113 49922 with your name — we have your payment and will deliver it.'
       );
+      e.detail = reason(body) + (paid.payment_id ? ' · payment ' + paid.payment_id : '');
+      throw e;
     });
+  }
+
+  /* Turns Postgres's own words into the one sentence that says what to do.
+     Every branch here is a thing that has actually gone wrong on this table,
+     and each one is fixed by running a specific file in docs/. */
+  function reason(body) {
+    if (/pincode/i.test(body) && /constraint/i.test(body)) {
+      return 'The orders table still only accepts Bengaluru PIN codes. ' +
+             'Run docs/migrate-pan-india.sql in the Supabase SQL editor.';
+    }
+    if (/row-level security|permission denied|42501/i.test(body)) {
+      return 'The table is not letting the website insert. ' +
+             'Run the policy at the bottom of docs/supabase-setup.sql.';
+    }
+    if (/column|schema cache|PGRST204/i.test(body)) {
+      return 'The orders table is missing a column. ' +
+             'Run docs/migrate-add-payments.sql.';
+    }
+    if (/constraint/i.test(body)) {
+      return 'The table refused the row: ' + body.replace(/\s+/g, ' ').slice(0, 150);
+    }
+    return body ? body.replace(/\s+/g, ' ').slice(0, 150) : 'No reason given.';
   }
 
   /** PP- plus six characters, skipping ones that are ambiguous when read out. */

@@ -3330,6 +3330,18 @@ select.input:invalid {
   color: var(--error);
 }
 
+/* The reason, under the sentence. Quieter than the message above it, but on
+   screen rather than in a console nobody opens on a phone — a screenshot of a
+   failed order should say what went wrong. */
+.form-status__detail {
+  display: block;
+  margin-top: 0.4rem;
+  color: var(--text);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.45;
+}
+
 /* --- Confirmation -------------------------------------------------------- */
 .confirm {
   max-width: 560px;
